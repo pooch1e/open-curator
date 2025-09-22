@@ -4,6 +4,7 @@ import { config } from '@/config';
 
 export default async function Page() {
   try {
+    // note - this is just getting museum objects
     const res = await fetch(
       config.ausMuseum.baseUrl + config.ausMuseum.objectEndpoint
     );
@@ -11,7 +12,7 @@ export default async function Page() {
     if (!res.ok) throw new Error('Failed to fetch museum data');
 
     const data = await res.json();
-    console.log(data.data, 'data in server comp');
+    
     return <SearchClient data={data.data} />;
   } catch (err: any) {
     return Response.json({ status: 400, error: err.message });

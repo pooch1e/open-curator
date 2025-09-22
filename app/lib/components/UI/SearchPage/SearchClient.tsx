@@ -32,17 +32,26 @@ export default function SearchClient({ data }: SearchClientProps) {
     }
   }, [data]);
 
-  console.log(museumData, 'data in client side');
+  
 
   const filterResults = useMemo(() => {
     if (!searchQuery.trim()) return museumData;
 
-    return museumData.filter(
-      (item) =>
-        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.type.toLowerCase().includes(searchQuery.toLowerCase())
-      // Add other searchable fields as needed
-    );
+    return museumData.filter((item) => {
+      const searchLower = searchQuery.toLowerCase();
+
+      // Search in title
+      if (item.title && item.title.toLowerCase().includes(searchLower)) {
+        return true;
+      }
+
+      // Search in type
+      if (item.type && item.type.toLowerCase().includes(searchLower)) {
+        return true;
+      }
+
+      return false;
+    });
   }, [museumData, searchQuery]);
 
   // handle search bar stuff here?
