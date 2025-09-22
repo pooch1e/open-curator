@@ -1,3 +1,9 @@
+import SearchGridContainer from './lib/components/UI/SearchPage/SearchGridContainer';
+
 export default function Page() {
-  return <h2>Hello, Next.js!</h2>;
+  return (
+    <>
+      <SearchGridContainer />
+    </>
+  );
 }
