@@ -11,7 +11,8 @@ export default async function Page() {
     if (!res.ok) throw new Error('Failed to fetch museum data');
 
     const data = await res.json();
-    return <SearchClient data={data} />;
+    console.log(data.data, 'data in server comp');
+    return <SearchClient data={data.data} />;
   } catch (err: any) {
     return Response.json({ status: 400, error: err.message });
   }

@@ -1,9 +1,18 @@
-export default function SearchBar() {
+interface searchBarProps {
+  onSearch: (query: string) => void;
+  searchQuery: string;
+}
+
+export default function SearchBar({ onSearch, searchQuery }: searchBarProps) {
   return (
     <div className="w-full max-w-xlg min-w-[200px]">
       <div className="relative">
         <input
           className="w-full bg-transparent placeholder:text-white text-white text-sm border border-red-700 rounded-md pl-3 pr-28 py-4 transition duration-300 ease focus:outline-none focus:border-white hover:border-white shadow-sm focus:shadow"
+          value={searchQuery}
+          onChange={(e) => {
+            onSearch(e.target.value);
+          }}
           placeholder="Search our collections"
         />
         <button
