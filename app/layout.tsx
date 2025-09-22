@@ -1,3 +1,4 @@
+import './app.css'
 import Header from './lib/components/Layout/Header';
 export default function RootLayout({
   children,
