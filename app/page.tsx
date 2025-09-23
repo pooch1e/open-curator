@@ -1,7 +1,8 @@
 import SearchClient from './lib/components/UI/SearchPage/SearchClient';
 
 import { config } from '@/config';
-import { extractMuseumDataWithImages } from './lib/utils/extractMuseumDataWithImages';
+import { extractMuseumData } from './lib/utils/extractMuseumData';
+import { extractData } from './lib/utils/extractData';
 
 export default async function Page() {
   try {
@@ -17,8 +18,9 @@ export default async function Page() {
     //validate + filter data
     const result = data.data;
 
-    const extractedData = (extractMuseumDataWithImages(result));
-    console.log(extractedData);
+    // need func to extract data here
+    const extracted = extractData(result);
+    console.log(extracted)
 
     return <SearchClient data={result} />;
   } catch (err: any) {
