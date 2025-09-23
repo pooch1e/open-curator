@@ -1,5 +1,3 @@
 export const extractData = (data: any) => {
-  return {
-    data: 'test',
-  };
+  return [{ data: 'test' }];
 };

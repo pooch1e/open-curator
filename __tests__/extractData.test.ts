@@ -1,4 +1,5 @@
-import { extractData } from '@/app/lib/utils/extractData';
+
+const { extractData } = require('../app/lib/utils/extractData');
 
 describe('init unit test', () => {
   it('runs test file', () => {
@@ -10,6 +11,6 @@ describe('extract data should return object from api with correct keys and value
   it('should return empty object when passed empty array of objects', () => {
     const test = [{}];
     const actual = extractData(test);
-    expect(actual).toEqual({});
+    expect(actual).toEqual([{}]);
   });
 });
