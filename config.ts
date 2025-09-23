@@ -11,7 +11,8 @@ interface Config {
   ausMuseum: MuseumConfig;
 }
 
-//add pagination and offset to start
+// !!!add pagination and offset to start
+// !Todo use different api 
 export const config: Config = {
   ausMuseum: {
     baseUrl: 'https://data.nma.gov.au/',
