@@ -1,5 +1,8 @@
-export default function CollectionPage() {
-  return <div className="border-2 h-dvh p-2">
+//!todo deal with the saving of collection?
 
-  </div>;
+import CollectionContainer from '../lib/components/UI/CollectionPage/CollectionContainer';
+
+// deals with 'backend' functions
+export default function CollectionPage() {
+  return <CollectionContainer />;
 }
