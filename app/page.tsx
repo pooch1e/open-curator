@@ -8,7 +8,7 @@ export default async function Page() {
   try {
     // note - this is just getting museum objects
     const res = await fetch(
-      config.ausMuseum.baseUrl + config.ausMuseum.objectEndpoint
+      config.ausMuseum.baseUrl + config.ausMuseum.objectAndMediaEndpoint
     );
 
     if (!res.ok) throw new Error('Failed to fetch museum data');
@@ -17,10 +17,11 @@ export default async function Page() {
 
     //validate + filter data
     const result = data.data;
-
+    console.log(result, 'data');
+    
     // need func to extract data here
     const extracted = extractData(result);
-    console.log(extracted)
+    console.log(extracted);
 
     return <SearchClient data={result} />;
   } catch (err: any) {
