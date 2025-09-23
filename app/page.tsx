@@ -18,7 +18,7 @@ export default async function Page() {
     //validate + filter data
     const result = data.data;
     console.log(result, 'data');
-    
+
     // need func to extract data here
     const extracted = extractData(result);
     console.log(extracted);

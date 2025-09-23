@@ -15,9 +15,9 @@ interface Config {
 export const config: Config = {
   ausMuseum: {
     baseUrl: 'https://data.nma.gov.au/',
-    objectEndpointStart: '/object?title=A',
+    objectEndpointStart: '/object?offset=0&limit=50',
     imageEndpoint: '/media?id=*',
-    objectAndMediaEndpoint: 'object?media=*',
+    objectAndMediaEndpoint: 'object?media=*&offset=0&limit=50',
     apiKey: process.env.MUSEUM_API_KEY ?? '',
   },
 };

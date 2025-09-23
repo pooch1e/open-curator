@@ -24,3 +24,5 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 Custom openCurator app utilising National Museum of Australia and MOMA museum API archives. 
 
 Project will pull from API starting with query A... and hydrate page data. When user searches for term other than A, will fire off a request to API and cache results to be filtered and searched.
+
+Will have to use a different API than Aus Museum as data is hard to parse and not up to date.
