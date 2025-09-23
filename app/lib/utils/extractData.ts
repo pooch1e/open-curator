@@ -1,3 +1,5 @@
 export const extractData = (data: any) => {
-  return [{}];
+  if (!data || data.length === 0) return [];
+
+  return { id: data };
 };
