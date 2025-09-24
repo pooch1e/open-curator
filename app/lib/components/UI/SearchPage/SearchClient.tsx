@@ -5,8 +5,18 @@ import SearchGridContainer from './SearchGridContainer';
 
 interface MuseumItem {
   id: number;
-  type: string;
-  title: string;
+  title: string | null;
+  artist: string | null;
+  date: string | null;
+  culture: string | null;
+  medium: string | null;
+  department: string | null;
+  primaryImage: string | null;
+  primaryImageSmall: string | null;
+  additionalImages: string | [];
+  isPublicDomain: boolean | null;
+  objectURL: string | null;
+  dimensions: string | null;
 }
 
 interface SearchClientProps {
@@ -32,8 +42,6 @@ export default function SearchClient({ data }: SearchClientProps) {
     }
   }, [data]);
 
-  
-
   const filterResults = useMemo(() => {
     if (!searchQuery.trim()) return museumData;
 
@@ -45,8 +53,8 @@ export default function SearchClient({ data }: SearchClientProps) {
         return true;
       }
 
-      // Search in type
-      if (item.type && item.type.toLowerCase().includes(searchLower)) {
+      // Search in artist
+      if (item.artist && item.artist.toLowerCase().includes(searchLower)) {
         return true;
       }
 

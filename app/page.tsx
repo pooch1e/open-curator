@@ -7,7 +7,7 @@ export default async function Page() {
   const metMuseumFetcher = new MetMuseumService(config.metMuseum.baseUrl);
 
   await metMuseumFetcher.getInitialObjectsWithImages();
-  
-  // return <SearchClient data={result} />;
+
+  return <SearchClient data={metMuseumFetcher} />;
   return <div></div>;
 }
