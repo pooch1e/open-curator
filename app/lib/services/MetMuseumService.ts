@@ -1,3 +1,20 @@
+import { processInBatches } from '../utils/processBatches';
+
+interface MuseumObject {
+  id: number;
+  title: string;
+  artist: string;
+  date: string;
+  culture: string;
+  medium: string;
+  department: string;
+  primaryImage: string;
+  primaryImageSmall: string;
+  additionalImages: string[];
+  isPublicDomain: boolean;
+  objectURL: string;
+  dimensions: string;
+}
 export class MetMuseumService {
   baseUrl: string;
 
@@ -5,11 +22,14 @@ export class MetMuseumService {
   private conCurrentRequests: number;
   constructor(baseUrl: string) {
     this.baseUrl = baseUrl;
-    this.rateLimitDelay = 56;
-    this.conCurrentRequests = 10;
+    this.rateLimitDelay = 100;
+    this.conCurrentRequests = 5; //increased these while in development to stop fast refresh funny business
   }
 
-  async getInitialObjectsWithImages(searchQuery = 'art', limit = 200) {
+  async getInitialObjectsWithImages(
+    searchQuery = 'art',
+    limit = 200
+  ): Promise<MuseumObject> {
     try {
       const searchParams = new URLSearchParams({
         hasImages: 'true',
@@ -19,27 +39,46 @@ export class MetMuseumService {
       const searchUrl = this.baseUrl + '/search?' + searchParams;
       console.log(`fetching from ${searchUrl}`);
 
-      const response = await fetch(searchUrl);
+      const response = await fetch(searchUrl, {
+        next: { revalidate: 3600 },
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(
+          `Search request failed: ${response.status} ${response.statusText}`,
+          errorText
+        );
+        throw new Error(
+          `Request failed: ${response.status} ${response.statusText}`
+        );
+      }
+
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const responseText = await response.text();
+        console.error(
+          'Expected JSON but received:',
+          contentType,
+          responseText.substring(0, 200)
+        );
+        throw new Error(`Expected JSON response but received ${contentType}`);
+      }
+
       const data = await response.json();
-      // console.log(data, 'fetched data');
 
       if (!data || !data.objectIDs || data.objectIDs.length === 0) {
         throw new Error('no objects found');
       }
 
-      //get first 200 objects
       const objectIds = data.objectIDs.slice(0, limit);
-      // console.log(objectIds);
 
-      // fire off requests
-      const objects = await Promise.all(
-        objectIds.map((id: number) => {
-          return this.getObjectsById(id);
-        })
-      );
-      // console.log(objects, 'found objects unfiltered');
+      const objects = await processInBatches(objectIds, 20, 300, (id) => {
+        return this.getObjectsById(id);
+      });
+
       const filtered = objects.filter(Boolean);
-      console.log(filtered, 'final shape');
+
       return filtered;
     } catch (err: any) {
       console.log(err);
@@ -70,6 +109,8 @@ export class MetMuseumService {
       }
 
       return null;
-    } catch (err) {}
+    } catch (err) {
+      return null;
+    }
   }
 }

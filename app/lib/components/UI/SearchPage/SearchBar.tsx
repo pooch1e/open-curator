@@ -1,18 +1,20 @@
 interface searchBarProps {
   onSearch: (query: string) => void;
   searchQuery: string;
+  onClick: (e: any) => void;
 }
 
-export default function SearchBar({ onSearch, searchQuery }: searchBarProps) {
+export default function SearchBar({ onSearch, searchQuery, onClick }: searchBarProps) {
   return (
     <div className="w-full max-w-xlg min-w-[200px]">
       <div className="relative">
         <input
-          className="w-full bg-transparent placeholder:text-white text-white text-sm border border-red-700 rounded-md pl-3 pr-28 py-4 transition duration-300 ease focus:outline-none focus:border-white hover:border-white shadow-sm focus:shadow"
+          className="w-full bg-transparent placeholder:text-white text-white text-sm border border-red-700 rounded-md pl-3 pr-28 py-4 transition duration-300 ease focus:outline-none focus:border-white hover:border-white shadow-sm focus:shadow "
           value={searchQuery}
           onChange={(e) => {
             onSearch(e.target.value);
           }}
+          onSubmit={onClick}
           placeholder="Search our collections"
         />
         <button
@@ -24,9 +26,9 @@ export default function SearchBar({ onSearch, searchQuery }: searchBarProps) {
             fill="currentColor"
             className="w-4 h-4 mr-2">
             <path
-              fill-rule="evenodd"
+              fillRule="evenodd"
               d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z"
-              clip-rule="evenodd"
+              clipRule="evenodd"
             />
           </svg>
           Search

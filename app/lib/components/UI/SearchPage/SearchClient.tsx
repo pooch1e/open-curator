@@ -72,6 +72,10 @@ export default function SearchClient({ data }: SearchClientProps) {
     setSearchQuery(query);
   };
 
+  const handleClick = (e: any) => {
+    setSearchQuery(e.value.target)
+  }
+
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error loading museum data</div>;
 
