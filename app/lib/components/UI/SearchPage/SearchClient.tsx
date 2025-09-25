@@ -28,6 +28,7 @@ export default function SearchClient({ data }: SearchClientProps) {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
+  const [searchRequest, setSearchRequest] = useState<string>('');
 
   // handle use effect stuff here?
 
@@ -60,7 +61,7 @@ export default function SearchClient({ data }: SearchClientProps) {
 
       //Search in Medium
       if (item.medium && item.medium.toLowerCase().includes(searchLower)) {
-        return true
+        return true;
       }
 
       return false;
@@ -73,8 +74,8 @@ export default function SearchClient({ data }: SearchClientProps) {
   };
 
   const handleClick = (e: any) => {
-    setSearchQuery(e.value.target)
-  }
+    setSearchQuery(e.value.target);
+  };
 
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error loading museum data</div>;
@@ -82,7 +83,11 @@ export default function SearchClient({ data }: SearchClientProps) {
   return (
     <>
       <div className="flex justify-center p-2">
-        <SearchBar onSearch={handleSearch} searchQuery={searchQuery} />
+        <SearchBar
+          onSearch={handleSearch}
+          searchQuery={searchQuery}
+          onClick={handleClick}
+        />
       </div>
       <SearchGridContainer results={filterResults} />
     </>

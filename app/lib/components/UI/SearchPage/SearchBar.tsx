@@ -1,10 +1,16 @@
 interface searchBarProps {
   onSearch: (query: string) => void;
   searchQuery: string;
-  onClick: (e: any) => void;
+  onButtonClick: (e: any) => void;
+  isLoading: boolean;
 }
 
-export default function SearchBar({ onSearch, searchQuery, onClick }: searchBarProps) {
+export default function SearchBar({
+  onSearch,
+  searchQuery,
+  onButtonClick,
+  isLoading = false,
+}: searchBarProps) {
   return (
     <div className="w-full max-w-xlg min-w-[200px]">
       <div className="relative">
@@ -14,10 +20,11 @@ export default function SearchBar({ onSearch, searchQuery, onClick }: searchBarP
           onChange={(e) => {
             onSearch(e.target.value);
           }}
-          onSubmit={onClick}
           placeholder="Search our collections"
         />
         <button
+          onClick={onButtonClick}
+          disabled={isLoading}
           className="absolute top-1 right-1 flex items-center rounded bg-slate-800 py-3 px-2.5 border border-transparent text-center text-sm text-white transition-all shadow-sm hover:shadow focus:bg-slate-700 focus:shadow-none active:bg-red-700 hover:bg-red-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
           type="button">
           <svg
@@ -31,7 +38,7 @@ export default function SearchBar({ onSearch, searchQuery, onClick }: searchBarP
               clipRule="evenodd"
             />
           </svg>
-          Search
+          {isLoading ? 'Searching...' : 'Search'}
         </button>
       </div>
     </div>
