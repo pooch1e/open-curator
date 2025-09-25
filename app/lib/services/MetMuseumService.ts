@@ -23,7 +23,7 @@ export class MetMuseumService {
       const data = await response.json();
       // console.log(data, 'fetched data');
 
-      if (!data || data.length === 0) {
+      if (!data || !data.objectIDs || data.objectIDs.length === 0) {
         throw new Error('no objects found');
       }
 

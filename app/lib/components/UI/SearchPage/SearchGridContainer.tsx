@@ -5,7 +5,7 @@ export default function SearchGridContainer({ results }) {
       <div className="grid grid-cols-4 gap-x-4 sm:grid-cols-12 sm:gap-x-4 md:gap-x-4 lg:grid-cols-12 lg:gap-x-6">
         {results.map((item) => {
           return (
-            <SearchGridItem key={item.id} type={item.type} title={item.title} />
+            <SearchGridItem key={item.id} title={item.title} artist={item.artist} date={item.date} medium={item.medium} objectURL={item.objectURL} />
           );
         })}
       </div>

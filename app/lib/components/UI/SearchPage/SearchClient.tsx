@@ -58,6 +58,11 @@ export default function SearchClient({ data }: SearchClientProps) {
         return true;
       }
 
+      //Search in Medium
+      if (item.medium && item.medium.toLowerCase().includes(searchLower)) {
+        return true
+      }
+
       return false;
     });
   }, [museumData, searchQuery]);

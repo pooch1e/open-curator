@@ -6,8 +6,9 @@ import { MetMuseumService } from './lib/services/MetMuseumService';
 export default async function Page() {
   const metMuseumFetcher = new MetMuseumService(config.metMuseum.baseUrl);
 
-  await metMuseumFetcher.getInitialObjectsWithImages();
+  const data = await metMuseumFetcher.getInitialObjectsWithImages();
+  console.log(data, 'data in page');
+  console.log(typeof data);
 
-  return <SearchClient data={metMuseumFetcher} />;
-  return <div></div>;
+  return <SearchClient data={data} />;
 }
