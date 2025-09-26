@@ -20,6 +20,7 @@ export class MetMuseumService {
 
   private rateLimitDelay: number;
   private conCurrentRequests: number;
+  public searchParams: string;
   constructor(baseUrl: string) {
     this.baseUrl = baseUrl;
     this.rateLimitDelay = 100;
@@ -111,6 +112,26 @@ export class MetMuseumService {
       return null;
     } catch (err) {
       return null;
+    }
+  }
+
+  async getObjectsByName(name: string) {
+    try {
+      const url = this.baseUrl;
+      this.searchParams = name;
+
+      const response = await fetch(url + this.searchParams);
+      const data = response.json();
+
+      if (!data) {
+        throw new Error('No objects found');
+      }
+      console.log(data, 'data in ssr');
+      console.log(typeof data);
+
+      return data;
+    } catch (err) {
+      throw err;
     }
   }
 }
