@@ -21,6 +21,7 @@ interface MuseumItem {
 
 interface SearchClientProps {
   data: MuseumItem[];
+  onApiSearch?: (query: string) => Promise<MuseumItem[]>;
 }
 
 export default function SearchClient({ data }: SearchClientProps) {
@@ -29,6 +30,7 @@ export default function SearchClient({ data }: SearchClientProps) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
   const [searchRequest, setSearchRequest] = useState<string>('');
+  const [isApiSearch, setIsApiSearch] = useState<Boolean>(false);
 
   // handle use effect stuff here?
 
@@ -66,19 +68,29 @@ export default function SearchClient({ data }: SearchClientProps) {
 
       return false;
     });
-  }, [museumData, searchQuery]);
+  }, [museumData, searchQuery, isApiSearch]);
 
   // handle search bar stuff here?
   const handleSearch = (query: string) => {
     setSearchQuery(query);
+    setIsApiSearch(false);
+    setIsError(false);
   };
 
-  const handleClick = (e: any) => {
-    setSearchRequest(e.target.value);
-    console.log(searchQuery);
+  const handleClick = async () => {
+    if (!searchQuery.trim()) return;
 
+    try {
+      const apiResults = await onApiSearch(searchQuery);
+      setMuseumData(apiResults);
+      console.log(apiResults.length || null);
+    } catch (err) {
+      setIsError(true);
+      setIsApiSearch(false);
+    } finally {
+      setIsLoading(false)
+    }
   };
-  
 
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error loading museum data</div>;
@@ -89,7 +101,7 @@ export default function SearchClient({ data }: SearchClientProps) {
         <SearchBar
           onSearch={handleSearch}
           searchQuery={searchQuery}
-          onClick={handleClick}
+          onButtonClick={handleClick}
         />
       </div>
       <SearchGridContainer results={filterResults} />

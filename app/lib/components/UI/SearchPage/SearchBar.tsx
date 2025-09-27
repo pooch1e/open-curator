@@ -1,7 +1,7 @@
 interface searchBarProps {
   onSearch: (query: string) => void;
   searchQuery: string;
-  onButtonClick: (e: any) => void;
+  onButtonClick: () => void;
   isLoading: boolean;
 }
 
