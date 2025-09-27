@@ -30,7 +30,7 @@ export class MetMuseumService {
   async getInitialObjectsWithImages(
     searchQuery = 'art',
     limit = 200
-  ): Promise<MuseumObject> {
+  ): Promise<MuseumObject[]> {
     try {
       const searchParams = new URLSearchParams({
         hasImages: 'true',
@@ -115,21 +115,45 @@ export class MetMuseumService {
     }
   }
 
-  async getObjectsByName(name: string) {
+  async getObjectsByName(searchQuery: string, limit = 50) {
     try {
-      const url = this.baseUrl;
-      this.searchParams = name;
+      const searchParams = new URLSearchParams({
+        hasImages: 'true',
+        q: searchQuery,
+      });
+      const searchUrl = `${this.baseUrl}/search?${searchParams}`;
+      console.log(`Searching for: ${searchQuery} at ${searchUrl}`);
 
-      const response = await fetch(url + this.searchParams);
-      const data = response.json();
+      //cache for an hour?
+      const response = await fetch(searchUrl, {
+        next: { revalidate: 3600 },
+      });
 
-      if (!data) {
-        throw new Error('No objects found');
+      if (!response.ok) {
+        throw new Error(
+          `Search failed: ${response.status} ${response.statusText}`
+        );
       }
+
+      const data = await response.json();
+
       console.log(data, 'data in ssr');
       console.log(typeof data);
 
-      return data;
+      if (!data || !data.objectIDs || data.objectIDs.length === 0) {
+        console.log(`No objects found for query: ${searchQuery}`);
+        return [];
+      }
+
+      const objectIds = data.objectIDs.slice(0, limit);
+      console.log(objectIds, 'ids for searched name');
+      const objects = await processInBatches(objectIds, 20, 300, (id) => {
+        return this.getObjectsById(id);
+      });
+
+      const filtered = objects.filter(Boolean);
+
+      return filtered;
     } catch (err) {
       throw err;
     }
