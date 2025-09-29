@@ -2,8 +2,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import SearchBar from './SearchBar';
 import SearchGridContainer from './SearchGridContainer';
-import { MetMuseumService } from '@/app/lib/services/MetMuseumService';
-import { config } from '@/config';
 
 interface MuseumItem {
   id: number;
@@ -86,16 +84,21 @@ export default function SearchClient({ data }: SearchClientProps) {
     setIsError(false);
 
     try {
-      const apiSearch = new MetMuseumService(config.metMuseum.baseUrl);
-      const results = await apiSearch.getObjectsByName(searchQuery);
+      const results = await fetch(
+        `/api/search?query=${encodeURIComponent(searchQuery)}&limit=50`
+      );
 
       if (!results) throw new Error('failed to fetch api objects');
-
-      const filtered = results.filter(
-        (item): item is MuseumItem => item !== null
+      const data = await results.json();
+      if (data !== typeof Object) {
+        throw new Error('data has been blocked by incapsula');
+      }
+      const filtered = data.filter(
+        (item: MuseumItem | null): item is MuseumItem => item !== null
       );
 
       setMuseumData(filtered);
+      setIsApiSearch(true);
       console.log(results, 'results from search button api request');
     } catch (err) {
       console.error(err);
