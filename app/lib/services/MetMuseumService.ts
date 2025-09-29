@@ -78,7 +78,9 @@ export class MetMuseumService {
         return this.getObjectsById(id);
       });
 
-      const filtered = objects.filter(Boolean);
+      const filtered = objects.filter(
+        (obj): obj is MuseumObject => obj !== null
+      );
 
       return filtered;
     } catch (err: any) {

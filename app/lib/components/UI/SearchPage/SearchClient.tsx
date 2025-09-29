@@ -15,7 +15,7 @@ interface MuseumItem {
   department: string | null;
   primaryImage: string | null;
   primaryImageSmall: string | null;
-  additionalImages: string | [];
+  additionalImages: string[];
   isPublicDomain: boolean | null;
   objectURL: string | null;
   dimensions: string | null;
@@ -31,8 +31,7 @@ export default function SearchClient({ data }: SearchClientProps) {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
-  const [searchRequest, setSearchRequest] = useState<string>('');
-  const [isApiSearch, setIsApiSearch] = useState<Boolean>(false);
+  const [isApiSearch, setIsApiSearch] = useState<boolean>(false);
 
   // handle use effect stuff here?
 
@@ -92,7 +91,11 @@ export default function SearchClient({ data }: SearchClientProps) {
 
       if (!results) throw new Error('failed to fetch api objects');
 
-      setMuseumData(results);
+      const filtered = results.filter(
+        (item): item is MuseumItem => item !== null
+      );
+
+      setMuseumData(filtered);
       console.log(results, 'results from search button api request');
     } catch (err) {
       console.error(err);
@@ -112,6 +115,7 @@ export default function SearchClient({ data }: SearchClientProps) {
           onSearch={handleSearch}
           searchQuery={searchQuery}
           onButtonClick={handleClick}
+          isLoading={isLoading}
         />
       </div>
       <SearchGridContainer results={filterResults} />
