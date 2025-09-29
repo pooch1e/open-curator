@@ -22,7 +22,7 @@ export class MetMuseumService {
   private conCurrentRequests: number;
   private lastRequestTime: number = 0;
   private requestCount: number = 0;
-  private static readonly MIN_REQUEST_INTERVAL = 1000; // 1 second between requests
+  private static readonly MIN_REQUEST_INTERVAL = 1000;
 
   constructor(baseUrl: string) {
     this.baseUrl = baseUrl;

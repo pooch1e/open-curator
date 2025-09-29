@@ -28,3 +28,7 @@ Project will pull from API starting with query A... and hydrate page data. When 
 Updated API for Met Museum, hydrating page with initial 200 requests that can be filtered and searched. Next todo: add search button for specfic requests to API
 Add second API
 Add catalog feature
+
+Met museum api blocked due to bot screening after 30 requests. Put in bug request on github. Defaulting to Harvard APi to hydrate page (potential for chicago api)
+
+
