@@ -9,9 +9,12 @@ export default function SearchGridContainer({ results }: any) {
               key={item.id}
               title={item.title}
               artist={item.artist}
-              date={item.date}
+              date={item.dated}
               medium={item.medium}
-              objectURL={item.objectURL}
+              objectURL={item.url}
+              period={item.period}
+              description={item.description}
+              culture={item.culture}
             />
           );
         })}
