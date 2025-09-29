@@ -131,21 +131,36 @@ export class MetMuseumService {
       const searchUrl = `${this.baseUrl}/search?${searchParams}`;
       console.log(`Searching for: ${searchQuery} at ${searchUrl}`);
 
-      //cache for an hour?
+      // Cache for an hour 
       const response = await fetch(searchUrl, {
+        headers: {
+          'User-Agent':
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          Accept: 'application/json',
+        },
         next: { revalidate: 3600 },
       });
 
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`Met Museum search failed: ${response.status} ${response.statusText}`, errorText);
         throw new Error(
-          `Search failed: ${response.status} ${response.statusText}`
+          `Met Museum API error: ${response.status} ${response.statusText}`
         );
       }
 
-      const data = await response.json();
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const responseText = await response.text();
+        console.error('Expected JSON but received:', contentType, responseText.substring(0, 200));
+        throw new Error(`Expected JSON response but received ${contentType}`);
+      }
 
-      console.log(data, 'data in ssr');
-      console.log(typeof data);
+      const data = await response.json();
+      console.log(`Search response for "${searchQuery}":`, {
+        total: data.total || 0,
+        objectIDs_length: data.objectIDs?.length || 0
+      });
 
       if (!data || !data.objectIDs || data.objectIDs.length === 0) {
         console.log(`No objects found for query: ${searchQuery}`);
@@ -153,16 +168,20 @@ export class MetMuseumService {
       }
 
       const objectIds = data.objectIDs.slice(0, limit);
-      console.log(objectIds, 'ids for searched name');
-      const objects = await processInBatches(objectIds, 20, 300, (id) => {
+      console.log(`Fetching details for ${objectIds.length} objects`);
+      
+      // Use smaller batches 
+      const objects = await processInBatches(objectIds, 10, 500, (id) => {
         return this.getObjectsById(id);
       });
 
       const filtered = objects.filter(Boolean);
+      console.log(`Returning ${filtered.length} objects with images`);
 
       return filtered;
-    } catch (err) {
-      throw err;
+    } catch (err: any) {
+      console.error('getObjectsByName error:', err.message);
+      throw new Error(`Failed to search museum: ${err.message}`);
     }
   }
 }

@@ -88,10 +88,21 @@ export default function SearchClient({ data }: SearchClientProps) {
         `/api/search?query=${encodeURIComponent(searchQuery)}&limit=50`
       );
 
-      if (!results) throw new Error('failed to fetch api objects');
+      if (!results.ok) {
+        const errorText = await results.text();
+        throw new Error(`API request failed: ${results.status} - ${errorText}`);
+      }
+      
       const data = await results.json();
-      if (data !== typeof Object) {
-        throw new Error('data has been blocked by incapsula');
+      
+      // Check if response is an error object
+      if (data.error) {
+        throw new Error(data.error);
+      }
+      
+      // Check if data is an array
+      if (!Array.isArray(data)) {
+        throw new Error('Invalid response format - expected array');
       }
       const filtered = data.filter(
         (item: MuseumItem | null): item is MuseumItem => item !== null

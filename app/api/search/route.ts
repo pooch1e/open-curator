@@ -17,12 +17,26 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const query = searchParams.get('query') || '';
     const limit = Number(searchParams.get('limit') || 50);
+    
+    console.log(`Search API called with query: "${query}", limit: ${limit}`);
+    
+    if (!query.trim()) {
+      return NextResponse.json(
+        { error: 'Query parameter is required' },
+        { status: 400 }
+      );
+    }
+    
     const results = await getCachedResults(query, limit);
+    console.log(`Search API returning ${results.length} results`);
+    
     return NextResponse.json(results);
   } catch (err: any) {
     console.error('API /api/search error:', err);
+    console.error('Error stack:', err.stack);
+    
     return NextResponse.json(
-      { error: 'Internal Server Error', details: err?.message || err },
+      { error: 'Failed to search museum collection', details: err?.message || 'Unknown error' },
       { status: 500 }
     );
   }
