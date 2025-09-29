@@ -15,7 +15,7 @@ interface MetMuseumConfig {
 interface HarvardMuseumConfig {
   baseUrl: string;
   urlEndsInObject: string;
-  apiKey: string | null;
+  apiKey: string | undefined;
 }
 
 interface Config {
