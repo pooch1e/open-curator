@@ -20,7 +20,7 @@ export class MetMuseumService {
 
   private rateLimitDelay: number;
   private conCurrentRequests: number;
-  public searchParams: string;
+
   constructor(baseUrl: string) {
     this.baseUrl = baseUrl;
     this.rateLimitDelay = 100;
@@ -41,6 +41,11 @@ export class MetMuseumService {
       console.log(`fetching from ${searchUrl}`);
 
       const response = await fetch(searchUrl, {
+        headers: {
+          'User-Agent':
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          Accept: 'application/json',
+        },
         next: { revalidate: 3600 },
       });
 
