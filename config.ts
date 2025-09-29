@@ -9,6 +9,7 @@ interface ausMuseumConfig {
 
 interface metMuseumConfig {
   baseUrl: string;
+  searchUrl : string
 }
 
 interface Config {
@@ -28,5 +29,7 @@ export const config: Config = {
   },
   metMuseum: {
     baseUrl: 'https://collectionapi.metmuseum.org/public/collection/v1',
+    searchUrl:
+      'https://collectionapi.metmuseum.org/public/collection/v1/search?isHighlight=true&q=',
   },
 };

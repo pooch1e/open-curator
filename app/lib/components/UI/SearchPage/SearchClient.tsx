@@ -2,6 +2,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import SearchBar from './SearchBar';
 import SearchGridContainer from './SearchGridContainer';
+import { MetMuseumService } from '@/app/lib/services/MetMuseumService';
+import { config } from '@/config';
 
 interface MuseumItem {
   id: number;
@@ -21,6 +23,7 @@ interface MuseumItem {
 
 interface SearchClientProps {
   data: MuseumItem[];
+  onApiSearch?: (query: string) => Promise<MuseumItem[]>;
 }
 
 export default function SearchClient({ data }: SearchClientProps) {
@@ -28,6 +31,8 @@ export default function SearchClient({ data }: SearchClientProps) {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
+  const [searchRequest, setSearchRequest] = useState<string>('');
+  const [isApiSearch, setIsApiSearch] = useState<Boolean>(false);
 
   // handle use effect stuff here?
 
@@ -41,6 +46,7 @@ export default function SearchClient({ data }: SearchClientProps) {
       setIsLoading(false);
     }
   }, [data]);
+  // handle search button click api request
 
   const filterResults = useMemo(() => {
     if (!searchQuery.trim()) return museumData;
@@ -60,16 +66,40 @@ export default function SearchClient({ data }: SearchClientProps) {
 
       //Search in Medium
       if (item.medium && item.medium.toLowerCase().includes(searchLower)) {
-        return true
+        return true;
       }
 
       return false;
     });
-  }, [museumData, searchQuery]);
+  }, [museumData, searchQuery, isApiSearch]);
 
   // handle search bar stuff here?
   const handleSearch = (query: string) => {
     setSearchQuery(query);
+    setIsApiSearch(false);
+    setIsError(false);
+  };
+
+  const handleClick = async () => {
+    if (!searchQuery.trim()) return;
+
+    setIsLoading(true);
+    setIsError(false);
+
+    try {
+      const apiSearch = new MetMuseumService(config.metMuseum.baseUrl);
+      const results = await apiSearch.getObjectsByName(searchQuery);
+
+      if (!results) throw new Error('failed to fetch api objects');
+
+      setMuseumData(results);
+      console.log(results, 'results from search button api request');
+    } catch (err) {
+      console.error(err);
+      setIsError(true);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (isLoading) return <div>Loading...</div>;
@@ -78,7 +108,11 @@ export default function SearchClient({ data }: SearchClientProps) {
   return (
     <>
       <div className="flex justify-center p-2">
-        <SearchBar onSearch={handleSearch} searchQuery={searchQuery} />
+        <SearchBar
+          onSearch={handleSearch}
+          searchQuery={searchQuery}
+          onButtonClick={handleClick}
+        />
       </div>
       <SearchGridContainer results={filterResults} />
     </>
