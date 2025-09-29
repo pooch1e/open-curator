@@ -2,6 +2,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import SearchBar from './SearchBar';
 import SearchGridContainer from './SearchGridContainer';
+import { MetMuseumService } from '@/app/lib/services/MetMuseumService';
+import { config } from '@/config';
 
 interface MuseumItem {
   id: number;
@@ -44,6 +46,7 @@ export default function SearchClient({ data }: SearchClientProps) {
       setIsLoading(false);
     }
   }, [data]);
+  // handle search button click api request
 
   const filterResults = useMemo(() => {
     if (!searchQuery.trim()) return museumData;
@@ -80,15 +83,22 @@ export default function SearchClient({ data }: SearchClientProps) {
   const handleClick = async () => {
     if (!searchQuery.trim()) return;
 
+    setIsLoading(true);
+    setIsError(false);
+
     try {
-      const apiResults = await onApiSearch(searchQuery);
-      setMuseumData(apiResults);
-      console.log(apiResults.length || null);
+      const apiSearch = new MetMuseumService(config.metMuseum.baseUrl);
+      const results = await apiSearch.getObjectsByName(searchQuery);
+
+      if (!results) throw new Error('failed to fetch api objects');
+
+      setMuseumData(results);
+      console.log(results, 'results from search button api request');
     } catch (err) {
+      console.error(err);
       setIsError(true);
-      setIsApiSearch(false);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   };
 
