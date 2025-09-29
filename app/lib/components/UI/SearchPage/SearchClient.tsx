@@ -17,6 +17,7 @@ interface MuseumItem {
   isPublicDomain: boolean | null;
   objectURL: string | null;
   dimensions: string | null;
+
 }
 
 interface SearchClientProps {
@@ -85,7 +86,7 @@ export default function SearchClient({ data }: SearchClientProps) {
 
     try {
       const results = await fetch(
-        `/api/search?query=${encodeURIComponent(searchQuery)}&limit=50`
+        `/api/harvard/search?q=${encodeURIComponent(searchQuery)}&limit=50`
       );
 
       if (!results.ok) {

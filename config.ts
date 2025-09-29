@@ -42,8 +42,8 @@ export const config: Config = {
       'https://collectionapi.metmuseum.org/public/collection/v1/search?isHighlight=true&q=',
   },
   harvardMuseum: {
-    baseUrl: 'https://api.harvardartmuseums.org/',
-    urlEndsInObject: 'https://api.harvardartmuseums.org/object',
-    apiKey: process.env.HARVARD_MUSEUM_API_KEY || null,
+    baseUrl: 'https://api.harvardartmuseums.org',
+    urlEndsInObject: 'https:/api.harvardartmuseums.org/object',
+    apiKey: process.env.HARVARD_MUSEUM_API_KEY || '',
   },
 };
