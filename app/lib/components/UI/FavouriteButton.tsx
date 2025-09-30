@@ -60,7 +60,7 @@ export default function FavouriteButton({
       onClick={handleToggleFavourite}
       type="button"
       aria-label={isFavourited ? 'Remove from favorites' : 'Add to favorites'}>
-      {isFavourited ? '♥' : '♡'}
+      {isFavourited ? '[ ]' : '+'}
     </button>
   );
 }
