@@ -1,6 +1,25 @@
 import FavouriteButton from '../FavouriteButton';
 import './underline-animate.css';
+
+interface Image {
+  alttext: string | null;
+  baseimageurl: string;
+  copyright: string | null;
+  date: string | null;
+  description: string | null;
+  displayorder: number;
+  format: string | null;
+  height: number | null;
+  idsid: number | null;
+  iiifbaseuri: string | null;
+  imageid: number;
+  publiccaption: string | null;
+  renditionnumber: string | null;
+  technique: string | null;
+  width: number | null;
+}
 interface SearchGridItemProps {
+  id: number;
   title: string;
   artist: string;
   date: string;
@@ -9,9 +28,11 @@ interface SearchGridItemProps {
   period: string;
   description: string;
   culture: string;
-  isClicked: () => void;
+  images : Image
+ 
 }
 export default function SearchGridItem({
+  id,
   title,
   artist,
   date,
@@ -20,7 +41,8 @@ export default function SearchGridItem({
   period,
   description,
   culture,
-  isClicked,
+  images
+  
 }: SearchGridItemProps) {
   const MAX_LENGTH = 25;
 
@@ -82,7 +104,15 @@ export default function SearchGridItem({
             </div>
           </div>
         </a>
-        <FavouriteButton />
+        <FavouriteButton
+          key={id}
+          id={id}
+          title={title}
+          artist={artist}
+          images={images}
+          url={objectURL}
+          date={date}
+        />
       </li>
     </ul>
   );

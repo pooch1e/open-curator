@@ -9,7 +9,7 @@ export default async function Page() {
   // const metMuseumFetcher = new MetMuseumService(config.metMuseum.baseUrl);
 
   // const data = await metMuseumFetcher.getInitialObjectsWithImages();
-  console.log(config.harvardMuseum.apiKey, 'is api key undefined');
+  // console.log(config.harvardMuseum.apiKey, 'is api key undefined');
   //refactor to use Harvard Api first - then use metmuseum
   const fetchHarvardApi = new HarvardApiService(
     config.harvardMuseum.baseUrl,
@@ -17,6 +17,7 @@ export default async function Page() {
   );
 
   const data = await fetchHarvardApi.getInitialObjectsWithImages(50, 'rank');
+  // console.log(data)
   
   return <SearchClient data={data} />;
 }

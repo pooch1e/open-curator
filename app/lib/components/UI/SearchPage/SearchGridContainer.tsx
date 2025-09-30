@@ -15,6 +15,7 @@ export default function SearchGridContainer({ results }: any) {
               period={item.period}
               description={item.description}
               culture={item.culture}
+              images={item?.images}
             />
           );
         })}
