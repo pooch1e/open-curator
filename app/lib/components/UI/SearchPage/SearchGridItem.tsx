@@ -29,6 +29,7 @@ interface SearchGridItemProps {
   description: string;
   culture: string;
   images : Image
+  primaryImageUrl: string
  
 }
 export default function SearchGridItem({
@@ -41,7 +42,8 @@ export default function SearchGridItem({
   period,
   description,
   culture,
-  images
+  images,
+  primaryImageUrl
   
 }: SearchGridItemProps) {
   const MAX_LENGTH = 25;
@@ -109,9 +111,12 @@ export default function SearchGridItem({
           id={id}
           title={title}
           artist={artist}
-          images={images}
-          url={objectURL}
           date={date}
+          culture={culture}
+          medium={medium}
+          objectURL={objectURL}
+          primaryimageurl={primaryImageUrl}
+          images={images}
         />
       </li>
     </ul>

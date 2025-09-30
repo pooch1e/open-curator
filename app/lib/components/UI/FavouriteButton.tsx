@@ -1,29 +1,55 @@
 'use client';
 
-import { useState } from 'react';
 import { useFavourites } from '../../hooks/useFavourites';
-import type { Artwork } from '../../contexts/FavouritesContext';
+
+interface FavouriteButtonProps {
+  id: number;
+  title: string | null;
+  artist: string | null;
+  date: string | null;
+  culture?: string | null;
+  medium?: string | null;
+  department?: string | null;
+  primaryimageurl?: string | null;
+  objectURL?: string | null;
+  images?: any[];
+}
+
 export default function FavouriteButton({
   id,
   title,
   artist,
-  imageUrl,
-  url,
   date,
-}: Artwork) {
+  culture,
+  medium,
+  department,
+  primaryimageurl,
+  objectURL,
+  images,
+}: FavouriteButtonProps) {
   const favourites = useFavourites();
-  const [isClicked, setIsClicked] = useState<boolean>(false);
 
   // check if work is already added to catalog
   const isFavourited = favourites?.favourites.some(
     (artwork) => artwork.id === id
   );
-  const handleIsClicked = () => {
-    setIsClicked((prev) => !prev);
+  
+  const handleToggleFavourite = () => {
     if (isFavourited) {
       favourites?.removeFavourite(id);
     } else {
-      favourites?.addFavourite({ id, title, artist, imageUrl, url, date });
+      favourites?.addFavourite({
+        id,
+        title,
+        artist,
+        date,
+        culture,
+        medium,
+        department,
+        primaryimageurl,
+        objectURL,
+        images,
+      });
     }
   };
   return (
@@ -31,8 +57,10 @@ export default function FavouriteButton({
       className={`text-5xl transition-colors ${
         isFavourited ? 'text-red-700' : 'text-white'
       } hover:text-red-500`}
-      onClick={handleIsClicked}>
-      {isFavourited ? 'X' : '+'}
+      onClick={handleToggleFavourite}
+      type="button"
+      aria-label={isFavourited ? 'Remove from favorites' : 'Add to favorites'}>
+      {isFavourited ? '♥' : '♡'}
     </button>
   );
 }

@@ -7,6 +7,7 @@ export default function SearchGridContainer({ results }: any) {
           return (
             <SearchGridItem
               key={item.id}
+              id={item.id}
               title={item.title}
               artist={item.artist}
               date={item.dated}
@@ -16,6 +17,7 @@ export default function SearchGridContainer({ results }: any) {
               description={item.description}
               culture={item.culture}
               images={item?.images}
+              primaryImageUrl={item.primaryimageurl}
             />
           );
         })}

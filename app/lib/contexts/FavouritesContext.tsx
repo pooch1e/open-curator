@@ -2,18 +2,22 @@
 import { useEffect, useState, createContext } from 'react';
 
 export type Artwork = {
-  id: number,
-  title: string,
-  artist : string,
-  imageUrl: string,
-  url: string,
-  date : string 
+  id: number;
+  title: string | null;
+  artist: string | null;
+  culture?: string | null;
+  medium?: string | null;
+  department?: string | null;
+  primaryimageurl?: string | null;
+  objectURL?: string | null;
+  date: string | null;
+  images?: any[];
 }
 
 type FavouritesContextType = {
   favourites: Artwork[];
   addFavourite: (item: Artwork) => void;
-  removeFavourite: (id: string) => void;
+  removeFavourite: (id: number) => void;
 };
 
 export const FavouritesContext = createContext<FavouritesContextType | undefined>(undefined);
@@ -29,12 +33,14 @@ export default function FavouritesProvidor({ children }: ProvidorProps) {
     try {
       const artworks = localStorage.getItem("favourites");
       if (artworks) {
-      setFavourites(JSON.parse(artworks))
+        const parsedArtworks = JSON.parse(artworks);
+        console.log('Loading favorites from localStorage:', parsedArtworks);
+        setFavourites(parsedArtworks);
+      } else {
+        console.log('No favorites found in localStorage');
       }
-    
-  } catch (err) {
-      console.log(err)
-      console.log('error mounting favourites')
+    } catch (err) {
+      console.log('Error loading favourites:', err);
     }
   }, [])
 
@@ -42,20 +48,30 @@ export default function FavouritesProvidor({ children }: ProvidorProps) {
   //save to favs
   useEffect(() => {
     try {
-    const faves = JSON.stringify(favourites)
-    localStorage.setItem('favourites', faves)
-  } catch (err) {
-    console.log('error saving favourites')
-  }
-}, [favourites])
+      const faves = JSON.stringify(favourites);
+      localStorage.setItem('favourites', faves);
+      console.log('Saving favorites to localStorage:', favourites);
+    } catch (err) {
+      console.log('Error saving favourites:', err);
+    }
+  }, [favourites])
 
 
 
-  const addFavourite = (item : Artwork) => {
-    setFavourites((prev) => [...prev, item]);
+  const addFavourite = (item: Artwork) => {
+    console.log('Adding favorite:', item);
+    setFavourites((prev) => {
+      const isAlreadyFavorited = prev.some(fav => fav.id === item.id);
+      if (isAlreadyFavorited) {
+        console.log('Item already in favorites, not adding again');
+        return prev;
+      }
+      return [...prev, item];
+    });
   };
 
-  const removeFavourite = (id) => {
+  const removeFavourite = (id: number) => {
+    console.log('Removing favorite with id:', id);
     setFavourites((prev) => prev.filter((item) => item.id !== id));
   };
 
