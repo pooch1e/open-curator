@@ -1,3 +1,4 @@
+import FavouriteButton from '../FavouriteButton';
 import './underline-animate.css';
 interface SearchGridItemProps {
   title: string;
@@ -8,6 +9,7 @@ interface SearchGridItemProps {
   period: string;
   description: string;
   culture: string;
+  isClicked: () => void;
 }
 export default function SearchGridItem({
   title,
@@ -18,77 +20,69 @@ export default function SearchGridItem({
   period,
   description,
   culture,
+  isClicked,
 }: SearchGridItemProps) {
+  const MAX_LENGTH = 25;
+
   return (
     <ul className="col-span-4 col-start-1 flex flex-col gap-6 sm:col-span-12 md:gap-10">
-      <li className="inline-block p-2">
+      <li className="inline-block p-4">
         <a
           href={objectURL}
           target="blank"
-          className="relative inline-block text-lg uppercase no-underline underline-animate">
-          <div className='hover:text-red-400'>
+          className="relative inline-block w-10/12 text-lg uppercase no-underline underline-animate">
+          <div className="hover:text-red-400">
             <div className="mb-1">
               <span>
                 <h3 className="text-2xl italic">{title}</h3>
               </span>
             </div>
-            <div className="grid grid-rows-2 gap-2 text-sm p-2">
-              {artist && (
-                <div>
-                  <div className="text-xs text-white uppercase tracking-wide">
-                    Artist
+            <div className="grid grid-cols-4 gap-8">
+              <div className="flex flex-row gap-8">
+                {artist && artist.length <= MAX_LENGTH && (
+                  <div>
+                    <div className="text-white font-medium text-sm ">
+                      {artist}
+                    </div>
                   </div>
-                  <div className="text-white font-medium">{artist}</div>
-                </div>
-              )}
+                )}
 
-              {date && (
-                <div>
-                  <div className="text-xs text-white uppercase tracking-wide">
-                    Date
+                {date && (
+                  <div>
+                    <div className="text-white font-medium grid-cols-2 text-xs">
+                      {date}
+                    </div>
                   </div>
-                  <div className="text-white font-medium">{date}</div>
-                </div>
-              )}
+                )}
 
-              {culture && (
-                <div>
-                  <div className="text-xs text-white uppercase tracking-wide">
-                    Culture
+                {culture && culture.length <= MAX_LENGTH && (
+                  <div>
+                    <div className="text-xs text-white font-medium">
+                      {culture}
+                    </div>
                   </div>
-                  <div className="text-white font-medium">{culture}</div>
-                </div>
-              )}
+                )}
 
-              {period && (
-                <div>
-                  <div className="text-xs text-white uppercase tracking-wide">
-                    Period
+                {period && period.length <= MAX_LENGTH && (
+                  <div>
+                    <div className="text-xs text-white font-medium">
+                      {period}
+                    </div>
                   </div>
-                  <div className="text-white font-medium">{period}</div>
-                </div>
-              )}
+                )}
 
-              {medium && (
-                <div className="col-span-2">
-                  <div className="text-xs text-white uppercase tracking-wide">
-                    Medium
+                {medium && medium.length <= MAX_LENGTH && (
+                  <div className="col-span-2">
+                    <div className="text-xs text-white font-medium">
+                      {medium}
+                    </div>
                   </div>
-                  <div className="text-white font-medium">{medium}</div>
-                </div>
-              )}
-
-              {/* {description && (
-              <div className="col-span-2 pt-3 border-t border-gray-200">
-                <div className="text-xs text-white uppercase tracking-wide mb-1">
-                  Description
-                </div>
-                <p className="text-white leading-relaxed">{description}</p>
+                )}
               </div>
-            )} */}
             </div>
           </div>
         </a>
+        <FavouriteButton isClicked={isClicked} />
       </li>
     </ul>
   );
