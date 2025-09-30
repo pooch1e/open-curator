@@ -82,7 +82,7 @@ export default function SearchGridItem({
             </div>
           </div>
         </a>
-        <FavouriteButton isClicked={isClicked} />
+        <FavouriteButton />
       </li>
     </ul>
   );
