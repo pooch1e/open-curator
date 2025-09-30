@@ -2,7 +2,23 @@
 import { useState, useEffect, useMemo } from 'react';
 import SearchBar from './SearchBar';
 import SearchGridContainer from './SearchGridContainer';
-
+interface Image {
+  alttext: string | null;
+  baseimageurl: string;
+  copyright: string | null;
+  date: string | null;
+  description: string | null;
+  displayorder: number;
+  format: string | null;
+  height: number | null;
+  idsid: number | null;
+  iiifbaseuri: string | null;
+  imageid: number;
+  publiccaption: string | null;
+  renditionnumber: string | null;
+  technique: string | null;
+  width: number | null;
+}
 interface MuseumItem {
   id: number;
   title: string | null;
@@ -11,12 +27,12 @@ interface MuseumItem {
   culture: string | null;
   medium: string | null;
   department: string | null;
-  primaryImage: string | null;
-  primaryImageSmall: string | null;
+  primaryimageurl: string | null;
   additionalImages: string[];
   isPublicDomain: boolean | null;
   objectURL: string | null;
   dimensions: string | null;
+  images: Image[]
 
 }
 
