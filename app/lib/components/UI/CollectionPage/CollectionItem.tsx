@@ -1,5 +1,5 @@
 //collection data for container??
-interface CollectionDataProps {
+interface CollectionItem {
   id: number;
   title: string | null;
   artist: string | null;
@@ -12,18 +12,28 @@ interface CollectionDataProps {
   images?: any[];
 }
 // !todo need to make the col start prop increase?
-interface CollectionDataProps {
-  collectionData: CollectionDataProps[];
+interface CollectionItemProps {
+  collectionData: CollectionItem;
 }
 export default function CollectionItem({
   collectionData,
-}: CollectionDataProps) {
+}: CollectionItemProps) {
+  console.log(collectionData, 'what am i in collection Item component');
   return (
     <div className="h-40 w-40 border-2 col-start-1">
       <div className="flex flex-col">
-        {collectionData.map((item) => {
-          return <div>test</div>;
-        })}
+        <div>
+          <h3>{collectionData.title}</h3>
+          <p>{collectionData.artist}</p>
+          <p>{collectionData.date}</p>
+          {collectionData.primaryimageurl && (
+            <img
+              src={collectionData.primaryimageurl}
+              alt={collectionData.title || 'Artwork'}
+              className="w-full h-auto"
+            />
+          )}
+        </div>
       </div>
     </div>
   );
