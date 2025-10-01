@@ -1,4 +1,5 @@
-import '../app.css'
+import '../app.css';
+import FavouritesProvidor from '../lib/contexts/FavouritesContext';
 export default function RootLayout({
   children,
 }: {
@@ -6,8 +7,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className='bg-black text-white'>
-        <main>{children}</main>
+      <body className="bg-black text-white">
+        <FavouritesProvidor>
+          <main>{children}</main>
+        </FavouritesProvidor>
       </body>
     </html>
   );
