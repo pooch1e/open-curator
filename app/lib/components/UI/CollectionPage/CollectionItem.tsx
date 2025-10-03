@@ -1,3 +1,5 @@
+import FavouriteButton from '../FavouriteButton';
+
 //collection data for container??
 interface CollectionItem {
   id: number;
@@ -18,7 +20,7 @@ interface CollectionItemProps {
 export default function CollectionItem({
   collectionData,
 }: CollectionItemProps) {
-  console.log(collectionData.artist, 'what am i in collection Item component')
+  console.log(collectionData.artist, 'what am i in collection Item component');
   console.log(collectionData.images);
   return (
     <div className="flex h-min grow flex-col gap-5">
@@ -26,7 +28,7 @@ export default function CollectionItem({
       <div
         id="hero"
         className="relative w-full aspect-4/3 md:aspect-video pb-[75%] md:pb-[56.25%]">
-        <div className="absolute size-full object-center">
+        <div className="absolute size-full object-fill">
           {collectionData.primaryimageurl ? (
             <img
               src={collectionData.primaryimageurl}
@@ -40,13 +42,13 @@ export default function CollectionItem({
                 src={collectionData.images?.baseimageurl}
                 alt={collectionData.title || 'Artwork'}
                 loading="lazy"
-                className="absolute h-full w-full inset-0 object-cover"
+                className="absolute h-full w-full inset-0 object-contain"
               />
             </div>
           )}
         </div>
       </div>
-      =
+
       <div className="flex flex-row items-start justify-between gap-4">
         <div className="flex w-full flex-col gap-2">
           <div className="flex flex-col">
@@ -91,6 +93,17 @@ export default function CollectionItem({
           <p className="font-sans">{collectionData.department}</p>
         </div>
       )}
+      <FavouriteButton
+        id={collectionData.id}
+        title={collectionData.title}
+        artist={collectionData.artist}
+        date={collectionData.date}
+        culture={collectionData.culture}
+        medium={collectionData.medium}
+        objectURL={collectionData.objectURL}
+        primaryimageurl={collectionData.primaryimageurl}
+        images={collectionData.images}
+      />
     </div>
   );
 }
