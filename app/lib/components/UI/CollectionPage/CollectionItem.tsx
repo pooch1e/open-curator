@@ -21,20 +21,20 @@ export default function CollectionItem({
   collectionData,
 }: CollectionItemProps) {
   console.log(collectionData.artist, 'what am i in collection Item component');
-  console.log(collectionData.images);
+  
   return (
-    <div className="flex h-min grow flex-col gap-5">
+    <div className="flex h-min grow flex-col gap-5 p-2 border-2  ">
       {/* Hero Image */}
       <div
         id="hero"
-        className="relative w-full aspect-4/3 md:aspect-video pb-[75%] md:pb-[56.25%]">
+        className="relative w-full aspect-4/3  object-contain md:aspect-video pb-[75%] md:pb-[56.25%]">
         <div className="absolute size-full object-fill">
           {collectionData.primaryimageurl ? (
             <img
               src={collectionData.primaryimageurl}
               alt={collectionData.title || 'Artwork'}
               loading="lazy"
-              className="absolute h-full w-full inset-0 object-cover"
+              className="relative h-full w-full inset-0 object-cover"
             />
           ) : (
             <div className="absolute h-full w-full inset-0 bg-gray-200 flex items-center justify-center">

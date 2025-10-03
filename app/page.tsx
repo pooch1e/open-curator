@@ -17,7 +17,8 @@ export default async function Page() {
   );
 
   const data = await fetchHarvardApi.getInitialObjectsWithImages(50, 'rank');
-  // console.log(data)
+  console.log(data)
+  
   
   return <SearchClient data={data} />;
 }
