@@ -27,6 +27,7 @@ interface ProvidorProps {
 }
 export default function FavouritesProvidor({ children }: ProvidorProps) {
   const [favourites, setFavourites] = useState<Artwork[]>([]);
+  const [isInitialised, setIsInitialised] = useState<boolean>(false)
 
   //load local storage on mount 
   useEffect(() => {
@@ -41,6 +42,8 @@ export default function FavouritesProvidor({ children }: ProvidorProps) {
       }
     } catch (err) {
       console.log('Error loading favourites:', err);
+    } finally {
+      setIsInitialised(true)
     }
   }, [])
 
@@ -48,13 +51,15 @@ export default function FavouritesProvidor({ children }: ProvidorProps) {
   //save to favs
   useEffect(() => {
     try {
+      if (isInitialised) {
       const faves = JSON.stringify(favourites);
       localStorage.setItem('favourites', faves);
       console.log('Saving favorites to localStorage:', favourites);
+      }
     } catch (err) {
       console.log('Error saving favourites:', err);
     }
-  }, [favourites])
+  }, [favourites, isInitialised])
 
 
 

@@ -192,7 +192,7 @@ export class MetMuseumService {
       const response = await this.makeRequest(
         `${this.baseUrl}/objects/${objectId}`,
         {
-          next: { revalidate: 86400 }, // Cache individual objects for 24 hours
+          next: { revalidate: 86400 }, 
         }
       );
 
