@@ -51,6 +51,9 @@ export async function GET(request: NextRequest) {
     if (service === 'Harvard') {
       results = await harvardService.searchObjects(query, limit);
     }
+    if (service === 'Chicago') {
+      results = await chicagoService.searchObjects(query, limit)
+    }
 
     cache.set(cacheKey, {
       data: results,
