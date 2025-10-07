@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { HarvardApiService } from '@/app/lib/services/HarvardMusemService';
+import { ChicagoMuseumService } from '@/app/lib/services/ChicagoMuseumService';
 import { config } from '@/config';
 
 const cache = new Map<string, { data: any; timestamp: number }>();
@@ -47,12 +48,16 @@ export async function GET(request: NextRequest) {
       config.harvardMuseum.apiKey
     );
 
+    const chicagoService = new ChicagoMuseumService(
+      'https://api.artic.edu/api/v1'
+    );
+
     let results;
     if (service === 'Harvard') {
       results = await harvardService.searchObjects(query, limit);
     }
     if (service === 'Chicago') {
-      results = await chicagoService.searchObjects(query, limit)
+      results = await chicagoService.getInitalObjectsWithImages(limit, query)
     }
 
     cache.set(cacheKey, {
