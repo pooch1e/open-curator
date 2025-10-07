@@ -2,6 +2,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import SearchBar from './SearchBar';
 import SearchGridContainer from './SearchGridContainer';
+import ClearAllFavouritesButton from '../ClearAllFavouritesButton';
 interface Image {
   alttext: string | null;
   baseimageurl: string;
@@ -149,6 +150,9 @@ export default function SearchClient({ data }: SearchClientProps) {
           onButtonClick={handleClick}
           isLoading={isLoading}
         />
+      </div>
+      <div>
+        <ClearAllFavouritesButton />
       </div>
       <SearchGridContainer results={filterResults} />
     </>
