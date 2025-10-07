@@ -29,6 +29,11 @@ Updated API for Met Museum, hydrating page with initial 200 requests that can be
 Add second API
 Add catalog feature
 
-Met museum api blocked due to bot screening after 30 requests. Put in bug request on github. Defaulting to Harvard APi to hydrate page (potential for chicago api)
+Using Chicago museum API on button click (add button press for enter key)
+
+TODO: 
+Mix Chicago and Harvard together in Cache
+
+
 
 

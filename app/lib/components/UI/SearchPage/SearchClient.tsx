@@ -32,8 +32,7 @@ interface MuseumItem {
   isPublicDomain: boolean | null;
   objectURL: string | null;
   dimensions: string | null;
-  images: Image[]
-
+  images: Image[];
 }
 
 interface SearchClientProps {
@@ -101,27 +100,29 @@ export default function SearchClient({ data }: SearchClientProps) {
     setIsError(false);
 
     try {
-      const results = await fetch(
-        `/api/harvard/search?q=${encodeURIComponent(searchQuery)}&limit=50`
+      const res = await fetch(
+        `/api/cache/?q=${encodeURIComponent(
+          searchQuery
+        )}&limit=50&service=chicago`
       );
 
-      if (!results.ok) {
-        const errorText = await results.text();
-        throw new Error(`API request failed: ${results.status} - ${errorText}`);
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`API request failed: ${res.status} - ${errorText}`);
       }
-      
-      const data = await results.json();
-      
+
+      const { results } = await res.json();
+
       // Check if response is an error object
-      if (data.error) {
-        throw new Error(data.error);
+      if (results.error) {
+        throw new Error(results.error);
       }
-      
+
       // Check if data is an array
-      if (!Array.isArray(data)) {
+      if (!Array.isArray(results)) {
         throw new Error('Invalid response format - expected array');
       }
-      const filtered = data.filter(
+      const filtered = results.filter(
         (item: MuseumItem | null): item is MuseumItem => item !== null
       );
 

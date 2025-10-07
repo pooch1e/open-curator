@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const query = searchParams.get('q');
     const limit = parseInt(searchParams.get('limit') || '100');
-    const service = searchParams.get('service');
+    const service = searchParams.get('service')?.toLowerCase();
 
     // will accept method from either Harvard or other API and cache results - may need two seperate caches?
 
@@ -53,20 +53,33 @@ export async function GET(request: NextRequest) {
     );
 
     let results;
-    if (service === 'Harvard') {
+    if (service === 'harvard') {
       results = await harvardService.searchObjects(query, limit);
     }
-    if (service === 'Chicago') {
-      results = await chicagoService.getInitalObjectsWithImages(limit, query)
+    if (service === 'chicago') {
+      const rawResults = await chicagoService.getInitialObjectsWithImages(
+        limit,
+        query
+      );
+
+      results = rawResults.map((item: any) => {
+        return chicagoService.transformToMuseumItem(item);
+      });
     }
+    const responseData = {
+      data: results,
+      cached: false,
+      service,
+      count: Array.isArray(results) ? results.length : 0,
+    };
 
     cache.set(cacheKey, {
-      data: results,
+      data: responseData,
       timestamp: Date.now(),
     });
 
     return NextResponse.json({
-      ...results,
+      results,
       cached: false,
       service,
     });

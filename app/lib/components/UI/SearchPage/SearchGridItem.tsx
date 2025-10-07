@@ -28,9 +28,8 @@ interface SearchGridItemProps {
   period: string;
   description: string;
   culture: string;
-  images : Image
-  primaryImageUrl: string
- 
+  images: Image;
+  primaryImageUrl: string;
 }
 export default function SearchGridItem({
   id,
@@ -43,11 +42,8 @@ export default function SearchGridItem({
   description,
   culture,
   images,
-  primaryImageUrl
-  
+  primaryImageUrl,
 }: SearchGridItemProps) {
-  const MAX_LENGTH = 25;
-
   return (
     <ul className="col-span-4 col-start-1 flex flex-col gap-6 sm:col-span-12 md:gap-10">
       <li className="inline-block p-4">
@@ -63,7 +59,7 @@ export default function SearchGridItem({
             </div>
             <div className="grid grid-cols-4 gap-8">
               <div className="flex flex-row gap-8">
-                {artist && artist.length <= MAX_LENGTH && (
+                {artist && (
                   <div>
                     <div className="text-white font-medium text-sm ">
                       {artist}
@@ -79,7 +75,7 @@ export default function SearchGridItem({
                   </div>
                 )}
 
-                {culture && culture.length <= MAX_LENGTH && (
+                {culture && (
                   <div>
                     <div className="text-xs text-white font-medium">
                       {culture}
@@ -87,7 +83,7 @@ export default function SearchGridItem({
                   </div>
                 )}
 
-                {period && period.length <= MAX_LENGTH && (
+                {period && (
                   <div>
                     <div className="text-xs text-white font-medium">
                       {period}
@@ -95,7 +91,7 @@ export default function SearchGridItem({
                   </div>
                 )}
 
-                {medium && medium.length <= MAX_LENGTH && (
+                {medium && (
                   <div className="col-span-2">
                     <div className="text-xs text-white font-medium">
                       {medium}
