@@ -62,8 +62,23 @@ export class ChicagoMuseumService {
     }
   }
 
-  getImageUrl(imageId: string, size: string = '843'): string {
+  /**
+   * Get optimized image URL for Chicago Museum IIIF images
+   * @param imageId - Chicago Museum image ID
+   * @param size - Image size (default '400' for better performance)
+   * @returns Optimized IIIF image URL
+   */
+  getImageUrl(imageId: string, size: string = '400'): string {
     return `https://www.artic.edu/iiif/2/${imageId}/full/${size},/0/default.jpg`;
+  }
+
+  /**
+   * Get thumbnail image URL (smaller size for grid views)
+   * @param imageId - Chicago Museum image ID
+   * @returns Small thumbnail URL
+   */
+  getThumbnailUrl(imageId: string): string {
+    return this.getImageUrl(imageId, '200');
   }
 
   transformToMuseumItem(chicagoItem: any): any {

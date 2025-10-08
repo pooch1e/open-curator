@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
 
     const service = new HarvardApiService(
       config.harvardMuseum.baseUrl,
-      config.harvardMuseum.apiKey
+      config.harvardMuseum.apiKey || ''
     );
 
     const results = await service.searchObjects(query, limit);

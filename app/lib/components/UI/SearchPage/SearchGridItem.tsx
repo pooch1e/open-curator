@@ -44,64 +44,69 @@ export default function SearchGridItem({
   images,
   primaryImageUrl,
 }: SearchGridItemProps) {
+  const artworkDescription = [artist, date, culture, period, medium].filter(Boolean).join(', ');
+  
   return (
-    <ul className="col-span-4 col-start-1 flex flex-col gap-6 sm:col-span-12 md:gap-10">
-      <li className="inline-block p-4">
+    <div className="col-span-4 col-start-1 flex flex-col gap-6 sm:col-span-12 md:gap-10" role="listitem">
+      <article className="inline-block p-4">
         <a
           href={objectURL}
-          target="blank"
-          className="relative inline-block w-10/12 text-lg uppercase no-underline underline-animate">
+          target="_blank"
+          rel="noopener noreferrer"
+          className="relative inline-block w-10/12 text-lg uppercase no-underline underline-animate"
+          aria-label={`View details for ${title}${artist ? ` by ${artist}` : ''} - opens in new tab`}>
           <div className="hover:text-red-400">
             <div className="mb-1">
-              <span>
-                <h3 className="text-2xl italic">{title}</h3>
-              </span>
+              <h3 className="text-2xl italic" id={`artwork-${id}`}>{title || 'Untitled Artwork'}</h3>
             </div>
-            <div className="grid grid-cols-4 gap-8">
+            <div className="grid grid-cols-4 gap-8" aria-describedby={`artwork-${id}`}>
               <div className="flex flex-row gap-8">
                 {artist && (
                   <div>
-                    <div className="text-white font-medium text-sm ">
+                    <span className="text-white font-medium text-sm" aria-label={`Artist: ${artist}`}>
                       {artist}
-                    </div>
+                    </span>
                   </div>
                 )}
 
                 {date && (
                   <div>
-                    <div className="text-white font-medium grid-cols-2 text-xs">
+                    <span className="text-white font-medium grid-cols-2 text-xs" aria-label={`Date: ${date}`}>
                       {date}
-                    </div>
+                    </span>
                   </div>
                 )}
 
                 {culture && (
                   <div>
-                    <div className="text-xs text-white font-medium">
+                    <span className="text-xs text-white font-medium" aria-label={`Culture: ${culture}`}>
                       {culture}
-                    </div>
+                    </span>
                   </div>
                 )}
 
                 {period && (
                   <div>
-                    <div className="text-xs text-white font-medium">
+                    <span className="text-xs text-white font-medium" aria-label={`Period: ${period}`}>
                       {period}
-                    </div>
+                    </span>
                   </div>
                 )}
 
                 {medium && (
                   <div className="col-span-2">
-                    <div className="text-xs text-white font-medium">
+                    <span className="text-xs text-white font-medium" aria-label={`Medium: ${medium}`}>
                       {medium}
-                    </div>
+                    </span>
                   </div>
                 )}
               </div>
             </div>
           </div>
         </a>
+        <div className="sr-only" aria-live="polite">
+          Artwork: {title || 'Untitled'}. {artworkDescription}
+        </div>
         <FavouriteButton
           key={id}
           id={id}
@@ -112,9 +117,9 @@ export default function SearchGridItem({
           medium={medium}
           objectURL={objectURL}
           primaryimageurl={primaryImageUrl}
-          images={images}
+          images={[images]}
         />
-      </li>
-    </ul>
+      </article>
+    </div>
   );
 }

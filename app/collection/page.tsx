@@ -5,5 +5,5 @@ import { useFavourites } from '../lib/hooks/useFavourites';
 export default function CollectionPage() {
   const collection = useFavourites();
   console.log(collection?.favourites, 'in page')
-  return <CollectionContainer favourites={collection?.favourites} />;
+  return <CollectionContainer favourites={collection?.favourites || []} />;
 }

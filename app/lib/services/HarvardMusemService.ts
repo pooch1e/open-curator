@@ -54,6 +54,50 @@ export class HarvardApiService {
   }
 
   /**
+   * Optimize IIIF image URL for better performance
+   * @param imageUrl - Original image URL
+   * @param maxWidth - Maximum width for the image (default 400)
+   * @param quality - Image quality (default 'default')
+   * @returns Optimized image URL
+   */
+  private optimizeImageUrl(
+    imageUrl: string, 
+    maxWidth = 400, 
+    quality: 'default' | 'gray' | 'bitonal' | 'color' = 'default'
+  ): string {
+    if (!imageUrl) return imageUrl;
+    
+    // Check if it's an IIIF URL that can be optimized
+    if (imageUrl.includes('nrs.harvard.edu') || imageUrl.includes('hvrd.art')) {
+      // Harvard IIIF URL format: .../full/full/0/default.jpg
+      // Optimize to: .../full/400,/0/default.jpg (400px wide, maintain aspect ratio)
+      if (imageUrl.includes('/full/full/0/')) {
+        return imageUrl.replace('/full/full/0/', `/full/${maxWidth},/0/`);
+      }
+      // If already optimized or different format, return as-is
+      return imageUrl;
+    }
+    
+    return imageUrl;
+  }
+
+  /**
+   * Process Harvard object to optimize image URLs
+   */
+  private optimizeHarvardObject(obj: HarvardObject): HarvardObject {
+    return {
+      ...obj,
+      primaryimageurl: obj.primaryimageurl ? this.optimizeImageUrl(obj.primaryimageurl, 400) : obj.primaryimageurl,
+      images: obj.images?.map(img => ({
+        ...img,
+        baseimageurl: this.optimizeImageUrl(img.baseimageurl, 400),
+        // Keep iiifbaseuri for potential full-size viewing
+        iiifbaseuri: img.iiifbaseuri
+      }))
+    };
+  }
+
+  /**
    * Get initial objects with images
    * @param limit - default 50
    * @param sort -
@@ -95,7 +139,7 @@ export class HarvardApiService {
       }
 
       console.log(`Found ${data.records.length} objects`);
-      return data.records;
+      return data.records.map(obj => this.optimizeHarvardObject(obj));
     } catch (err) {
       console.error('Error fetching Harvard objects:', err);
       throw err;
@@ -120,7 +164,7 @@ export class HarvardApiService {
       }
 
       const data: HarvardObject = await response.json();
-      return data;
+      return this.optimizeHarvardObject(data);
     } catch (err) {
       console.error(`Error fetching object ${objectId}:`, err);
       return null;
@@ -164,7 +208,7 @@ export class HarvardApiService {
       const data: HarvardApiResponse = await response.json();
 
       console.log(`Search returned ${data.records?.length || 0} results`);
-      return data.records || [];
+      return (data.records || []).map(obj => this.optimizeHarvardObject(obj));
     } catch (err) {
       console.error('Search error:', err);
       throw err;
@@ -197,7 +241,7 @@ export class HarvardApiService {
       }
 
       const data: HarvardApiResponse = await response.json();
-      return data.records || [];
+      return (data.records || []).map(obj => this.optimizeHarvardObject(obj));
     } catch (err) {
       console.error('Search error:', err);
       throw err;

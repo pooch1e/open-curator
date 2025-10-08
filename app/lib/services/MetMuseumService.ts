@@ -214,7 +214,7 @@ export class MetMuseumService {
           culture: data.culture || '',
           medium: data.medium || '',
           department: data.department || '',
-          primaryImage: data.primaryImage,
+          primaryImage: data.primaryImageSmall || data.primaryImage, 
           primaryImageSmall: data.primaryImageSmall,
           additionalImages: data.additionalImages || [],
           isPublicDomain: data.isPublicDomain,

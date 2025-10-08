@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
     // init services
     const harvardService = new HarvardApiService(
       config.harvardMuseum.baseUrl,
-      config.harvardMuseum.apiKey
+      config.harvardMuseum.apiKey || ''
     );
 
     const chicagoService = new ChicagoMuseumService(

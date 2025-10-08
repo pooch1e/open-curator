@@ -4,7 +4,7 @@ export default function ClearAllFavouritesButton() {
   const favourites = useFavourites();
 
   // check if work is already added to catalog
-  const isFavourited = favourites?.favourites?.length > 0 
+  const isFavourited = (favourites?.favourites?.length ?? 0) > 0
   console.log(isFavourited)
   
 

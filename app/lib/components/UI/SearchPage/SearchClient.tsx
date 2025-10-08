@@ -138,11 +138,21 @@ export default function SearchClient({ data }: SearchClientProps) {
     }
   };
 
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error loading museum data</div>;
+  if (isLoading) return (
+    <div role="status" aria-live="polite" aria-label="Loading search results">
+      <span className="sr-only">Loading museum collections...</span>
+      Loading...
+    </div>
+  );
+  if (isError) return (
+    <div role="alert" aria-live="assertive" className="text-red-400">
+      <span className="sr-only">Error occurred</span>
+      Error loading museum data. Please try again.
+    </div>
+  );
 
   return (
-    <>
+    <main>
       <div className="flex justify-center p-2">
         <SearchBar
           onSearch={handleSearch}
@@ -154,7 +164,12 @@ export default function SearchClient({ data }: SearchClientProps) {
       <div className="p-2">
         <ClearAllFavouritesButton />
       </div>
+      <div aria-live="polite" aria-label="Search results" className="sr-only">
+        {filterResults.length > 0 ? 
+          `Found ${filterResults.length} artworks${searchQuery ? ` matching "${searchQuery}"` : ''}` : 
+          searchQuery ? `No artworks found matching "${searchQuery}"` : ''}
+      </div>
       <SearchGridContainer results={filterResults} />
-    </>
+    </main>
   );
 }
