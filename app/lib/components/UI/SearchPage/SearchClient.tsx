@@ -151,7 +151,7 @@ export default function SearchClient({ data }: SearchClientProps) {
           isLoading={isLoading}
         />
       </div>
-      <div>
+      <div className="p-2">
         <ClearAllFavouritesButton />
       </div>
       <SearchGridContainer results={filterResults} />
