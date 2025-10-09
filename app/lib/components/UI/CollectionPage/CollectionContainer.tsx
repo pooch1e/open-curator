@@ -1,3 +1,4 @@
+import ClearAllFavouritesButton from '../ClearAllFavouritesButton';
 import CollectionItem from './CollectionItem';
 interface collectionContainerProps {
   favourites: any[];
@@ -8,6 +9,9 @@ export default function CollectionContainer({
 }: collectionContainerProps) {
   return (
     <section className="py-8 px-4 md:py-12" aria-labelledby="collection-heading" role="region">
+      <div className='p-2'>
+        <ClearAllFavouritesButton />
+      </div>
       <div className="max-w-7xl mx-auto">
         <h1 id="collection-heading" className="text-2xl md:text-3xl font-bold text-white mb-6">
           My Collection 

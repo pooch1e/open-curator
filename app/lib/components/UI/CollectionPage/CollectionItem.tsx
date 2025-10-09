@@ -138,7 +138,7 @@ export default function CollectionItem({
                 rel="noopener noreferrer"
                 className="font-sans text-primary underline break-all">
                 <span className="sr-only">Link to Artwork: </span>
-                {collectionData.objectURL}
+                <p>Link to artwork</p>
               </a>
             </div>
           )}
