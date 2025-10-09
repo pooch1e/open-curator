@@ -1,6 +1,6 @@
 @import 'tailwindcss';
 
-/* Screen Reader Only utility classes */
+
 .sr-only {
   position: absolute;
   width: 1px;

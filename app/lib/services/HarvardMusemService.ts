@@ -32,6 +32,38 @@ interface HarvardObject {
   }>;
 }
 
+interface MuseumItem {
+  id: number;
+  title: string | null;
+  artist: string | null;
+  date: string | null;
+  culture: string | null;
+  medium: string | null;
+  department: string | null;
+  primaryimageurl: string | null;
+  additionalImages: string[];
+  isPublicDomain: boolean | null;
+  objectURL: string | null;
+  dimensions: string | null;
+  images: Array<{
+    alttext: string | null;
+    baseimageurl: string;
+    copyright: string | null;
+    date: string | null;
+    description: string | null;
+    displayorder: number;
+    format: string | null;
+    height: number | null;
+    idsid: number | null;
+    iiifbaseuri: string | null;
+    imageid: number;
+    publiccaption: string | null;
+    renditionnumber: string | null;
+    technique: string | null;
+    width: number | null;
+  }>;
+}
+
 interface HarvardApiResponse {
   info: {
     totalrecords: number;
@@ -54,30 +86,25 @@ export class HarvardApiService {
   }
 
   /**
-   * Optimize IIIF image URL for better performance
-   * @param imageUrl - Original image URL
-   * @param maxWidth - Maximum width for the image (default 400)
-   * @param quality - Image quality (default 'default')
-   * @returns Optimized image URL
+   
+   * @param imageUrl 
+   * @param maxWidth
+   * @param quality 
+   * @returns 
    */
   private optimizeImageUrl(
-    imageUrl: string, 
-    maxWidth = 400, 
+    imageUrl: string,
+    maxWidth = 400,
     quality: 'default' | 'gray' | 'bitonal' | 'color' = 'default'
   ): string {
     if (!imageUrl) return imageUrl;
-    
-    // Check if it's an IIIF URL that can be optimized
+
     if (imageUrl.includes('nrs.harvard.edu') || imageUrl.includes('hvrd.art')) {
-      // Harvard IIIF URL format: .../full/full/0/default.jpg
-      // Optimize to: .../full/400,/0/default.jpg (400px wide, maintain aspect ratio)
       if (imageUrl.includes('/full/full/0/')) {
         return imageUrl.replace('/full/full/0/', `/full/${maxWidth},/0/`);
       }
-      // If already optimized or different format, return as-is
-      return imageUrl;
     }
-    
+
     return imageUrl;
   }
 
@@ -87,20 +114,22 @@ export class HarvardApiService {
   private optimizeHarvardObject(obj: HarvardObject): HarvardObject {
     return {
       ...obj,
-      primaryimageurl: obj.primaryimageurl ? this.optimizeImageUrl(obj.primaryimageurl, 400) : obj.primaryimageurl,
-      images: obj.images?.map(img => ({
+      primaryimageurl: obj.primaryimageurl
+        ? this.optimizeImageUrl(obj.primaryimageurl, 400)
+        : obj.primaryimageurl,
+      images: obj.images?.map((img) => ({
         ...img,
         baseimageurl: this.optimizeImageUrl(img.baseimageurl, 400),
-        // Keep iiifbaseuri for potential full-size viewing
-        iiifbaseuri: img.iiifbaseuri
-      }))
+
+        iiifbaseuri: img.iiifbaseuri,
+      })),
     };
   }
 
   /**
-   * Get initial objects with images
-   * @param limit - default 50
-   * @param sort -
+   *
+   * @param limit
+   * @param sort
    */
   async getInitialObjectsWithImages(
     limit = 50,
@@ -139,7 +168,7 @@ export class HarvardApiService {
       }
 
       console.log(`Found ${data.records.length} objects`);
-      return data.records.map(obj => this.optimizeHarvardObject(obj));
+      return data.records.map((obj) => this.optimizeHarvardObject(obj));
     } catch (err) {
       console.error('Error fetching Harvard objects:', err);
       throw err;
@@ -208,7 +237,7 @@ export class HarvardApiService {
       const data: HarvardApiResponse = await response.json();
 
       console.log(`Search returned ${data.records?.length || 0} results`);
-      return (data.records || []).map(obj => this.optimizeHarvardObject(obj));
+      return (data.records || []).map((obj) => this.optimizeHarvardObject(obj));
     } catch (err) {
       console.error('Search error:', err);
       throw err;
@@ -241,7 +270,7 @@ export class HarvardApiService {
       }
 
       const data: HarvardApiResponse = await response.json();
-      return (data.records || []).map(obj => this.optimizeHarvardObject(obj));
+      return (data.records || []).map((obj) => this.optimizeHarvardObject(obj));
     } catch (err) {
       console.error('Search error:', err);
       throw err;
@@ -263,5 +292,39 @@ export class HarvardApiService {
   // get random
   async getRandomObjects(limit = 50): Promise<HarvardObject[]> {
     return this.getInitialObjectsWithImages(limit, 'random');
+  }
+
+  transformToMuseumItem(harvardDataObject: HarvardObject[]): MuseumItem[] {
+    return harvardDataObject.map((item) => ({
+      id: item.id,
+      title: item.title,
+      artist: item.people?.[0]?.displayname || item.people?.[0]?.name || null,
+      date: item.dated || null,
+      culture: item.culture || null,
+      medium: item.medium || null,
+      department: item.department || null,
+      primaryimageurl: item.primaryimageurl || null,
+      additionalImages: [],
+      isPublicDomain: true, // Harvard data is typically public domain
+      objectURL: item.url || null,
+      dimensions: item.dimensions || null,
+      images: (item.images || []).map((img) => ({
+        alttext: null,
+        baseimageurl: img.baseimageurl,
+        copyright: null,
+        date: null,
+        description: null,
+        displayorder: 0,
+        format: null,
+        height: img.height,
+        idsid: null,
+        iiifbaseuri: img.iiifbaseuri,
+        imageid: 0,
+        publiccaption: null,
+        renditionnumber: null,
+        technique: null,
+        width: img.width,
+      })),
+    }));
   }
 }

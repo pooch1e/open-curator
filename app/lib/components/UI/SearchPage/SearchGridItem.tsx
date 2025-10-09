@@ -24,7 +24,7 @@ interface SearchGridItemProps {
   artist: string;
   date: string;
   medium: string;
-  objectURL: string;
+  objectURL: string | null;
   period: string;
   description: string;
   culture: string;
@@ -50,11 +50,11 @@ export default function SearchGridItem({
     <div className="col-span-4 col-start-1 flex flex-col gap-6 sm:col-span-12 md:gap-10" role="listitem">
       <article className="inline-block p-4">
         <a
-          href={objectURL}
-          target="_blank"
-          rel="noopener noreferrer"
+          href={objectURL || '#'}
+          target={objectURL ? "_blank" : "_self"}
+          rel={objectURL ? "noopener noreferrer" : undefined}
           className="relative inline-block w-10/12 text-lg uppercase no-underline underline-animate"
-          aria-label={`View details for ${title}${artist ? ` by ${artist}` : ''} - opens in new tab`}>
+          aria-label={`View details for ${title}${artist ? ` by ${artist}` : ''} ${objectURL ? '- opens in new tab' : '- no external link available'}`}>
           <div className="hover:text-red-400">
             <div className="mb-1">
               <h3 className="text-2xl italic" id={`artwork-${id}`}>{title || 'Untitled Artwork'}</h3>

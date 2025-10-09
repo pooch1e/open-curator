@@ -3,6 +3,11 @@ import { useState, useEffect, useMemo } from 'react';
 import SearchBar from './SearchBar';
 import SearchGridContainer from './SearchGridContainer';
 import ClearAllFavouritesButton from '../ClearAllFavouritesButton';
+import {
+  CHICAGO_API_PRESET,
+  ChicagoPreset,
+} from '@/app/lib/config/chicago.config';
+import DropDown from '../PresetSelector/DropDown';
 interface Image {
   alttext: string | null;
   baseimageurl: string;
@@ -47,6 +52,11 @@ export default function SearchClient({ data }: SearchClientProps) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
   const [isApiSearch, setIsApiSearch] = useState<boolean>(false);
+  const [selectedPreset, setSelectedPreset] = useState<ChicagoPreset | null>(
+    null
+  );
+  const [availablePresets, setAvailablePresets] =
+    useState<ChicagoPreset[]>(CHICAGO_API_PRESET);
 
   // handle use effect stuff here?
 
@@ -60,6 +70,61 @@ export default function SearchClient({ data }: SearchClientProps) {
       setIsLoading(false);
     }
   }, [data]);
+
+  // handle search preset
+  useEffect(() => {
+    if (!selectedPreset) return;
+
+    const executePresetSearch = async () => {
+      setIsLoading(true);
+      setIsError(false);
+
+      try {
+        // Build query based on preset
+        const query = selectedPreset.searchTerm;
+        setSearchQuery(query); // Update search bar to show what's being searched
+
+        const res = await fetch(
+          `/api/cache/?q=${encodeURIComponent(
+            query
+          )}&limit=50&service=chicago`
+        );
+
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(`API request failed: ${res.status} - ${errorText}`);
+        }
+
+        const responseData = await res.json();
+        
+        // Check if the response has an error
+        if (responseData.error) {
+          throw new Error(responseData.error);
+        }
+
+        const { results } = responseData;
+
+        if (!Array.isArray(results)) {
+          throw new Error('Invalid response format - expected results to be an array');
+        }
+
+        const filtered = results.filter(
+          (item: MuseumItem | null): item is MuseumItem => item !== null
+        );
+
+        setMuseumData(filtered);
+        setIsApiSearch(true);
+      } catch (err) {
+        console.error('Preset search error:', err);
+        setIsError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    executePresetSearch();
+  }, [selectedPreset]);
+
   // handle search button click api request
 
   const filterResults = useMemo(() => {
@@ -138,18 +203,20 @@ export default function SearchClient({ data }: SearchClientProps) {
     }
   };
 
-  if (isLoading) return (
-    <div role="status" aria-live="polite" aria-label="Loading search results">
-      <span className="sr-only">Loading museum collections...</span>
-      Loading...
-    </div>
-  );
-  if (isError) return (
-    <div role="alert" aria-live="assertive" className="text-red-400">
-      <span className="sr-only">Error occurred</span>
-      Error loading museum data. Please try again.
-    </div>
-  );
+  if (isLoading)
+    return (
+      <div role="status" aria-live="polite" aria-label="Loading search results">
+        <span className="sr-only">Loading museum collections...</span>
+        Loading...
+      </div>
+    );
+  if (isError)
+    return (
+      <div role="alert" aria-live="assertive" className="text-red-400">
+        <span className="sr-only">Error occurred</span>
+        Error loading museum data. Please try again.
+      </div>
+    );
 
   return (
     <main>
@@ -161,13 +228,22 @@ export default function SearchClient({ data }: SearchClientProps) {
           isLoading={isLoading}
         />
       </div>
-      <div className="p-2">
-        <ClearAllFavouritesButton />
+      <div className="flex justify-between">
+        <div className="p-2">
+          <ClearAllFavouritesButton />
+        </div>
+        <div className="p-2">
+          <DropDown presets={availablePresets} onSelectPreset={setSelectedPreset} />
+        </div>
       </div>
       <div aria-live="polite" aria-label="Search results" className="sr-only">
-        {filterResults.length > 0 ? 
-          `Found ${filterResults.length} artworks${searchQuery ? ` matching "${searchQuery}"` : ''}` : 
-          searchQuery ? `No artworks found matching "${searchQuery}"` : ''}
+        {filterResults.length > 0
+          ? `Found ${filterResults.length} artworks${
+              searchQuery ? ` matching "${searchQuery}"` : ''
+            }`
+          : searchQuery
+          ? `No artworks found matching "${searchQuery}"`
+          : ''}
       </div>
       <SearchGridContainer results={filterResults} />
     </main>

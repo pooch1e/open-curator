@@ -66,11 +66,17 @@ export async function GET(request: NextRequest) {
         return chicagoService.transformToMuseumItem(item);
       });
     }
+
+    // Ensure results is always an array
+    if (!Array.isArray(results)) {
+      results = [];
+    }
+
     const responseData = {
-      data: results,
+      results,
       cached: false,
       service,
-      count: Array.isArray(results) ? results.length : 0,
+      count: results.length,
     };
 
     cache.set(cacheKey, {
@@ -78,12 +84,12 @@ export async function GET(request: NextRequest) {
       timestamp: Date.now(),
     });
 
-    return NextResponse.json({
-      results,
-      cached: false,
-      service,
-    });
+    return NextResponse.json(responseData);
   } catch (err: any) {
-    return NextResponse.json({ status: 500, err: err.message });
+    console.error('Cache API error:', err);
+    return NextResponse.json(
+      { error: err.message || 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
