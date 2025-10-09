@@ -7,6 +7,7 @@ import {
   CHICAGO_API_PRESET,
   ChicagoPreset,
 } from '@/app/lib/config/chicago.config';
+import DropDown from '../PresetSelector/DropDown';
 interface Image {
   alttext: string | null;
   baseimageurl: string;
@@ -54,7 +55,7 @@ export default function SearchClient({ data }: SearchClientProps) {
   const [selectedPreset, setSelectedPreset] = useState<ChicagoPreset | null>(
     null
   );
-  const [availablePresets, setAvailablePreset] =
+  const [availablePresets, setAvailablePresets] =
     useState<ChicagoPreset[]>(CHICAGO_API_PRESET);
 
   // handle use effect stuff here?
@@ -172,8 +173,13 @@ export default function SearchClient({ data }: SearchClientProps) {
           isLoading={isLoading}
         />
       </div>
-      <div className="p-2">
-        <ClearAllFavouritesButton />
+      <div className='flex justify-between'>
+        <div className="p-2">
+          <ClearAllFavouritesButton />
+        </div>
+        <div className="p-2">
+          <DropDown presets={availablePresets} />
+        </div>
       </div>
       <div aria-live="polite" aria-label="Search results" className="sr-only">
         {filterResults.length > 0
