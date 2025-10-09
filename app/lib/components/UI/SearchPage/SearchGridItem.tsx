@@ -1,36 +1,7 @@
 import FavouriteButton from '../FavouriteButton';
 import './underline-animate.css';
+import type { SearchGridItemProps } from '@/app/lib/config/types';
 
-interface Image {
-  alttext: string | null;
-  baseimageurl: string;
-  copyright: string | null;
-  date: string | null;
-  description: string | null;
-  displayorder: number;
-  format: string | null;
-  height: number | null;
-  idsid: number | null;
-  iiifbaseuri: string | null;
-  imageid: number;
-  publiccaption: string | null;
-  renditionnumber: string | null;
-  technique: string | null;
-  width: number | null;
-}
-interface SearchGridItemProps {
-  id: number;
-  title: string;
-  artist: string;
-  date: string;
-  medium: string;
-  objectURL: string | null;
-  period: string;
-  description: string;
-  culture: string;
-  images: Image;
-  primaryImageUrl: string;
-}
 export default function SearchGridItem({
   id,
   title,

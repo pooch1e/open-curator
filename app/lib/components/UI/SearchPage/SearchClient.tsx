@@ -8,43 +8,8 @@ import {
   ChicagoPreset,
 } from '@/app/lib/config/chicago.config';
 import DropDown from '../PresetSelector/DropDown';
-interface Image {
-  alttext: string | null;
-  baseimageurl: string;
-  copyright: string | null;
-  date: string | null;
-  description: string | null;
-  displayorder: number;
-  format: string | null;
-  height: number | null;
-  idsid: number | null;
-  iiifbaseuri: string | null;
-  imageid: number;
-  publiccaption: string | null;
-  renditionnumber: string | null;
-  technique: string | null;
-  width: number | null;
-}
-interface MuseumItem {
-  id: number;
-  title: string | null;
-  artist: string | null;
-  date: string | null;
-  culture: string | null;
-  medium: string | null;
-  department: string | null;
-  primaryimageurl: string | null;
-  additionalImages: string[];
-  isPublicDomain: boolean | null;
-  objectURL: string | null;
-  dimensions: string | null;
-  images: Image[];
-}
+import type {Image, MuseumItem, SearchClientProps} from '../../../config/types'
 
-interface SearchClientProps {
-  data: MuseumItem[];
-  onApiSearch?: (query: string) => Promise<MuseumItem[]>;
-}
 
 export default function SearchClient({ data }: SearchClientProps) {
   const [museumData, setMuseumData] = useState<MuseumItem[]>([]);
