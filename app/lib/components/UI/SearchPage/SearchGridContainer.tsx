@@ -29,7 +29,7 @@ export default function SearchGridContainer({ results }: any) {
               artist={item.artist}
               date={item.dated}
               medium={item.medium}
-              objectURL={item.url}
+              objectURL={item.objectURL}
               period={item.period}
               description={item.description}
               culture={item.culture}

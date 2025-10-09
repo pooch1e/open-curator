@@ -1,3 +1,5 @@
+// Depreciated Please do not use
+
 import { processInBatches } from '../utils/processBatches';
 import { delay } from '../utils/delay';
 
@@ -192,7 +194,7 @@ export class MetMuseumService {
       const response = await this.makeRequest(
         `${this.baseUrl}/objects/${objectId}`,
         {
-          next: { revalidate: 86400 }, 
+          next: { revalidate: 86400 },
         }
       );
 
@@ -214,7 +216,7 @@ export class MetMuseumService {
           culture: data.culture || '',
           medium: data.medium || '',
           department: data.department || '',
-          primaryImage: data.primaryImageSmall || data.primaryImage, 
+          primaryImage: data.primaryImageSmall || data.primaryImage,
           primaryImageSmall: data.primaryImageSmall,
           additionalImages: data.additionalImages || [],
           isPublicDomain: data.isPublicDomain,
