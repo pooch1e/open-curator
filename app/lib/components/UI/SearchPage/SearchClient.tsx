@@ -3,6 +3,10 @@ import { useState, useEffect, useMemo } from 'react';
 import SearchBar from './SearchBar';
 import SearchGridContainer from './SearchGridContainer';
 import ClearAllFavouritesButton from '../ClearAllFavouritesButton';
+import {
+  CHICAGO_API_PRESET,
+  ChicagoPreset,
+} from '@/app/lib/config/chicago.config';
 interface Image {
   alttext: string | null;
   baseimageurl: string;
@@ -47,6 +51,11 @@ export default function SearchClient({ data }: SearchClientProps) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
   const [isApiSearch, setIsApiSearch] = useState<boolean>(false);
+  const [selectedPreset, setSelectedPreset] = useState<ChicagoPreset | null>(
+    null
+  );
+  const [availablePresets, setAvailablePreset] =
+    useState<ChicagoPreset[]>(CHICAGO_API_PRESET);
 
   // handle use effect stuff here?
 
@@ -138,18 +147,20 @@ export default function SearchClient({ data }: SearchClientProps) {
     }
   };
 
-  if (isLoading) return (
-    <div role="status" aria-live="polite" aria-label="Loading search results">
-      <span className="sr-only">Loading museum collections...</span>
-      Loading...
-    </div>
-  );
-  if (isError) return (
-    <div role="alert" aria-live="assertive" className="text-red-400">
-      <span className="sr-only">Error occurred</span>
-      Error loading museum data. Please try again.
-    </div>
-  );
+  if (isLoading)
+    return (
+      <div role="status" aria-live="polite" aria-label="Loading search results">
+        <span className="sr-only">Loading museum collections...</span>
+        Loading...
+      </div>
+    );
+  if (isError)
+    return (
+      <div role="alert" aria-live="assertive" className="text-red-400">
+        <span className="sr-only">Error occurred</span>
+        Error loading museum data. Please try again.
+      </div>
+    );
 
   return (
     <main>
@@ -165,9 +176,13 @@ export default function SearchClient({ data }: SearchClientProps) {
         <ClearAllFavouritesButton />
       </div>
       <div aria-live="polite" aria-label="Search results" className="sr-only">
-        {filterResults.length > 0 ? 
-          `Found ${filterResults.length} artworks${searchQuery ? ` matching "${searchQuery}"` : ''}` : 
-          searchQuery ? `No artworks found matching "${searchQuery}"` : ''}
+        {filterResults.length > 0
+          ? `Found ${filterResults.length} artworks${
+              searchQuery ? ` matching "${searchQuery}"` : ''
+            }`
+          : searchQuery
+          ? `No artworks found matching "${searchQuery}"`
+          : ''}
       </div>
       <SearchGridContainer results={filterResults} />
     </main>
