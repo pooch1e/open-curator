@@ -10,13 +10,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Preconnect to image domains for faster loading */}
+       
         <link rel="preconnect" href="https://nrs.harvard.edu" />
         <link rel="preconnect" href="https://hvrd.art" />
         <link rel="preconnect" href="https://images.metmuseum.org" />
         <link rel="preconnect" href="https://www.artic.edu" />
         <link rel="preconnect" href="https://data.nma.gov.au" />
-        {/* DNS prefetch for additional performance */}
+       
         <link rel="dns-prefetch" href="https://api.harvardartmuseums.org" />
         <link rel="dns-prefetch" href="https://collectionapi.metmuseum.org" />
       </head>

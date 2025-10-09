@@ -10,7 +10,7 @@ export default function Button({ text, handleClick, 'aria-label': ariaLabel }: B
       type="button"
       onClick={handleClick}
       aria-label={ariaLabel || text}
-      className="text-white text-2xl underline underline-offset-4 hover:text-red-300 focus:text-red-500 ">
+      className="text-white text-2xl underline underline-offset-4 hover:text-red-600 focus:text-red-300 ">
       {text}
     </button>
   );
