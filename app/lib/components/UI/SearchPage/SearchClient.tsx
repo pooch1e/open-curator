@@ -70,6 +70,61 @@ export default function SearchClient({ data }: SearchClientProps) {
       setIsLoading(false);
     }
   }, [data]);
+
+  // handle search preset
+  useEffect(() => {
+    if (!selectedPreset) return;
+
+    const executePresetSearch = async () => {
+      setIsLoading(true);
+      setIsError(false);
+
+      try {
+        // Build query based on preset
+        const query = selectedPreset.searchTerm;
+        setSearchQuery(query); // Update search bar to show what's being searched
+
+        const res = await fetch(
+          `/api/cache/?q=${encodeURIComponent(
+            query
+          )}&limit=50&service=chicago`
+        );
+
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(`API request failed: ${res.status} - ${errorText}`);
+        }
+
+        const responseData = await res.json();
+        
+        // Check if the response has an error
+        if (responseData.error) {
+          throw new Error(responseData.error);
+        }
+
+        const { results } = responseData;
+
+        if (!Array.isArray(results)) {
+          throw new Error('Invalid response format - expected results to be an array');
+        }
+
+        const filtered = results.filter(
+          (item: MuseumItem | null): item is MuseumItem => item !== null
+        );
+
+        setMuseumData(filtered);
+        setIsApiSearch(true);
+      } catch (err) {
+        console.error('Preset search error:', err);
+        setIsError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    executePresetSearch();
+  }, [selectedPreset]);
+
   // handle search button click api request
 
   const filterResults = useMemo(() => {
@@ -173,12 +228,12 @@ export default function SearchClient({ data }: SearchClientProps) {
           isLoading={isLoading}
         />
       </div>
-      <div className='flex justify-between'>
+      <div className="flex justify-between">
         <div className="p-2">
           <ClearAllFavouritesButton />
         </div>
         <div className="p-2">
-          <DropDown presets={availablePresets} />
+          <DropDown presets={availablePresets} onSelectPreset={setSelectedPreset} />
         </div>
       </div>
       <div aria-live="polite" aria-label="Search results" className="sr-only">
