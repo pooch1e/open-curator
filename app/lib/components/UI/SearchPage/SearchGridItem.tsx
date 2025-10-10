@@ -35,9 +35,9 @@ export default function SearchGridItem({
             } ${
               objectURL ? '- opens in new tab' : '- no external link available'
             }`}>
-            <div className="hover:text-red-600 font-crimsonPro">
+            <div className="hover:text-red-600 font-crimson">
               <div className="mb-1">
-                <h3 className="text-2xl italic" id={`artwork-${id}`}>
+                <h3 className="text-2xl italic font-medium" id={`artwork-${id}`}>
                   {title || 'Untitled Artwork'}
                 </h3>
               </div>
@@ -45,7 +45,7 @@ export default function SearchGridItem({
               {/* Controller for container */}
               <div className="col-span-2" aria-describedby={`artwork-${id}`}>
                 {/* height here -- adjust as needed */}
-                <div className="flex flex-row gap-8 h-76 sm:h-40 md:h-48 lg:h-auto font-crimsonPro line-clamp-2">
+                <div className="flex flex-row gap-8 h-76 sm:h-40 md:h-48 lg:h-auto font-crimson line-clamp-2">
                   {artist && (
                     <div>
                       <span
@@ -59,7 +59,7 @@ export default function SearchGridItem({
                   {date && (
                     <div>
                       <span
-                        className="text-white font-medium col-span-1 text-xs"
+                        className="text-white font-light col-span-1 text-xs"
                         aria-label={`Date: ${date}`}>
                         {date}
                       </span>
@@ -69,7 +69,7 @@ export default function SearchGridItem({
                   {culture && (
                     <div className="col-span-1">
                       <span
-                        className="text-xs text-white font-medium"
+                        className="text-xs text-white font-light"
                         aria-label={`Culture: ${culture}`}>
                         {culture}
                       </span>
@@ -79,7 +79,7 @@ export default function SearchGridItem({
                   {period && (
                     <div>
                       <span
-                        className="text-xs text-white font-medium"
+                        className="text-xs text-white font-light"
                         aria-label={`Period: ${period}`}>
                         {period}
                       </span>
@@ -89,7 +89,7 @@ export default function SearchGridItem({
                   {medium && (
                     <div className="col-span-2">
                       <span
-                        className="text-xs text-white font-medium"
+                        className="text-xs text-white font-light"
                         aria-label={`Medium: ${medium}`}>
                         {medium}
                       </span>
@@ -98,7 +98,7 @@ export default function SearchGridItem({
                   {description && (
                     <div className="col-span-2">
                       <span
-                        className="text-xs text-white font-medium"
+                        className="text-xs text-white font-light"
                         aria-label={`Medium: ${description}`}>
                         {description}
                       </span>

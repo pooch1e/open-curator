@@ -60,13 +60,13 @@ export default function CollectionItem({
           {/* Title Artist */}
           <header className="flex flex-col gap-2">
             <h3
-              className="h5 w-full font-semibold"
+              className="text-lg w-full font-medium font-crimson"
               id={`artwork-title-${collectionData.id}`}>
               {collectionData.title || 'Untitled'}
             </h3>
             {collectionData.artist && (
               <p
-                className="h6 uppercase"
+                className="text-sm uppercase font-crimson font-medium"
                 aria-label={`Artist: ${collectionData.artist}`}>
                 {collectionData.artist}
               </p>
@@ -81,17 +81,17 @@ export default function CollectionItem({
               <dl className="text-primary flex flex-col gap-1">
                 {collectionData.date && (
                   <div className="flex items-center gap-2 text-sm">
-                    <dd className="uppercase">{collectionData.date}</dd>
+                    <dd className="uppercase font-crimson font-light">{collectionData.date}</dd>
                   </div>
                 )}
                 {collectionData.culture && (
                   <div className="flex items-center gap-2 text-sm">
-                    <dd className="uppercase">{collectionData.culture}</dd>
+                    <dd className="uppercase font-crimson font-light">{collectionData.culture}</dd>
                   </div>
                 )}
                 {collectionData.medium && (
                   <div className="flex items-center gap-2 text-sm">
-                    <dd>{collectionData.medium}</dd>
+                    <dd className="font-crimson font-light text-xs">{collectionData.medium}</dd>
                   </div>
                 )}
               </dl>
@@ -103,7 +103,7 @@ export default function CollectionItem({
         <footer className="flex flex-col gap-2 mt-auto border-t pt-3">
           {collectionData.department && (
             <div className="text-primary">
-              <p className="font-sans text-sm text-gray-600">
+              <p className="font-crimson font-light text-xs text-gray-400">
                 {collectionData.department}
               </p>
             </div>
@@ -114,7 +114,7 @@ export default function CollectionItem({
                 href={collectionData.objectURL ?? '#'}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-sans text-sm text-primary underline hover:no-underline transition-all">
+                className="font-crimson font-normal text-sm text-red-400 underline hover:no-underline transition-all">
                 View at Museum
               </a>
             </div>

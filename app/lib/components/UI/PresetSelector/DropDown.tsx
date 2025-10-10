@@ -1,25 +1,15 @@
 import { ReactNode, useEffect, useState } from 'react';
+import type { DropDownProps, ChicagoPreset } from '@/app/lib/config/types';
 
-interface ChicagoPreset {
-  id: string;
-  label: string;
-  sortField: string;
-  description: string | null;
-  searchTerm: string;
-  category: 'sort' | 'content' | 'department' | 'medium';
-}
 
-interface DropDownProps {
-  presets: ChicagoPreset[];
-  onSelectPreset: (preset: ChicagoPreset) => void;
-}
+
 
 export default function DropDown({ presets, onSelectPreset }: DropDownProps) {
   const [open, setOpen] = useState<boolean>(false);
   const [selectedPreset, setSelectedPreset] = useState<ChicagoPreset | null>(
     null
   );
-  console.log(presets, 'in dropdown menu');
+
 
   const handleOpen = () => {
     setOpen(!open);
@@ -34,15 +24,17 @@ export default function DropDown({ presets, onSelectPreset }: DropDownProps) {
 
   return (
     <div className="dropdown text-2xl">
-      <button className="hover:text-red-300" onClick={handleOpen}>
+      <button
+        className="hover:text-red-600 font-crimson font-medium"
+        onClick={handleOpen}>
         {selectedPreset ? selectedPreset.label : 'Search Presets'}
       </button>
       {open ? (
-        <ul className="menu">
+        <ul className="menu font-crimson font-medium">
           {presets.map((item) => (
             <li
               key={item.id}
-              className="menu-item hover:text-red-500"
+              className="menu-item hover:text-red-500 font-crimson font-light"
               onClick={() => handleSelected(item)}>
               <button>{item.label}</button>
             </li>
