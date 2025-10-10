@@ -35,7 +35,7 @@ export default function SearchGridItem({
             } ${
               objectURL ? '- opens in new tab' : '- no external link available'
             }`}>
-            <div className="hover:text-red-600">
+            <div className="hover:text-red-600 font-crimsonPro">
               <div className="mb-1">
                 <h3 className="text-2xl italic" id={`artwork-${id}`}>
                   {title || 'Untitled Artwork'}
@@ -45,7 +45,7 @@ export default function SearchGridItem({
               {/* Controller for container */}
               <div className="col-span-2" aria-describedby={`artwork-${id}`}>
                 {/* height here -- adjust as needed */}
-                <div className="flex flex-row gap-8 h-76 sm:h-40 md:h-48 lg:h-auto font-medium line-clamp-2">
+                <div className="flex flex-row gap-8 h-76 sm:h-40 md:h-48 lg:h-auto font-crimsonPro line-clamp-2">
                   {artist && (
                     <div>
                       <span
