@@ -49,3 +49,32 @@ export interface SearchGridItemProps {
   images: Image;
   primaryImageUrl: string;
 }
+export interface CollectionItem {
+  id: number;
+  title: string | null;
+  artist: string | null;
+  date: string | null;
+  culture?: string | null;
+  medium?: string | null;
+  department?: string | null;
+  primaryimageurl?: string | null;
+  objectURL?: string | null;
+  images?: any[];
+}
+
+export interface CollectionItemProps {
+  collectionData: CollectionItem;
+}
+
+export interface FavouriteButtonProps {
+  id: number;
+  title: string | null;
+  artist: string | null;
+  date: string | null;
+  culture?: string | null;
+  medium?: string | null;
+  department?: string | null;
+  primaryimageurl?: string | null;
+  objectURL?: string | null;
+  images?: any[];
+}

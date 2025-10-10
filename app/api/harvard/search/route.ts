@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { HarvardApiService } from '@/app/lib/services/HarvardMusemService';
 import { config } from '@/config';
+import { createErrorResponse, API_ERRORS } from '@/app/lib/utils/apiErrors';
 
 export async function GET(request: NextRequest) {
   try {
@@ -10,10 +11,7 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '50');
 
     if (!query) {
-      return NextResponse.json(
-        { error: 'Search query is required' },
-        { status: 400 }
-      );
+      return createErrorResponse(API_ERRORS.MISSING_QUERY, 400);
     }
 
     const service = new HarvardApiService(
@@ -25,10 +23,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(results);
   } catch (error) {
-    console.error('Search API error:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch search results' },
-      { status: 500 }
-    );
+    console.error('Harvard Search API error:', error);
+    return createErrorResponse(API_ERRORS.INTERNAL_ERROR, 500);
   }
 }

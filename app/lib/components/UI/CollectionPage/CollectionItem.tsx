@@ -1,22 +1,9 @@
 import FavouriteButton from '../FavouriteButton';
-
+import type { CollectionItemProps } from '@/app/lib/config/types';
 //collection data for container??
-interface CollectionItem {
-  id: number;
-  title: string | null;
-  artist: string | null;
-  date: string | null;
-  culture?: string | null;
-  medium?: string | null;
-  department?: string | null;
-  primaryimageurl?: string | null;
-  objectURL?: string | null;
-  images?: any[];
-}
+
 // !todo need to make the col start prop increase?
-interface CollectionItemProps {
-  collectionData: CollectionItem;
-}
+
 export default function CollectionItem({
   collectionData,
 }: CollectionItemProps) {
@@ -41,7 +28,7 @@ export default function CollectionItem({
           aria-label={artworkDescription}>
           {collectionData.primaryimageurl ? (
             <img
-              src={collectionData.primaryimageurl}
+              src={collectionData?.primaryimageurl}
               alt={`${artworkDescription}${
                 collectionData.date ? `, ${collectionData.date}` : ''
               }`}
