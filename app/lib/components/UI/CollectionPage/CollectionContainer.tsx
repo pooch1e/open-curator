@@ -9,7 +9,7 @@ export default function CollectionContainer({
 }: collectionContainerProps) {
   return (
     <section className="py-8 px-4 md:py-12" aria-labelledby="collection-heading" role="region">
-      <div className='p-2'>
+      <div className='px-6 py-2'>
         <ClearAllFavouritesButton />
       </div>
       <div className="max-w-7xl mx-auto">

@@ -179,10 +179,10 @@ export default function SearchClient({ data }: SearchClientProps) {
         />
       </div>
       <div className="flex justify-between">
-        <div className="p-2">
+        <div className="px-6 py-2">
           <ClearAllFavouritesButton />
         </div>
-        <div className="p-2">
+        <div className="px-6 py-2">
           <DropDown
             presets={availablePresets}
             onSelectPreset={setSelectedPreset}
