@@ -16,11 +16,11 @@ export default async function Page() {
       'rank'
     );
 
-    const harvardApi = await fetch('/api/cache')
-
     // Transform Harvard data to match MuseumItem interface
     const data = fetchHarvardApi.transformToMuseumItem(harvardData);
 
     return <SearchClient data={data} />;
-  } catch (err) {}
+  } catch (err) {
+    return <SearchClient data={[]} />;
+  }
 }
