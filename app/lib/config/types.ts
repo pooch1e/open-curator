@@ -78,3 +78,17 @@ export interface FavouriteButtonProps {
   objectURL?: string | null;
   images?: any[];
 }
+
+export interface ChicagoPreset {
+  id: string;
+  label: string;
+  sortField: string;
+  description: string | null;
+  searchTerm: string;
+  category: 'sort' | 'content' | 'department' | 'medium';
+}
+
+export interface DropDownProps {
+  presets: ChicagoPreset[];
+  onSelectPreset: (preset: ChicagoPreset) => void;
+}

@@ -1,5 +1,11 @@
 @import 'tailwindcss';
 
+/* Custom font variables */
+:root {
+  --font-priori-serif: 'Priori Serif', serif;
+  --font-crimson-pro: 'Crimson Pro', serif;
+}
+
 
 .sr-only {
   position: absolute;

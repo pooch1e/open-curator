@@ -15,5 +15,5 @@ export default function ClearAllFavouritesButton() {
     }
   };
 
-  return <Button text={'clear favourites'} handleClick={handleClick} />;
+  return <Button text={'Clear Favourites'} handleClick={handleClick} />;
 }
