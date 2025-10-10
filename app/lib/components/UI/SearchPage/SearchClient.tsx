@@ -170,7 +170,7 @@ export default function SearchClient({ data }: SearchClientProps) {
 
   return (
     <main>
-      <div className="flex justify-center p-2">
+      <div className="flex justify-center p-2 mt-8">
         <SearchBar
           onSearch={handleSearch}
           searchQuery={searchQuery}

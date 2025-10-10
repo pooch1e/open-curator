@@ -13,7 +13,7 @@ export default function Header() {
       </header>
       {/* custom border like HR */}
       <div className="flex justify-center">
-        <div className="border-b-1 min-w-11/12 "></div>
+        <div className="border-b-1 min-w-11/12 mt-3 "></div>
       </div>
     </>
   );

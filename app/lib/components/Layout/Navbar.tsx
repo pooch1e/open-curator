@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Button from '../UI/Button';
 export default function Navbar() {
   return (
-    <nav role="navigation" aria-label="Main navigation" className="flex justify-between p-2 font-mono">
+    <nav role="navigation" aria-label="Main navigation" className="flex justify-between p-4 px-4 font-mono">
       <Link href={'/'}>
         <Button text={'Home'} aria-label="Go to Home page" />
       </Link>
