@@ -6,7 +6,6 @@
   --font-crimson-pro: 'Crimson Pro', serif;
 }
 
-
 .sr-only {
   position: absolute;
   width: 1px;
@@ -17,4 +16,25 @@
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border-width: 0;
+}
+
+@keyframes expand-text {
+  0% {
+    max-width: 2ch;
+    letter-spacing: 0em;
+  }
+  50% {
+    letter-spacing: 0.1em;
+  }
+  100% {
+    max-width: 20ch; 
+    letter-spacing: 0em;
+  }
+}
+
+.animate-expand-text {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  animation: expand-text 2s ease-in-out forwards;
 }

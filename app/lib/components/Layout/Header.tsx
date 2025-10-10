@@ -5,9 +5,9 @@ export default function Header() {
     <>
       <header role="banner" className="">
         <h1
-          className="font-serif text-center text-4xl p-2 mb-2"
+          className="font-serif text-center text-4xl p-2 mb-2 overflow-hidden"
           aria-label="openGallery - Museum Art Collection">
-          OpenGallery
+          <span className="inline-block animate-expand-text">OpenGallery</span>
         </h1>
         <Navbar />
       </header>
