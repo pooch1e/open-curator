@@ -1,19 +1,7 @@
 'use client';
 
 import { useFavourites } from '../../hooks/useFavourites';
-
-interface FavouriteButtonProps {
-  id: number;
-  title: string | null;
-  artist: string | null;
-  date: string | null;
-  culture?: string | null;
-  medium?: string | null;
-  department?: string | null;
-  primaryimageurl?: string | null;
-  objectURL?: string | null;
-  images?: any[];
-}
+import type { FavouriteButtonProps } from '../../config/types';
 
 export default function FavouriteButton({
   id,
@@ -33,7 +21,7 @@ export default function FavouriteButton({
   const isFavourited = favourites?.favourites.some(
     (artwork) => artwork.id === id
   );
-  
+
   const handleToggleFavourite = () => {
     if (isFavourited) {
       favourites?.removeFavourite(id);
@@ -60,7 +48,7 @@ export default function FavouriteButton({
       onClick={handleToggleFavourite}
       type="button"
       aria-label={isFavourited ? 'Remove from favorites' : 'Add to favorites'}>
-      {isFavourited ? '[ ]' : '+'}
+      {isFavourited ? '■' : '+'}
     </button>
   );
 }

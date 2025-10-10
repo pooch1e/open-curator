@@ -17,7 +17,7 @@ export default function SearchGridContainer({ results }: any) {
     <section className="pt-6 md:pt-10 gap-6 md:gap-10" aria-label="Museum artworks collection" role="region">
       <h2 className="sr-only">Search Results</h2>
       <div 
-        className="grid grid-cols-4 gap-x-4 sm:grid-cols-12 sm:gap-x-4 md:gap-x-4 lg:grid-cols-12 lg:gap-x-6"
+        className="grid grid-cols-2 gap-x-6 sm:grid-cols-12 sm:gap-x-4 md:gap-x-4 lg:grid-cols-12 lg:gap-x-6"
         role="list"
         aria-label={`${sortedResults.length} artworks found`}>
         {sortedResults.map((item: any) => {

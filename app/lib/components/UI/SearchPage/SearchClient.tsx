@@ -8,43 +8,8 @@ import {
   ChicagoPreset,
 } from '@/app/lib/config/chicago.config';
 import DropDown from '../PresetSelector/DropDown';
-interface Image {
-  alttext: string | null;
-  baseimageurl: string;
-  copyright: string | null;
-  date: string | null;
-  description: string | null;
-  displayorder: number;
-  format: string | null;
-  height: number | null;
-  idsid: number | null;
-  iiifbaseuri: string | null;
-  imageid: number;
-  publiccaption: string | null;
-  renditionnumber: string | null;
-  technique: string | null;
-  width: number | null;
-}
-interface MuseumItem {
-  id: number;
-  title: string | null;
-  artist: string | null;
-  date: string | null;
-  culture: string | null;
-  medium: string | null;
-  department: string | null;
-  primaryimageurl: string | null;
-  additionalImages: string[];
-  isPublicDomain: boolean | null;
-  objectURL: string | null;
-  dimensions: string | null;
-  images: Image[];
-}
-
-interface SearchClientProps {
-  data: MuseumItem[];
-  onApiSearch?: (query: string) => Promise<MuseumItem[]>;
-}
+import type { MuseumItem, SearchClientProps } from '../../../config/types';
+import { Riple } from 'react-loading-indicators';
 
 export default function SearchClient({ data }: SearchClientProps) {
   const [museumData, setMuseumData] = useState<MuseumItem[]>([]);
@@ -85,9 +50,7 @@ export default function SearchClient({ data }: SearchClientProps) {
         setSearchQuery(query); // Update search bar to show what's being searched
 
         const res = await fetch(
-          `/api/cache/?q=${encodeURIComponent(
-            query
-          )}&limit=50&service=chicago`
+          `/api/cache/?q=${encodeURIComponent(query)}&limit=50&service=chicago`
         );
 
         if (!res.ok) {
@@ -96,7 +59,7 @@ export default function SearchClient({ data }: SearchClientProps) {
         }
 
         const responseData = await res.json();
-        
+
         // Check if the response has an error
         if (responseData.error) {
           throw new Error(responseData.error);
@@ -105,7 +68,9 @@ export default function SearchClient({ data }: SearchClientProps) {
         const { results } = responseData;
 
         if (!Array.isArray(results)) {
-          throw new Error('Invalid response format - expected results to be an array');
+          throw new Error(
+            'Invalid response format - expected results to be an array'
+          );
         }
 
         const filtered = results.filter(
@@ -203,21 +168,6 @@ export default function SearchClient({ data }: SearchClientProps) {
     }
   };
 
-  if (isLoading)
-    return (
-      <div role="status" aria-live="polite" aria-label="Loading search results">
-        <span className="sr-only">Loading museum collections...</span>
-        Loading...
-      </div>
-    );
-  if (isError)
-    return (
-      <div role="alert" aria-live="assertive" className="text-red-400">
-        <span className="sr-only">Error occurred</span>
-        Error loading museum data. Please try again.
-      </div>
-    );
-
   return (
     <main>
       <div className="flex justify-center p-2">
@@ -233,19 +183,55 @@ export default function SearchClient({ data }: SearchClientProps) {
           <ClearAllFavouritesButton />
         </div>
         <div className="p-2">
-          <DropDown presets={availablePresets} onSelectPreset={setSelectedPreset} />
+          <DropDown
+            presets={availablePresets}
+            onSelectPreset={setSelectedPreset}
+          />
         </div>
       </div>
-      <div aria-live="polite" aria-label="Search results" className="sr-only">
-        {filterResults.length > 0
-          ? `Found ${filterResults.length} artworks${
-              searchQuery ? ` matching "${searchQuery}"` : ''
-            }`
-          : searchQuery
-          ? `No artworks found matching "${searchQuery}"`
-          : ''}
-      </div>
-      <SearchGridContainer results={filterResults} />
+
+      {isError && (
+        <div
+          role="alert"
+          aria-live="assertive"
+          className="text-red-400 text-center p-4">
+          Error loading museum data. Please try again.
+        </div>
+      )}
+
+      {isLoading ? (
+        <div
+          role="status"
+          aria-live="polite"
+          aria-label="Loading search results"
+          className="flex justify-center items-center p-8">
+          <Riple color="#d0d1d0" size="medium" text="" textColor="" />
+        </div>
+      ) : filterResults.length === 0 ? (
+        <div className="flex flex-col justify-center items-center p-8 text-gray-400">
+          <p className="text-xl mb-2">No artworks found</p>
+          {searchQuery && (
+            <p className="text-sm">Try a different search term</p>
+          )}
+        </div>
+      ) : (
+        <>
+          <div
+            aria-live="polite"
+            aria-label="Search results"
+            className="sr-only">
+            {filterResults.length > 0
+              ? `Found ${filterResults.length} artworks${
+                  searchQuery ? ` matching "${searchQuery}"` : ''
+                }`
+              : searchQuery
+              ? `No artworks found matching "${searchQuery}"`
+              : ''}
+          </div>
+
+          <SearchGridContainer results={filterResults} />
+        </>
+      )}
     </main>
   );
 }

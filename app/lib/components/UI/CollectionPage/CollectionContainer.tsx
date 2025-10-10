@@ -22,7 +22,7 @@ export default function CollectionContainer({
           <p className="text-white" aria-live="polite">Your collection is empty. Add artworks to see them here.</p>
         ) : (
           <div 
-            className="grid grid-cols-4 gap-x-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6"
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6"
             role="list"
             aria-label={`Collection of ${favourites.length} artworks`}>
             {favourites.map((item) => (
