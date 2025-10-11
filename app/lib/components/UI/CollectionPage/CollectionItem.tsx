@@ -32,18 +32,18 @@ export default function CollectionItem({
                 {collectionData.title || 'Untitled'}
               </p>
               {collectionData.artist && (
-                <p className="text-xs font-light font-crimson text-gray-300">
+                <p className="text-xs font-light font-crimson text-white">
                   by {collectionData.artist}
                 </p>
               )}
-              <p className="text-xs font-light font-crimson text-gray-400 mt-1">
+              <p className="text-xs font-light font-crimson text-white mt-1">
                 Click to view fullscreen
               </p>
             </div>
           }
         >
           <div
-            className="relative w-full aspect-[4/3] cursor-pointer transition-transform duration-200 hover:scale-105"
+            className="relative w-full aspect-[4/3] cursor-pointer transition-transform duration-200"
             role="img"
             aria-label={artworkDescription}
             onClick={onImageClick}
