@@ -15,7 +15,7 @@ Open Curator is a web application that allows users to search, discover, and cur
 
 - 🔍 **Smart Search**: Search across multiple museum collections simultaneously
 - 🏛️ **Multiple Museums**: Integrates with Harvard Art Museums, Metropolitan Museum of Art, and Australian Museum APIs
-- 📱 **Responsive Design**: Optimized for desktop, tablet, and mobile devices  
+- 📱 **Responsive Design**: Optimized for desktop, tablet, and mobile devices
 - ❤️ **Personal Collections**: Save artworks to create personalized exhibitions using React Context
 - 🔗 **Direct Museum Links**: Easy access to original museum pages for each artwork
 - ⚡ **Fast Performance**: Cached results and optimized loading with Next.js
@@ -25,8 +25,8 @@ Open Curator is a web application that allows users to search, discover, and cur
 ## 🏛️ Museum Partners
 
 - **Harvard Art Museums** - Access to over 250,000 objects from Harvard's world-class collections
-- **Metropolitan Museum of Art** - Explore artworks from one of the world's largest and most prestigious art museums  
-- **Australian Museum** - National Museum of Australia collections
+- **Chicago Museum** - Chicago Museum collection
+- **Metropolitan Museum of Art** - Explore artworks from one of the world's largest and most prestigious art museums
 
 ## 🚀 Running the Application Offline
 
@@ -73,25 +73,25 @@ touch .env.local
 
 Add the following environment variables to `.env.local`:
 
-```env
+````env
 # Harvard Art Museums API (Required)
 HARVARD_MUSEUM_API_KEY=your_harvard_api_key_here
 
-# Optional: Australian Museum API Key
-MUSEUM_API_KEY=your_museum_api_key_here
-```
 
 #### Getting API Keys
 
 **Harvard Art Museums API (Required):**
 1. Visit [Harvard Art Museums API](https://www.harvardartmuseums.org/collections/api)
-2. Click "Request an API Key"  
+2. Click "Request an API Key"
 3. Fill out the registration form (free for educational and personal use)
 4. Copy your API key to the `.env.local` file
 5. **Important**: Wait a few minutes after registration for the API key to become active
 
 **Metropolitan Museum API:**
 - No API key required - uses open access API
+
+**Chicago Museum :**
+- No API key required - uses open access API, however it is rate limited
 
 **Australian Museum API (Optional):**
 - Contact the museum directly for API access if needed
@@ -105,7 +105,7 @@ Check that your configuration is correct:
 cat .env.local
 
 # Should show your API keys (keep these secret!)
-```
+````
 
 ### Step 5: Run the Development Server
 
@@ -115,7 +115,7 @@ Start the application in development mode:
 # Using npm
 npm run dev
 
-# Using yarn  
+# Using yarn
 yarn dev
 
 # Using pnpm
@@ -126,6 +126,7 @@ bun dev
 ```
 
 The application will be available at:
+
 - **Primary URL**: [http://localhost:3000](http://localhost:3000)
 - **Network Access**: The app will also display your local network IP for testing on mobile devices
 
@@ -146,6 +147,7 @@ The production server will run on [http://localhost:3000](http://localhost:3000)
 ### Step 7: Advanced Offline Configuration
 
 #### Static Export (Optional)
+
 For completely offline deployment without a server:
 
 ```bash
@@ -163,6 +165,7 @@ npm run build
 ```
 
 #### Docker Deployment (Optional)
+
 Create a `Dockerfile` for containerized deployment:
 
 ```dockerfile
@@ -179,18 +182,21 @@ CMD ["npm", "start"]
 ## 📱 How to Use
 
 ### Searching for Artworks
+
 1. **Browse Initial Collection**: The homepage loads with a curated selection of artworks
 2. **Search by Keywords**: Use the search bar to find specific artworks, artists, or themes
 3. **Filter Results**: Results are automatically filtered as you type
 4. **API Search**: Click the search button to query external museum APIs for more results
 
 ### Creating Your Exhibition
-1. **Add to Favorites**: Click the favorite button (❤️) on any artwork
+
+1. **Add to Favorites**: Click the favorite button (+) on any artwork
 2. **View Collection**: Navigate to "My Collection" to see all saved artworks
 3. **Manage Collection**: Remove items or clear your entire collection
 4. **Explore Details**: Click on artwork titles to visit the original museum page
 
 ### Responsive Design
+
 - **Desktop**: Full grid layout with detailed information
 - **Tablet**: Optimized grid with touch-friendly controls
 - **Mobile**: Single-column layout with swipe gestures
@@ -198,34 +204,40 @@ CMD ["npm", "start"]
 ## 🛠️ Technology Stack
 
 ### Frontend Framework
+
 - **Next.js 15.5.3** with App Router for server-side rendering
 - **React 19.1.0** with latest hooks and features
 - **TypeScript 5.x** for type safety and better development experience
 
 ### Styling & UI
+
 - **Tailwind CSS 4.x** for utility-first styling
 - **Custom Fonts**: Priori Serif and Crimson Pro
 - **Responsive Design**: Mobile-first approach
 - **Loading Indicators**: React Loading Indicators
 
 ### State Management
+
 - **React Context API** for favorites management
 - **Custom Hooks** (`useFavourites`) for state logic
 - **Session Storage** for persistence
 
 ### APIs & Data Sources
+
 - **Harvard Art Museums API** - Primary data source with advanced search
-- **Metropolitan Museum API** - Secondary collection access  
+- **Metropolitan Museum API** - Secondary collection access
 - **Australian Museum API** - Additional cultural artifacts
 - **IIIF Image Protocol** - Optimized image delivery
 
 ### Performance & Optimization
+
 - **Next.js Caching** - Built-in ISR (Incremental Static Regeneration)
 - **Image Optimization** - WebP/AVIF formats, multiple sizes
 - **Rate Limiting** - Respectful API usage with delays
 - **Error Boundaries** - Graceful error handling
 
 ### Development Tools
+
 - **Jest** - Unit testing framework
 - **ESLint** - Code linting with Next.js config
 - **PostCSS** - CSS processing
@@ -273,7 +285,7 @@ open-curator/
 │   └── fonts/                  # Custom font files
 ├── config.ts                   # API configuration
 ├── jest.config.ts              # Jest testing configuration
-├── next.config.ts              # Next.js configuration  
+├── next.config.ts              # Next.js configuration
 ├── tailwind.config.js          # Tailwind CSS configuration
 ├── postcss.config.mjs          # PostCSS configuration
 ├── tsconfig.json               # TypeScript configuration
@@ -297,6 +309,7 @@ npm run test -- --coverage
 ```
 
 ### Test Structure
+
 - Unit tests in `__tests__/` directory
 - Service layer testing for API integrations
 - Component testing with React Testing Library
@@ -305,16 +318,19 @@ npm run test -- --coverage
 ## 🚀 Deployment Options
 
 ### Vercel (Recommended)
+
 1. Connect your repository to Vercel
 2. Add environment variables in the Vercel dashboard
 3. Deploy automatically on git push
 
 ### Netlify
+
 1. Connect repository and configure build settings
 2. Add environment variables in site settings
 3. Deploy with build command: `npm run build`
 
 ### Self-Hosted Server
+
 ```bash
 # Production build
 npm run build
@@ -328,6 +344,7 @@ pm2 save
 ```
 
 ### Docker Deployment
+
 ```bash
 # Build Docker image
 docker build -t open-curator .
@@ -351,7 +368,8 @@ export const config = {
   },
   metMuseum: {
     baseUrl: 'https://collectionapi.metmuseum.org/public/collection/v1',
-    searchUrl: 'https://collectionapi.metmuseum.org/public/collection/v1/search?isHighlight=true&q=',
+    searchUrl:
+      'https://collectionapi.metmuseum.org/public/collection/v1/search?isHighlight=true&q=',
   },
   ausMuseum: {
     baseUrl: 'https://data.nma.gov.au/',
@@ -393,14 +411,14 @@ images: {
 ```bash
 # Development
 npm run dev          # Start development server
-npm run build        # Create production build  
+npm run build        # Create production build
 npm start           # Start production server
 
 # Code Quality
 npm run lint        # Run ESLint
 npm run test        # Run Jest tests
 
-# Debugging  
+# Debugging
 npm run inspect     # Start with Node.js inspector
 ```
 
@@ -425,11 +443,18 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## 📚 API Documentation
 
 ### Harvard Art Museums API
+
 - **Documentation**: [Harvard Art Museums API Docs](https://github.com/harvardartmuseums/api-docs)
 - **Rate Limits**: 2,500 requests per day (free tier)
 - **Features**: Advanced search, high-quality images, detailed metadata
 
+### Chicago Museum API
+
+- **Documentation**: [Chicago Museum Api](https://www.artic.edu/open-access/public-api)
+- **Rate Limits**: No official rate limits, however, I employ rate limiting of 30 requests a second max and caching frequent requests via a proxy layer
+
 ### Metropolitan Museum of Art API
+
 - **Documentation**: [Met Museum API](https://metmuseum.github.io/)
 - **Rate Limits**: No official limits, but respectful usage required
 - **Features**: Open access collection, high-resolution images
@@ -439,6 +464,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ### Common Issues
 
 **1. API Key Not Working**
+
 ```bash
 # Check your .env.local file exists and has correct format
 cat .env.local
@@ -449,6 +475,7 @@ npm run dev
 ```
 
 **2. Build Errors**
+
 ```bash
 # Clear Next.js cache and reinstall
 npx next clean
@@ -458,12 +485,14 @@ npm run build
 ```
 
 **3. Images Not Loading**
+
 - Verify internet connection for external images
 - Check museum API status pages
 - Review browser console for CORS or loading errors
 - Ensure image domains are configured in `next.config.ts`
 
 **4. TypeScript Errors**
+
 ```bash
 # Check TypeScript configuration
 npx tsc --noEmit
@@ -473,6 +502,7 @@ npm update @types/node @types/react @types/react-dom
 ```
 
 **5. Port Already in Use**
+
 ```bash
 # Use different port
 npm run dev -- --port 3001
@@ -482,6 +512,7 @@ lsof -ti:3000 | xargs kill
 ```
 
 **6. Environment Variables Not Loading**
+
 - Ensure `.env.local` is in the project root
 - Restart the development server after changes
 - Check that variable names match exactly (case-sensitive)
@@ -501,22 +532,14 @@ DEBUG=api:* npm run dev
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License
 
 ## 🙏 Acknowledgments
 
 - **Harvard Art Museums** for providing free access to their collection API
+- **Chicago Museum** for providing free access to their collection API
 - **Metropolitan Museum of Art** for their open access program
-- **Next.js Team** for the excellent React framework
-- **Vercel** for free hosting and deployment platform
-
-## 📞 Support
-
-If you encounter any issues or have questions:
-
-1. Check the [Issues](https://github.com/your-username/exhibition-curator/issues) page
-2. Create a new issue with detailed information
-3. Include error messages and steps to reproduce
+- **Counter** For the opportunity and review
 
 ## 🔄 Version History
 
@@ -526,9 +549,3 @@ If you encounter any issues or have questions:
 - Tailwind CSS 4.x for styling
 
 ---
-
-**Built with ❤️ for art lovers, researchers, and curious minds everywhere.**
-
-
-
-
