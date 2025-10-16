@@ -109,18 +109,55 @@ export class HarvardApiService {
   }
 
   /**
-   * Process Harvard object to optimize image URLs
+   * Validates if an image URL is accessible and not broken
    */
-  private optimizeHarvardObject(obj: HarvardObject): HarvardObject {
+  private isValidImageUrl(url: string): boolean {
+    if (!url || url.trim() === '') return false;
+    
+    // Check for common broken image indicators
+    const invalidPatterns = [
+      /\/full\/0\//,  // IIIF URLs with 0 width/height
+      /\/0\/default\.jpg$/,  // Common broken IIIF pattern
+      /placeholder/i,
+      /not[_-]?found/i,
+      /unavailable/i,
+    ];
+    
+    return !invalidPatterns.some(pattern => pattern.test(url));
+  }
+
+  /**
+   * Process Harvard object to optimize image URLs and ensure valid primary image
+   */
+  private optimizeHarvardObject(obj: HarvardObject): HarvardObject | null {
+    let primaryImageUrl = obj.primaryimageurl;
+    
+    // If primary image URL is missing or invalid, try to get from images array
+    if (!primaryImageUrl || !this.isValidImageUrl(primaryImageUrl)) {
+      if (obj.images && obj.images.length > 0) {
+        // Find the first valid image from the images array
+        const validImage = obj.images.find(img => 
+          img.baseimageurl && this.isValidImageUrl(img.baseimageurl)
+        );
+        
+        if (validImage) {
+          primaryImageUrl = validImage.baseimageurl;
+        } else {
+          // No valid images found, skip this object
+          return null;
+        }
+      } else {
+        // No images at all, skip this object
+        return null;
+      }
+    }
+    
     return {
       ...obj,
-      primaryimageurl: obj.primaryimageurl
-        ? this.optimizeImageUrl(obj.primaryimageurl, 400)
-        : obj.primaryimageurl,
+      primaryimageurl: this.optimizeImageUrl(primaryImageUrl, 400),
       images: obj.images?.map((img) => ({
         ...img,
         baseimageurl: this.optimizeImageUrl(img.baseimageurl, 400),
-
         iiifbaseuri: img.iiifbaseuri,
       })),
     };
@@ -168,7 +205,12 @@ export class HarvardApiService {
       }
 
       console.log(`Found ${data.records.length} objects`);
-      return data.records.map((obj) => this.optimizeHarvardObject(obj));
+      const optimizedObjects = data.records
+        .map((obj) => this.optimizeHarvardObject(obj))
+        .filter((obj): obj is HarvardObject => obj !== null);
+      
+      console.log(`Filtered to ${optimizedObjects.length} objects with valid images`);
+      return optimizedObjects;
     } catch (err) {
       console.error('Error fetching Harvard objects:', err);
       throw err;
@@ -237,7 +279,12 @@ export class HarvardApiService {
       const data: HarvardApiResponse = await response.json();
 
       console.log(`Search returned ${data.records?.length || 0} results`);
-      return (data.records || []).map((obj) => this.optimizeHarvardObject(obj));
+      const optimizedResults = (data.records || [])
+        .map((obj) => this.optimizeHarvardObject(obj))
+        .filter((obj): obj is HarvardObject => obj !== null);
+      
+      console.log(`Filtered to ${optimizedResults.length} results with valid images`);
+      return optimizedResults;
     } catch (err) {
       console.error('Search error:', err);
       throw err;
@@ -270,7 +317,11 @@ export class HarvardApiService {
       }
 
       const data: HarvardApiResponse = await response.json();
-      return (data.records || []).map((obj) => this.optimizeHarvardObject(obj));
+      const optimizedResults = (data.records || [])
+        .map((obj) => this.optimizeHarvardObject(obj))
+        .filter((obj): obj is HarvardObject => obj !== null);
+      
+      return optimizedResults;
     } catch (err) {
       console.error('Search error:', err);
       throw err;
