@@ -197,51 +197,88 @@ CMD ["npm", "start"]
 
 ## 🛠️ Technology Stack
 
-### Frontend
-- **Framework**: Next.js 15.5.3 with App Router
-- **Language**: TypeScript 5.x
-- **Styling**: Tailwind CSS 4.x
-- **State Management**: React Context API
-- **Hooks**: Custom hooks for favorites management
+### Frontend Framework
+- **Next.js 15.5.3** with App Router for server-side rendering
+- **React 19.1.0** with latest hooks and features
+- **TypeScript 5.x** for type safety and better development experience
 
-### APIs & Data
-- **Harvard Art Museums API**: Primary museum data source
-- **Metropolitan Museum of Art API**: Secondary museum data source
-- **Caching**: Next.js built-in caching with revalidation
-- **Rate Limiting**: Implemented to respect API guidelines
+### Styling & UI
+- **Tailwind CSS 4.x** for utility-first styling
+- **Custom Fonts**: Priori Serif and Crimson Pro
+- **Responsive Design**: Mobile-first approach
+- **Loading Indicators**: React Loading Indicators
+
+### State Management
+- **React Context API** for favorites management
+- **Custom Hooks** (`useFavourites`) for state logic
+- **Session Storage** for persistence
+
+### APIs & Data Sources
+- **Harvard Art Museums API** - Primary data source with advanced search
+- **Metropolitan Museum API** - Secondary collection access  
+- **Australian Museum API** - Additional cultural artifacts
+- **IIIF Image Protocol** - Optimized image delivery
+
+### Performance & Optimization
+- **Next.js Caching** - Built-in ISR (Incremental Static Regeneration)
+- **Image Optimization** - WebP/AVIF formats, multiple sizes
+- **Rate Limiting** - Respectful API usage with delays
+- **Error Boundaries** - Graceful error handling
 
 ### Development Tools
-- **Testing**: Jest with React Testing Library
-- **Linting**: ESLint with Next.js configuration
-- **Type Checking**: TypeScript strict mode
-- **Build Tool**: Next.js built-in bundling
+- **Jest** - Unit testing framework
+- **ESLint** - Code linting with Next.js config
+- **PostCSS** - CSS processing
+- **TypeScript** - Static type checking
 
 ## 📁 Project Structure
 
 ```
-exhibition-curator/
-├── app/
-│   ├── api/                    # API routes
-│   │   ├── harvard/search/     # Harvard Museum API endpoint
-│   │   └── met/search/         # Met Museum API endpoint
-│   ├── collection/             # Collection page
-│   ├── lib/
-│   │   ├── components/         # Reusable React components
-│   │   │   ├── Layout/         # Header, navigation components
-│   │   │   └── UI/             # Search, grid, collection components
+open-curator/
+├── app/                        # Next.js 13+ App Directory
+│   ├── api/                    # API Routes
+│   │   ├── cache/              # Cache management
+│   │   ├── harvard/search/     # Harvard Museum search endpoint
+│   │   └── met/search/         # Met Museum search endpoint
+│   ├── lib/                    # Shared utilities and components
+│   │   ├── components/         # React components
+│   │   │   ├── Layout/         # Header, navigation
+│   │   │   │   ├── Header.tsx
+│   │   │   │   └── Navbar.tsx
+│   │   │   ├── UI/             # User interface components
+│   │   │   │   ├── Button.tsx
+│   │   │   │   ├── FavouriteButton.tsx
+│   │   │   │   └── ClearAllFavouritesButton.tsx
+│   │   │   └── Errors/         # Error handling components
 │   │   ├── contexts/           # React Context providers
+│   │   │   └── FavouritesContext.tsx
 │   │   ├── hooks/              # Custom React hooks
+│   │   │   └── useFavourites.tsx
 │   │   ├── services/           # API service classes
-│   │   └── utils/              # Utility functions
-│   ├── layout.tsx              # Root layout component
-│   └── page.tsx                # Homepage
+│   │   │   ├── HarvardMusemService.ts
+│   │   │   ├── MetMuseumService.ts
+│   │   │   └── ChicagoMuseumService.ts
+│   │   ├── utils/              # Utility functions
+│   │   │   ├── apiErrors.ts
+│   │   │   ├── delay.ts
+│   │   │   └── processBatches.ts
+│   │   └── config/             # Configuration files
+│   ├── layout.tsx              # Root layout with fonts and providers
+│   ├── page.tsx                # Homepage component
+│   ├── global-error.tsx        # Global error boundary
+│   └── not-found.tsx           # 404 page
 ├── __tests__/                  # Test files
+│   └── extractData.test.ts
+├── public/                     # Static assets
+│   └── fonts/                  # Custom font files
 ├── config.ts                   # API configuration
 ├── jest.config.ts              # Jest testing configuration
-├── next.config.ts              # Next.js configuration
-├── package.json                # Dependencies and scripts
+├── next.config.ts              # Next.js configuration  
 ├── tailwind.config.js          # Tailwind CSS configuration
-└── tsconfig.json               # TypeScript configuration
+├── postcss.config.mjs          # PostCSS configuration
+├── tsconfig.json               # TypeScript configuration
+├── package.json                # Dependencies and scripts
+└── pnpm-lock.yaml             # Package lock file
 ```
 
 ## 🧪 Testing
