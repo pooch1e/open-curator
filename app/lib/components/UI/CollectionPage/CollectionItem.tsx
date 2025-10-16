@@ -1,12 +1,15 @@
 import FavouriteButton from '../FavouriteButton';
-import type { CollectionItemProps } from '@/app/lib/config/types';
-//collection data for container??
 
-// !todo need to make the col start prop increase?
+import type { CollectionItemProps } from '@/app/lib/config/types';
+
+interface ExtendedCollectionItemProps extends CollectionItemProps {
+  onImageClick?: () => void;
+}
 
 export default function CollectionItem({
   collectionData,
-}: CollectionItemProps) {
+  onImageClick,
+}: ExtendedCollectionItemProps) {
   console.log(
     collectionData.objectURL,
     'what am i in collection Item component'
@@ -23,9 +26,13 @@ export default function CollectionItem({
         role="listitem">
         {/* Hero Image */}
         <div
-          className="relative w-full aspect-[4/3]"
+          className="relative w-full aspect-[4/3] cursor-pointer transition-transform duration-200"
           role="img"
-          aria-label={artworkDescription}>
+          aria-label={artworkDescription}
+          onClick={onImageClick}>
+          {/* Hover overlay */}
+          <div className="absolute inset-0 bg-black opacity-0 hover:opacity-10 transition-opacity duration-200 z-10 rounded-lg" />
+
           {collectionData.primaryimageurl ? (
             <img
               src={collectionData?.primaryimageurl}
@@ -33,10 +40,10 @@ export default function CollectionItem({
                 collectionData.date ? `, ${collectionData.date}` : ''
               }`}
               loading="lazy"
-              className="absolute inset-0 h-full w-full object-cover"
+              className="absolute inset-0 h-full w-full object-cover rounded-lg"
             />
           ) : (
-            <div className="absolute inset-0 h-full w-full bg-gray-200 flex items-center justify-center">
+            <div className="absolute inset-0 h-full w-full bg-gray-200 flex items-center justify-center rounded-lg">
               {collectionData.images?.[0]?.baseimageurl ? (
                 <img
                   src={collectionData.images[0].baseimageurl}
@@ -44,7 +51,7 @@ export default function CollectionItem({
                     collectionData.date ? `, ${collectionData.date}` : ''
                   }`}
                   loading="lazy"
-                  className="absolute inset-0 h-full w-full object-contain"
+                  className="absolute inset-0 h-full w-full object-contain rounded-lg"
                 />
               ) : (
                 <div className="text-gray-500" aria-label="No image available">
@@ -53,6 +60,19 @@ export default function CollectionItem({
               )}
             </div>
           )}
+
+          {/* Click indicator */}
+          <div className="absolute top-2 right-2 bg-black bg-opacity-50 rounded-full p-1 opacity-0 hover:opacity-100 transition-opacity duration-200">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="white"
+              strokeWidth="2">
+              <path d="15 3h6v6M10 14l9-9M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h7" />
+            </svg>
+          </div>
         </div>
 
         {/* Main */}
@@ -81,17 +101,23 @@ export default function CollectionItem({
               <dl className="text-primary flex flex-col gap-1">
                 {collectionData.date && (
                   <div className="flex items-center gap-2 text-sm">
-                    <dd className="uppercase font-crimson font-light">{collectionData.date}</dd>
+                    <dd className="uppercase font-crimson font-light">
+                      {collectionData.date}
+                    </dd>
                   </div>
                 )}
                 {collectionData.culture && (
                   <div className="flex items-center gap-2 text-sm">
-                    <dd className="uppercase font-crimson font-light">{collectionData.culture}</dd>
+                    <dd className="uppercase font-crimson font-light">
+                      {collectionData.culture}
+                    </dd>
                   </div>
                 )}
                 {collectionData.medium && (
                   <div className="flex items-center gap-2 text-sm">
-                    <dd className="font-crimson font-light text-xs">{collectionData.medium}</dd>
+                    <dd className="font-crimson font-light text-xs">
+                      {collectionData.medium}
+                    </dd>
                   </div>
                 )}
               </dl>
