@@ -114,10 +114,10 @@ export class HarvardApiService {
   private isValidImageUrl(url: string): boolean {
     if (!url || url.trim() === '') return false;
     
-    // Check for common broken image indicators
+
     const invalidPatterns = [
-      /\/full\/0\//,  // IIIF URLs with 0 width/height
-      /\/0\/default\.jpg$/,  // Common broken IIIF pattern
+      /\/full\/0\//,  
+      /\/0\/default\.jpg$/, 
       /placeholder/i,
       /not[_-]?found/i,
       /unavailable/i,
@@ -132,10 +132,10 @@ export class HarvardApiService {
   private optimizeHarvardObject(obj: HarvardObject): HarvardObject | null {
     let primaryImageUrl = obj.primaryimageurl;
     
-    // If primary image URL is missing or invalid, try to get from images array
+   
     if (!primaryImageUrl || !this.isValidImageUrl(primaryImageUrl)) {
       if (obj.images && obj.images.length > 0) {
-        // Find the first valid image from the images array
+      
         const validImage = obj.images.find(img => 
           img.baseimageurl && this.isValidImageUrl(img.baseimageurl)
         );
@@ -143,11 +143,11 @@ export class HarvardApiService {
         if (validImage) {
           primaryImageUrl = validImage.baseimageurl;
         } else {
-          // No valid images found, skip this object
+         
           return null;
         }
       } else {
-        // No images at all, skip this object
+       
         return null;
       }
     }
@@ -204,12 +204,12 @@ export class HarvardApiService {
         return [];
       }
 
-      console.log(`Found ${data.records.length} objects`);
+      
       const optimizedObjects = data.records
         .map((obj) => this.optimizeHarvardObject(obj))
         .filter((obj): obj is HarvardObject => obj !== null);
       
-      console.log(`Filtered to ${optimizedObjects.length} objects with valid images`);
+  
       return optimizedObjects;
     } catch (err) {
       console.error('Error fetching Harvard objects:', err);
