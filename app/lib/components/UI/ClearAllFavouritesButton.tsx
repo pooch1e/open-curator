@@ -5,11 +5,11 @@ export default function ClearAllFavouritesButton() {
 
   // check if work is already added to catalog
   const isFavourited = (favourites?.favourites?.length ?? 0) > 0
-  console.log(isFavourited)
+
   
 
   const handleClick = () => {
-    console.log('clear favourites clicked')
+    
     if (isFavourited) {
       favourites?.clearAllFavourites();
     }
