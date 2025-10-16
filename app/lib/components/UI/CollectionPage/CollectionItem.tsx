@@ -23,7 +23,6 @@ export default function CollectionItem({
         role="img"
         aria-label={artworkDescription}
         onClick={onImageClick}>
-        {/* Subtle overlay on hover */}
         <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 rounded-lg" />
 
         {collectionData.primaryimageurl ? (
@@ -50,7 +49,6 @@ export default function CollectionItem({
           </div>
         )}
 
-        {/* Icon (top right) */}
         <div className="absolute top-2 right-2 bg-black/50 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           <svg
             width="16"
@@ -64,7 +62,7 @@ export default function CollectionItem({
         </div>
       </div>
 
-      {/* Main Content */}
+      {/* Content */}
       <div className="flex flex-col gap-3 flex-grow">
         {/* Title & Artist */}
         <header className="flex flex-col gap-1">
@@ -82,7 +80,6 @@ export default function CollectionItem({
           )}
         </header>
 
-        {/* Metadata */}
         {(collectionData.date ||
           collectionData.culture ||
           collectionData.medium) && (
@@ -102,7 +99,6 @@ export default function CollectionItem({
         )}
       </div>
 
-      {/* Footer */}
       <footer className="flex flex-col gap-2 mt-auto border-t border-gray-800/60 pt-3">
         {collectionData.department && (
           <p className="font-crimson font-light text-xs text-gray-500">
@@ -121,7 +117,6 @@ export default function CollectionItem({
         )}
       </footer>
 
-      {/* Favourite Button */}
       <div className="flex justify-center">
         <FavouriteButton
           id={collectionData.id}
