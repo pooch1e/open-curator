@@ -21,7 +21,7 @@ export default function SearchGridItem({
 
   return (
     <div
-      className="col-span-4 col-start-1 flex flex-col gap-6 sm:col-span-12 md:gap-10"
+      className="col-span-4 col-start-1 flex flex-col gap-6 sm:col-span-12 md:gap-10 md:pr-6 md:border-r md:border-gray-700/40"
       role="listitem">
       <article className="p-4 relative">
         <div className="flex flex-col md:flex-row gap-6 md:gap-8">
@@ -53,7 +53,7 @@ export default function SearchGridItem({
           </div>
 
           {/* Content Section */}
-          <div className="flex-1 flex flex-col gap-4">
+          <div className="flex-1 flex flex-col gap-4 pr-10  md:border-r md:border-gray-700/40 md:border-">
             <a
               href={objectURL || '#'}
               target={objectURL ? '_blank' : '_self'}
@@ -73,7 +73,7 @@ export default function SearchGridItem({
               </h3>
             </a>
 
-            {/* Metadata Grid */}
+        
             <div
               className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 font-crimson"
               aria-describedby={`artwork-${id}`}>
@@ -145,7 +145,7 @@ export default function SearchGridItem({
             </div>
           </div>
 
-          {/* Favourite Button */}
+         
           <div className="md:absolute md:top-4 md:right-4">
             <FavouriteButton
               key={id}
@@ -168,5 +168,4 @@ export default function SearchGridItem({
       </article>
     </div>
   );
-
 }
