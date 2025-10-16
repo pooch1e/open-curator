@@ -159,7 +159,7 @@ export default function SearchClient({ data }: SearchClientProps) {
 
       setMuseumData(filtered);
       setIsApiSearch(true);
-      console.log(results, 'results from search button api request');
+      setSearchQuery('');
     } catch (err) {
       console.error(err);
       setIsError(true);
@@ -204,8 +204,12 @@ export default function SearchClient({ data }: SearchClientProps) {
           role="status"
           aria-live="polite"
           aria-label="Loading search results"
-          className="flex justify-center items-center p-8">
+          className="flex flex-col justify-center items-center p-8">
           <Riple color="#d0d1d0" size="medium" text="" textColor="" />
+          <div className="mt-4 text-center">
+            <p className="text-gray-400 text-sm mb-2">Loading artworks...</p>
+            <p className="text-gray-500 text-xs">Images will appear as they load</p>
+          </div>
         </div>
       ) : filterResults.length === 0 ? (
         <div className="flex flex-col justify-center items-center p-8 text-gray-400">

@@ -34,9 +34,9 @@ export default function CollectionContainer({
         <ClearAllFavouritesButton />
       </div>
       <div className="max-w-7xl mx-auto">
-        <h1 id="collection-heading" className="text-2xl md:text-3xl font-bold text-white mb-6">
+        <h1 id="collection-heading" className="text-2xl md:text-3xl font-bold text-white mb-6 text-center p-4">
           My Collection 
-          <span aria-label={`${favourites.length} items in collection`}>({favourites.length})</span>
+          <span className='p-4' aria-label={`${favourites.length} items in collection`}>({favourites.length})</span>
         </h1>
 
         {favourites.length === 0 ? (
