@@ -21,7 +21,7 @@ export default function SearchGridItem({
 
   return (
     <div
-      className="col-span-4 col-start-1 flex flex-col gap-6 sm:col-span-12 md:gap-10 md:pr-6 md:border-r md:border-gray-700/40"
+      className="col-span-4 col-start-1 flex flex-col gap-6 sm:col-span-12 md:gap-10 md:pr-6 "
       role="listitem">
       <article className="p-4 relative">
         <div className="flex flex-col md:flex-row gap-6 md:gap-8">
@@ -39,7 +39,7 @@ export default function SearchGridItem({
                 <img
                   src={primaryImageUrl}
                   alt={title || 'Artwork'}
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                  className="w-full h-full object-scale-down hover:scale-105 transition-transform duration-300"
                   loading="lazy"
                 />
               ) : (
@@ -53,7 +53,7 @@ export default function SearchGridItem({
           </div>
 
           {/* Content Section */}
-          <div className="flex-1 flex flex-col gap-4 pr-10  md:border-r md:border-gray-700/40 md:border-">
+          <div className="flex-1 flex flex-col gap-4 pr-10">
             <a
               href={objectURL || '#'}
               target={objectURL ? '_blank' : '_self'}
