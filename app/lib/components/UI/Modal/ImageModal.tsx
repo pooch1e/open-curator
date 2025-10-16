@@ -67,7 +67,7 @@ export default function ImageModal({
       aria-modal="true"
       aria-labelledby="modal-title"
     >
-      {/* Close button */}
+
       <button
         onClick={onClose}
         className="absolute top-4 right-4 text-white hover:text-red-600 z-10 p-2"
@@ -79,7 +79,7 @@ export default function ImageModal({
         </svg>
       </button>
 
-      {/* Nav buttons */}
+  
       {currentIndex > 0 && (
         <button
           onClick={(e) => {
@@ -110,7 +110,7 @@ export default function ImageModal({
         </button>
       )}
 
-      {/* Main content */}
+      {/* content */}
       <div 
         className="flex flex-col lg:flex-row max-w-7xl mx-auto p-4 gap-6"
         onClick={(e) => e.stopPropagation()}
@@ -190,7 +190,7 @@ export default function ImageModal({
             </div>
           )}
 
-          {/* Gallery counter */}
+          {/* Counter */}
           <div className="mt-6 pt-4 border-t border-gray-700 text-center">
             <span className="text-gray-400 font-crimson font-light text-sm">
               {currentIndex + 1} of {items.length}
