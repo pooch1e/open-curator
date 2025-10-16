@@ -1,90 +1,121 @@
-# Exhibition Curator
+# Open Curator
 
 > A digital platform for creating personalized virtual art exhibitions from world-renowned museum collections
 
 [![Next.js](https://img.shields.io/badge/Next.js-15.5.3-black?style=flat-square&logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.x-38B2AC?style=flat-square&logo=tailwind-css)](https://tailwindcss.com/)
+[![React](https://img.shields.io/badge/React-19.1.0-61DAFB?style=flat-square&logo=react)](https://reactjs.org/)
 
 ## 🎨 About
 
-Exhibition Curator is a web application that allows users to search, discover, and curate personalized virtual art exhibitions using artworks from multiple prestigious museum APIs. Built for art lovers, researchers, and students, this platform makes it easy to create and share custom collections of historical and contemporary artworks.
-
-**Live Demo:** [Coming Soon - Will be hosted on Vercel]
+Open Curator is a web application that allows users to search, discover, and curate personalized virtual art exhibitions using artworks from multiple prestigious museum APIs. Built for art lovers, researchers, and students, this platform makes it easy to create and share custom collections of historical and contemporary artworks.
 
 ### Key Features
 
 - 🔍 **Smart Search**: Search across multiple museum collections simultaneously
-- 🏛️ **Multiple Museums**: Integrates with Harvard Art Museums and Metropolitan Museum of Art APIs
-- 📱 **Responsive Design**: Optimized for desktop, tablet, and mobile devices
-- ❤️ **Personal Collections**: Save artworks to create personalized exhibitions
+- 🏛️ **Multiple Museums**: Integrates with Harvard Art Museums, Metropolitan Museum of Art, and Australian Museum APIs
+- 📱 **Responsive Design**: Optimized for desktop, tablet, and mobile devices  
+- ❤️ **Personal Collections**: Save artworks to create personalized exhibitions using React Context
 - 🔗 **Direct Museum Links**: Easy access to original museum pages for each artwork
-- ⚡ **Fast Performance**: Cached results and optimized loading
+- ⚡ **Fast Performance**: Cached results and optimized loading with Next.js
 - 🎯 **Session Persistence**: Collections persist throughout your browsing session
+- 🖼️ **Image Optimization**: IIIF image optimization for fast loading
 
 ## 🏛️ Museum Partners
 
 - **Harvard Art Museums** - Access to over 250,000 objects from Harvard's world-class collections
-- **Metropolitan Museum of Art** - Explore artworks from one of the world's largest and most prestigious art museums
+- **Metropolitan Museum of Art** - Explore artworks from one of the world's largest and most prestigious art museums  
+- **Australian Museum** - National Museum of Australia collections
 
-## 🚀 Quick Start
+## 🚀 Running the Application Offline
 
 ### Prerequisites
 
-- **Node.js** 18.x or higher
+Before you begin, ensure you have the following installed on your system:
+
+- **Node.js** 18.x or higher ([Download here](https://nodejs.org/))
 - **npm**, **yarn**, **pnpm**, or **bun** package manager
 - **Harvard Art Museums API Key** (free registration required)
 
-### 1. Clone the Repository
+### Step 1: Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/exhibition-curator.git
-cd exhibition-curator
+git clone https://github.com/your-username/open-curator.git
+cd open-curator
 ```
 
-### 2. Install Dependencies
+### Step 2: Install Dependencies
+
+Choose one of the following package managers:
 
 ```bash
-# Using npm
+# Using npm (most common)
 npm install
 
 # Using yarn
 yarn install
 
-# Using pnpm
+# Using pnpm (faster)
 pnpm install
 
-# Using bun
+# Using bun (fastest)
 bun install
 ```
 
-### 3. Environment Setup
+### Step 3: Environment Configuration
 
-Create a `.env.local` file in the root directory:
+The application requires API keys to access museum collections. Create a `.env.local` file in the root directory:
+
+```bash
+touch .env.local
+```
+
+Add the following environment variables to `.env.local`:
 
 ```env
 # Harvard Art Museums API (Required)
 HARVARD_MUSEUM_API_KEY=your_harvard_api_key_here
 
-# Optional: Museum API Key (if needed for future integrations)
+# Optional: Australian Museum API Key
 MUSEUM_API_KEY=your_museum_api_key_here
 ```
 
 #### Getting API Keys
 
-**Harvard Art Museums API:**
+**Harvard Art Museums API (Required):**
 1. Visit [Harvard Art Museums API](https://www.harvardartmuseums.org/collections/api)
-2. Click "Request an API Key"
+2. Click "Request an API Key"  
 3. Fill out the registration form (free for educational and personal use)
 4. Copy your API key to the `.env.local` file
+5. **Important**: Wait a few minutes after registration for the API key to become active
 
-### 4. Run the Development Server
+**Metropolitan Museum API:**
+- No API key required - uses open access API
+
+**Australian Museum API (Optional):**
+- Contact the museum directly for API access if needed
+
+### Step 4: Verify Configuration
+
+Check that your configuration is correct:
+
+```bash
+# Verify your .env.local file
+cat .env.local
+
+# Should show your API keys (keep these secret!)
+```
+
+### Step 5: Run the Development Server
+
+Start the application in development mode:
 
 ```bash
 # Using npm
 npm run dev
 
-# Using yarn
+# Using yarn  
 yarn dev
 
 # Using pnpm
@@ -94,9 +125,13 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
+The application will be available at:
+- **Primary URL**: [http://localhost:3000](http://localhost:3000)
+- **Network Access**: The app will also display your local network IP for testing on mobile devices
 
-### 5. Build for Production
+### Step 6: Build for Production (Offline Deployment)
+
+To create an optimized production build:
 
 ```bash
 # Create production build
@@ -104,6 +139,41 @@ npm run build
 
 # Start production server
 npm start
+```
+
+The production server will run on [http://localhost:3000](http://localhost:3000)
+
+### Step 7: Advanced Offline Configuration
+
+#### Static Export (Optional)
+For completely offline deployment without a server:
+
+```bash
+# Add to next.config.ts
+const nextConfig = {
+  output: 'export',
+  trailingSlash: true,
+  images: {
+    unoptimized: true
+  }
+}
+
+# Then build
+npm run build
+```
+
+#### Docker Deployment (Optional)
+Create a `Dockerfile` for containerized deployment:
+
+```dockerfile
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+COPY . .
+RUN npm run build
+EXPOSE 3000
+CMD ["npm", "start"]
 ```
 
 ## 📱 How to Use
