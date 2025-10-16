@@ -283,63 +283,126 @@ open-curator/
 
 ## 🧪 Testing
 
+The application includes Jest for unit testing:
+
 ```bash
 # Run all tests
 npm test
 
 # Run tests in watch mode
-npm run test:watch
+npm run test -- --watch
 
 # Run tests with coverage
-npm run test:coverage
+npm run test -- --coverage
 ```
 
-## 🚀 Deployment
+### Test Structure
+- Unit tests in `__tests__/` directory
+- Service layer testing for API integrations
+- Component testing with React Testing Library
+- TypeScript support in tests
+
+## 🚀 Deployment Options
 
 ### Vercel (Recommended)
+1. Connect your repository to Vercel
+2. Add environment variables in the Vercel dashboard
+3. Deploy automatically on git push
 
-1. **Connect Repository**:
-   - Visit [vercel.com](https://vercel.com)
-   - Import your GitHub repository
+### Netlify
+1. Connect repository and configure build settings
+2. Add environment variables in site settings
+3. Deploy with build command: `npm run build`
 
-2. **Environment Variables**:
-   - Add `HARVARD_MUSEUM_API_KEY` in Vercel dashboard
-   - Add any other required environment variables
+### Self-Hosted Server
+```bash
+# Production build
+npm run build
+npm start
 
-3. **Deploy**:
-   - Vercel automatically deploys on every push to main branch
-   - Production URL will be provided
+# Or use PM2 for process management
+npm install -g pm2
+pm2 start npm -- start
+pm2 startup
+pm2 save
+```
 
-### Other Platforms
+### Docker Deployment
+```bash
+# Build Docker image
+docker build -t open-curator .
 
-The application can also be deployed on:
-- **Netlify**: Connect GitHub repo and add environment variables
-- **Railway**: Deploy with automatic HTTPS and custom domains
-- **Render**: Free static site hosting with easy setup
+# Run container
+docker run -p 3000:3000 -e HARVARD_MUSEUM_API_KEY=your_key open-curator
+```
 
 ## 🔧 Configuration
 
 ### API Configuration
 
-Edit `config.ts` to modify API endpoints:
+Edit `config.ts` to modify API endpoints and settings:
 
 ```typescript
 export const config = {
   harvardMuseum: {
     baseUrl: 'https://api.harvardartmuseums.org',
+    urlEndsInObject: 'https://api.harvardartmuseums.org/object',
     apiKey: process.env.HARVARD_MUSEUM_API_KEY || '',
   },
   metMuseum: {
     baseUrl: 'https://collectionapi.metmuseum.org/public/collection/v1',
+    searchUrl: 'https://collectionapi.metmuseum.org/public/collection/v1/search?isHighlight=true&q=',
+  },
+  ausMuseum: {
+    baseUrl: 'https://data.nma.gov.au/',
+    objectEndpointStart: '/object?offset=0&limit=50',
+    imageEndpoint: '/media?id=*',
+    objectAndMediaEndpoint: 'object?media=*&offset=0&limit=50',
+    apiKey: process.env.MUSEUM_API_KEY ?? '',
   },
 };
 ```
 
 ### Performance Settings
 
-- **Image Caching**: 1 hour (3600s) for museum images
-- **API Caching**: 1 hour for search results
-- **Rate Limiting**: Respects museum API guidelines
+- **Image Caching**: 1 hour (3600s) for museum images with ISR
+- **API Caching**: 1 hour for search results with ISR
+- **Rate Limiting**: Implemented to respect museum API guidelines
+- **Concurrent Requests**: Limited to prevent API throttling
+
+### Image Optimization
+
+Next.js image optimization is configured for museum domains:
+
+```typescript
+// next.config.ts
+images: {
+  remotePatterns: [
+    { protocol: 'https', hostname: 'nrs.harvard.edu' },
+    { protocol: 'https', hostname: 'hvrd.art' },
+    { protocol: 'https', hostname: 'images.metmuseum.org' },
+    { protocol: 'https', hostname: 'www.artic.edu' },
+    { protocol: 'https', hostname: 'data.nma.gov.au' },
+  ],
+  formats: ['image/webp', 'image/avif'],
+}
+```
+
+## 🔍 Available Scripts
+
+```bash
+# Development
+npm run dev          # Start development server
+npm run build        # Create production build  
+npm start           # Start production server
+
+# Code Quality
+npm run lint        # Run ESLint
+npm run test        # Run Jest tests
+
+# Debugging  
+npm run inspect     # Start with Node.js inspector
+```
 
 ## 🤝 Contributing
 
@@ -375,29 +438,66 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ### Common Issues
 
-**API Key Not Working**
+**1. API Key Not Working**
 ```bash
-# Check your .env.local file
+# Check your .env.local file exists and has correct format
 cat .env.local
 
-# Restart development server
+# Verify the key is active (Harvard keys need activation time)
+# Restart the development server
 npm run dev
 ```
 
-**Build Errors**
+**2. Build Errors**
 ```bash
-# Clear Next.js cache
+# Clear Next.js cache and reinstall
 npx next clean
-
-# Reinstall dependencies
-rm -rf node_modules package-lock.json
+rm -rf node_modules package-lock.json .next
 npm install
+npm run build
 ```
 
-**Images Not Loading**
-- Check internet connection
-- Verify museum API status
-- Check browser console for CORS errors
+**3. Images Not Loading**
+- Verify internet connection for external images
+- Check museum API status pages
+- Review browser console for CORS or loading errors
+- Ensure image domains are configured in `next.config.ts`
+
+**4. TypeScript Errors**
+```bash
+# Check TypeScript configuration
+npx tsc --noEmit
+
+# Update type definitions
+npm update @types/node @types/react @types/react-dom
+```
+
+**5. Port Already in Use**
+```bash
+# Use different port
+npm run dev -- --port 3001
+
+# Or kill existing process
+lsof -ti:3000 | xargs kill
+```
+
+**6. Environment Variables Not Loading**
+- Ensure `.env.local` is in the project root
+- Restart the development server after changes
+- Check that variable names match exactly (case-sensitive)
+- Verify no trailing spaces in the `.env.local` file
+
+### Debug Mode
+
+Enable debug logging:
+
+```bash
+# Set debug environment
+DEBUG=* npm run dev
+
+# Or specific debug categories
+DEBUG=api:* npm run dev
+```
 
 ## 📄 License
 
@@ -417,6 +517,13 @@ If you encounter any issues or have questions:
 1. Check the [Issues](https://github.com/your-username/exhibition-curator/issues) page
 2. Create a new issue with detailed information
 3. Include error messages and steps to reproduce
+
+## 🔄 Version History
+
+- **v0.1.0** - Initial release with Harvard and Met Museum APIs
+- Modern React 19.1.0 and Next.js 15.5.3
+- TypeScript 5.x for enhanced development experience
+- Tailwind CSS 4.x for styling
 
 ---
 

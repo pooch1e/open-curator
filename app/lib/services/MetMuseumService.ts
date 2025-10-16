@@ -39,7 +39,6 @@ export class MetMuseumService {
     if (timeSinceLastRequest < MetMuseumService.MIN_REQUEST_INTERVAL) {
       const waitTime =
         MetMuseumService.MIN_REQUEST_INTERVAL - timeSinceLastRequest;
-      console.log(`Rate limiting: waiting ${waitTime}ms`);
       await delay(waitTime);
     }
 
@@ -82,15 +81,9 @@ export class MetMuseumService {
     let retries = 3;
     while (retries > 0) {
       try {
-        console.log(`Making request to: ${url} (attempt ${4 - retries})`);
         const response = await fetch(url, defaultOptions);
 
         if (response.status === 403) {
-          console.warn(
-            `403 Forbidden - waiting before retry. Attempts left: ${
-              retries - 1
-            }`
-          );
           if (retries > 1) {
             await delay(Math.pow(2, 4 - retries) * 1000); // Exponential backoff
             retries--;
@@ -99,11 +92,6 @@ export class MetMuseumService {
         }
 
         if (response.status === 429) {
-          console.warn(
-            `429 Rate Limited - waiting before retry. Attempts left: ${
-              retries - 1
-            }`
-          );
           if (retries > 1) {
             await delay(5000); // Wait 5 seconds for rate limit
             retries--;
@@ -113,7 +101,6 @@ export class MetMuseumService {
 
         return response;
       } catch (error) {
-        console.error(`Request failed:`, error);
         if (retries > 1) {
           await delay(1000 * (4 - retries));
           retries--;
@@ -137,7 +124,6 @@ export class MetMuseumService {
       });
 
       const searchUrl = this.baseUrl + '/search?' + searchParams;
-      console.log(`fetching from ${searchUrl}`);
 
       const response = await this.makeRequest(searchUrl, {
         next: { revalidate: 3600 },
@@ -145,10 +131,6 @@ export class MetMuseumService {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error(
-          `Search request failed: ${response.status} ${response.statusText}`,
-          errorText
-        );
         throw new Error(
           `Request failed: ${response.status} ${response.statusText}`
         );
@@ -157,11 +139,6 @@ export class MetMuseumService {
       const contentType = response.headers.get('content-type');
       if (!contentType || !contentType.includes('application/json')) {
         const responseText = await response.text();
-        console.error(
-          'Expected JSON but received:',
-          contentType,
-          responseText.substring(0, 200)
-        );
         throw new Error(`Expected JSON response but received ${contentType}`);
       }
 
@@ -184,7 +161,6 @@ export class MetMuseumService {
 
       return filtered;
     } catch (err: any) {
-      console.log(err);
       throw err;
     }
   }
@@ -199,9 +175,6 @@ export class MetMuseumService {
       );
 
       if (!response.ok) {
-        console.warn(
-          `Failed to fetch object ${objectId}: ${response.status} ${response.statusText}`
-        );
         return null;
       }
 
@@ -227,7 +200,6 @@ export class MetMuseumService {
 
       return null;
     } catch (err) {
-      console.warn(`Error fetching object ${objectId}:`, err);
       return null;
     }
   }
@@ -239,7 +211,6 @@ export class MetMuseumService {
         q: searchQuery,
       });
       const searchUrl = `${this.baseUrl}/search?${searchParams}`;
-      console.log(`Searching for: ${searchQuery} at ${searchUrl}`);
 
       // Cache for an hour with robust request handling
       const response = await this.makeRequest(searchUrl, {
@@ -248,10 +219,6 @@ export class MetMuseumService {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error(
-          `Met Museum search failed: ${response.status} ${response.statusText}`,
-          errorText
-        );
         throw new Error(
           `Met Museum API error: ${response.status} ${response.statusText}`
         );
@@ -260,27 +227,16 @@ export class MetMuseumService {
       const contentType = response.headers.get('content-type');
       if (!contentType || !contentType.includes('application/json')) {
         const responseText = await response.text();
-        console.error(
-          'Expected JSON but received:',
-          contentType,
-          responseText.substring(0, 200)
-        );
         throw new Error(`Expected JSON response but received ${contentType}`);
       }
 
       const data = await response.json();
-      console.log(`Search response for "${searchQuery}":`, {
-        total: data.total || 0,
-        objectIDs_length: data.objectIDs?.length || 0,
-      });
 
       if (!data || !data.objectIDs || data.objectIDs.length === 0) {
-        console.log(`No objects found for query: ${searchQuery}`);
         return [];
       }
 
       const objectIds = data.objectIDs.slice(0, limit);
-      console.log(`Fetching details for ${objectIds.length} objects`);
 
       // Use very conservative batches and delays to avoid 403 errors
       const objects = await processInBatches(objectIds, 3, 3000, (id) => {
@@ -288,11 +244,9 @@ export class MetMuseumService {
       });
 
       const filtered = objects.filter(Boolean);
-      console.log(`Returning ${filtered.length} objects with images`);
 
       return filtered;
     } catch (err: any) {
-      console.error('getObjectsByName error:', err.message);
       throw new Error(`Failed to search museum: ${err.message}`);
     }
   }

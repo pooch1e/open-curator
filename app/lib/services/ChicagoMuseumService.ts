@@ -16,20 +16,13 @@ export class ChicagoMuseumService {
       });
 
       const url = `${this.baseUrl}/artworks/search?${params}`;
-      console.log('Chicago API - Request URL:', url);
 
       const response = await fetch(url, {
         next: { revalidate: 3600 },
       });
 
-      console.log('Chicago API - Response status:', response.status);
-
       if (!response.ok) {
         const errorText = await response.text();
-        console.error(
-          `Chicago API - Request failed: ${response.status}`,
-          errorText
-        );
         throw new Error(
           `Request failed: ${response.status} ${response.statusText}`
         );
@@ -38,56 +31,40 @@ export class ChicagoMuseumService {
       const data = await response.json();
 
       if (!data.data || data.data.length === 0) {
-        console.log('Chicago API - No artworks found');
         return [];
       }
 
       // Filter for artworks with images
       const filteredArtworksWithImages = data.data.filter((artwork: any) => {
-        const hasImage = !!artwork.image_id;
-        if (!hasImage) {
-          console.log(
-            'Chicago API - Artwork without image:',
-            artwork.id,
-            artwork.title
-          );
-        }
-        return hasImage;
+        return !!artwork.image_id;
       });
 
       return filteredArtworksWithImages;
     } catch (err: any) {
-      console.error('Chicago API - Error fetching objects:', err);
       throw err;
     }
   }
 
   /**
    * Get optimized image URL for Chicago Museum IIIF images
-   * @param imageId - Chicago Museum image ID
-   * @param size - Image size (default '400' for better performance)
-   * @returns Optimized IIIF image URL
+   * @param imageId -
+   * @param size -
+   * @returns
    */
   getImageUrl(imageId: string, size: string = '400'): string {
     return `https://www.artic.edu/iiif/2/${imageId}/full/${size},/0/default.jpg`;
   }
 
   /**
-   * Get thumbnail image URL (smaller size for grid views)
-   * @param imageId - Chicago Museum image ID
-   * @returns Small thumbnail URL
+   *
+   * @param imageId -
+   * @returns
    */
   getThumbnailUrl(imageId: string): string {
     return this.getImageUrl(imageId, '200');
   }
 
   transformToMuseumItem(chicagoItem: any): any {
-    // console.log(
-    //   'Transforming Chicago item:',
-    //   chicagoItem.id,
-    //   chicagoItem.title
-    // );
-
     return {
       id: chicagoItem.id,
       title: chicagoItem.title || 'Untitled',

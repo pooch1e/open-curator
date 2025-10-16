@@ -1,4 +1,3 @@
-// @refresh reset
 import SearchClient from './lib/components/UI/SearchPage/SearchClient';
 
 import { config } from '@/config';
