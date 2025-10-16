@@ -159,7 +159,7 @@ export default function SearchClient({ data }: SearchClientProps) {
 
       setMuseumData(filtered);
       setIsApiSearch(true);
-      console.log(results, 'results from search button api request');
+      setSearchQuery('');
     } catch (err) {
       console.error(err);
       setIsError(true);
