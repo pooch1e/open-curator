@@ -28,6 +28,12 @@ export default function SearchBar({
           onChange={(e) => {
             onSearch(e.target.value);
           }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault()
+              onButtonClick()
+            }
+          }}
           placeholder="Search our collections"
           aria-describedby={descriptionId}
           aria-label="Search museum collections by title, artist, or medium"
