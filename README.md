@@ -11,6 +11,10 @@
 
 Open Curator is a web application that allows users to search, discover, and curate personalized virtual art exhibitions using artworks from multiple prestigious museum APIs. Built for art lovers, researchers, and students, this platform makes it easy to create and share custom collections of historical and contemporary artworks.
 
+## HOSTED
+Hosted on Vercel
+https://open-curator-kappa.vercel.app/
+
 ### Key Features
 
 - 🔍 **Smart Search**: Search across multiple museum collections simultaneously
