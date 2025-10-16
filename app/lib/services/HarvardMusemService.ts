@@ -178,7 +178,6 @@ export class HarvardApiService {
       });
 
       const url = `${this.baseUrl}/object?${params}`;
-      console.log(`Fetching from ${url}`);
 
       const response = await fetch(url, {
         next: { revalidate: 3600 },
@@ -186,7 +185,6 @@ export class HarvardApiService {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error(`Request failed: ${response.status}`, errorText);
         throw new Error(
           `Request failed: ${response.status} ${response.statusText}`
         );
@@ -195,7 +193,6 @@ export class HarvardApiService {
       const data: HarvardApiResponse = await response.json();
 
       if (!data.records || data.records.length === 0) {
-        console.log('No objects found');
         return [];
       }
 
@@ -205,7 +202,6 @@ export class HarvardApiService {
 
       return optimizedObjects;
     } catch (err) {
-      console.error('Error fetching Harvard objects:', err);
       throw err;
     }
   }
@@ -223,14 +219,12 @@ export class HarvardApiService {
       );
 
       if (!response.ok) {
-        console.error(`Object ${objectId} not found`);
         return null;
       }
 
       const data: HarvardObject = await response.json();
       return this.optimizeHarvardObject(data);
     } catch (err) {
-      console.error(`Error fetching object ${objectId}:`, err);
       return null;
     }
   }
@@ -246,7 +240,6 @@ export class HarvardApiService {
   ): Promise<HarvardObject[]> {
     try {
       if (!searchQuery || searchQuery.trim().length === 0) {
-        console.log('Empty search query');
         return [];
       }
 
@@ -259,7 +252,6 @@ export class HarvardApiService {
       });
 
       const url = `${this.baseUrl}/object?${params}`;
-      console.log(`Searching for: "${searchQuery}" at ${url}`);
 
       const response = await fetch(url, {
         next: { revalidate: 3600 },
@@ -271,17 +263,12 @@ export class HarvardApiService {
 
       const data: HarvardApiResponse = await response.json();
 
-      console.log(`Search returned ${data.records?.length || 0} results`);
       const optimizedResults = (data.records || [])
         .map((obj) => this.optimizeHarvardObject(obj))
         .filter((obj): obj is HarvardObject => obj !== null);
 
-      console.log(
-        `Filtered to ${optimizedResults.length} results with valid images`
-      );
       return optimizedResults;
     } catch (err) {
-      console.error('Search error:', err);
       throw err;
     }
   }
@@ -318,7 +305,6 @@ export class HarvardApiService {
 
       return optimizedResults;
     } catch (err) {
-      console.error('Search error:', err);
       throw err;
     }
   }

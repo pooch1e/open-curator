@@ -38,13 +38,10 @@ export default function FavouritesProvidor({ children }: ProvidorProps) {
       const artworks = localStorage.getItem('favourites');
       if (artworks) {
         const parsedArtworks = JSON.parse(artworks);
-        console.log('Loading favorites from localStorage:', parsedArtworks);
         setFavourites(parsedArtworks);
-      } else {
-        console.log('No favorites found in localStorage');
       }
     } catch (err) {
-      console.log('Error loading favourites:', err);
+      // Silently handle localStorage errors
     } finally {
       setIsInitialised(true);
     }
@@ -56,19 +53,16 @@ export default function FavouritesProvidor({ children }: ProvidorProps) {
       if (isInitialised) {
         const faves = JSON.stringify(favourites);
         localStorage.setItem('favourites', faves);
-        console.log('Saving favorites to localStorage:', favourites);
       }
     } catch (err) {
-      console.log('Error saving favourites:', err);
+      // Silently handle localStorage errors
     }
   }, [favourites, isInitialised]);
 
   const addFavourite = (item: Artwork) => {
-    console.log('Adding favorite:', item);
     setFavourites((prev) => {
       const isAlreadyFavorited = prev.some((fav) => fav.id === item.id);
       if (isAlreadyFavorited) {
-        console.log('Item already in favorites, not adding again');
         return prev;
       }
       return [...prev, item];
@@ -76,12 +70,10 @@ export default function FavouritesProvidor({ children }: ProvidorProps) {
   };
 
   const removeFavourite = (id: number) => {
-    console.log('Removing favorite with id:', id);
     setFavourites((prev) => prev.filter((item) => item.id !== id));
   };
 
   const clearAllFavourites = () => {
-    console.log('clearing favourites');
     setFavourites([]);
   };
 

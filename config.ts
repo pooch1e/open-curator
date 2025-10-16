@@ -1,4 +1,3 @@
-// config.ts
 interface AusMuseumConfig {
   baseUrl: string;
   objectEndpointStart: string;
@@ -24,10 +23,6 @@ interface Config {
   harvardMuseum: HarvardMuseumConfig;
 }
 
-// !!!add pagination and offset to start
-// !Todo use different api
-
-//note harvard museum requires key .env
 export const config: Config = {
   ausMuseum: {
     baseUrl: 'https://data.nma.gov.au/',

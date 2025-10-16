@@ -86,7 +86,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(responseData);
   } catch (err: any) {
-    console.error('Cache API error:', err);
     return NextResponse.json(
       { error: err.message || 'Internal server error' },
       { status: 500 }

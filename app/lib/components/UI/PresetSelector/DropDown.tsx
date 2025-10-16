@@ -17,7 +17,6 @@ export default function DropDown({ presets, onSelectPreset }: DropDownProps) {
 
   const handleSelected = (preset: ChicagoPreset) => {
     setSelectedPreset(preset);
-    console.log(selectedPreset)
     onSelectPreset(preset);
     setOpen(false);
   };

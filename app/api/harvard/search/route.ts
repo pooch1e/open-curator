@@ -23,7 +23,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(results);
   } catch (error) {
-    console.error('Harvard Search API error:', error);
     return createErrorResponse(API_ERRORS.INTERNAL_ERROR, 500);
   }
 }

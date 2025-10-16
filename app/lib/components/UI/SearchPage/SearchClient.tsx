@@ -80,7 +80,6 @@ export default function SearchClient({ data }: SearchClientProps) {
         setMuseumData(filtered);
         setIsApiSearch(true);
       } catch (err) {
-        console.error('Preset search error:', err);
         setIsError(true);
       } finally {
         setIsLoading(false);
@@ -161,7 +160,6 @@ export default function SearchClient({ data }: SearchClientProps) {
       setIsApiSearch(true);
       setSearchQuery('');
     } catch (err) {
-      console.error(err);
       setIsError(true);
     } finally {
       setIsLoading(false);
