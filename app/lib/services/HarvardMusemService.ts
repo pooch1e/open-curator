@@ -113,17 +113,16 @@ export class HarvardApiService {
    */
   private isValidImageUrl(url: string): boolean {
     if (!url || url.trim() === '') return false;
-    
 
     const invalidPatterns = [
-      /\/full\/0\//,  
-      /\/0\/default\.jpg$/, 
+      /\/full\/0\//,
+      /\/0\/default\.jpg$/,
       /placeholder/i,
       /not[_-]?found/i,
       /unavailable/i,
     ];
-    
-    return !invalidPatterns.some(pattern => pattern.test(url));
+
+    return !invalidPatterns.some((pattern) => pattern.test(url));
   }
 
   /**
@@ -131,27 +130,23 @@ export class HarvardApiService {
    */
   private optimizeHarvardObject(obj: HarvardObject): HarvardObject | null {
     let primaryImageUrl = obj.primaryimageurl;
-    
-   
+
     if (!primaryImageUrl || !this.isValidImageUrl(primaryImageUrl)) {
       if (obj.images && obj.images.length > 0) {
-      
-        const validImage = obj.images.find(img => 
-          img.baseimageurl && this.isValidImageUrl(img.baseimageurl)
+        const validImage = obj.images.find(
+          (img) => img.baseimageurl && this.isValidImageUrl(img.baseimageurl)
         );
-        
+
         if (validImage) {
           primaryImageUrl = validImage.baseimageurl;
         } else {
-         
           return null;
         }
       } else {
-       
         return null;
       }
     }
-    
+
     return {
       ...obj,
       primaryimageurl: this.optimizeImageUrl(primaryImageUrl, 400),
@@ -169,7 +164,7 @@ export class HarvardApiService {
    * @param sort
    */
   async getInitialObjectsWithImages(
-    limit = 50,
+    limit = 80,
     sort: 'rank' | 'random' | 'datebegin' = 'rank'
   ): Promise<HarvardObject[]> {
     try {
@@ -204,12 +199,10 @@ export class HarvardApiService {
         return [];
       }
 
-      
       const optimizedObjects = data.records
         .map((obj) => this.optimizeHarvardObject(obj))
         .filter((obj): obj is HarvardObject => obj !== null);
-      
-  
+
       return optimizedObjects;
     } catch (err) {
       console.error('Error fetching Harvard objects:', err);
@@ -282,8 +275,10 @@ export class HarvardApiService {
       const optimizedResults = (data.records || [])
         .map((obj) => this.optimizeHarvardObject(obj))
         .filter((obj): obj is HarvardObject => obj !== null);
-      
-      console.log(`Filtered to ${optimizedResults.length} results with valid images`);
+
+      console.log(
+        `Filtered to ${optimizedResults.length} results with valid images`
+      );
       return optimizedResults;
     } catch (err) {
       console.error('Search error:', err);
@@ -320,7 +315,7 @@ export class HarvardApiService {
       const optimizedResults = (data.records || [])
         .map((obj) => this.optimizeHarvardObject(obj))
         .filter((obj): obj is HarvardObject => obj !== null);
-      
+
       return optimizedResults;
     } catch (err) {
       console.error('Search error:', err);
