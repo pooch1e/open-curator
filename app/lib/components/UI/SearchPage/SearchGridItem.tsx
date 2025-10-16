@@ -1,4 +1,5 @@
 import FavouriteButton from '../FavouriteButton';
+import ImageSkeleton from '../Skeleton/ImageSkeleton';
 import './underline-animate.css';
 import type { SearchGridItemProps } from '@/app/lib/config/types';
 
@@ -36,11 +37,9 @@ export default function SearchGridItem({
                 artist ? ` by ${artist}` : ''
               }`}>
               {primaryImageUrl ? (
-                <img
+                <ImageSkeleton
                   src={primaryImageUrl}
                   alt={title || 'Artwork'}
-                  className="w-full h-full object-scale-down hover:scale-105 transition-transform duration-300"
-                  loading="lazy"
                 />
               ) : (
                 <div className="w-full h-full bg-gray-800 flex items-center justify-center">
