@@ -4,19 +4,11 @@ import './underline-animate.css';
 import type { SearchGridItemProps } from '@/app/lib/config/types';
 
 export default function SearchGridItem({
-  id,
-  title,
-  artist,
-  date,
-  medium,
-  objectURL,
+  item,
   period,
   description,
-  culture,
-  images,
-  primaryImageUrl,
 }: SearchGridItemProps) {
-  const artworkDescription = [artist, date, culture, period, medium]
+  const artworkDescription = [item.artist, item.date, item.culture, period, item.medium]
     .filter(Boolean)
     .join(', ');
 

@@ -6,11 +6,11 @@ interface ExtendedCollectionItemProps extends CollectionItemProps {
 }
 
 export default function CollectionItem({
-  collectionData,
+  item,
   onImageClick,
 }: ExtendedCollectionItemProps) {
-  const artworkDescription = `${collectionData.title || 'Untitled artwork'}${
-    collectionData.artist ? ` by ${collectionData.artist}` : ''
+  const artworkDescription = `${item.title || 'Untitled artwork'}${
+    item.artist ? ` by ${item.artist}` : ''
   }`;
 
   return (
@@ -25,20 +25,20 @@ export default function CollectionItem({
         onClick={onImageClick}>
         <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 rounded-lg" />
 
-        {collectionData.primaryimageurl ? (
+        {item.primaryimageurl ? (
           <img
-            src={collectionData.primaryimageurl}
+            src={item.primaryimageurl}
             alt={`${artworkDescription}${
-              collectionData.date ? `, ${collectionData.date}` : ''
+              item.date ? `, ${item.date}` : ''
             }`}
             loading="lazy"
             className="absolute inset-0 h-full w-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-500 ease-out"
           />
-        ) : collectionData.images?.[0]?.baseimageurl ? (
+        ) : item.images?.[0]?.baseimageurl ? (
           <img
-            src={collectionData.images[0].baseimageurl}
+            src={item.images[0].baseimageurl}
             alt={`${artworkDescription}${
-              collectionData.date ? `, ${collectionData.date}` : ''
+              item.date ? `, ${item.date}` : ''
             }`}
             loading="lazy"
             className="absolute inset-0 h-full w-full object-contain rounded-lg bg-gray-800 group-hover:scale-105 transition-transform duration-500 ease-out"
@@ -68,30 +68,30 @@ export default function CollectionItem({
         <header className="flex flex-col gap-1">
           <h3
             className="text-lg md:text-xl font-medium font-crimson italic tracking-tight group-hover:text-red-500 transition-colors"
-            id={`artwork-title-${collectionData.id}`}>
-            {collectionData.title || 'Untitled'}
+            id={`artwork-title-${item.id}`}>
+            {item.title || 'Untitled'}
           </h3>
-          {collectionData.artist && (
+          {item.artist && (
             <p
               className="text-sm uppercase font-crimson font-medium text-gray-300 tracking-wide"
-              aria-label={`Artist: ${collectionData.artist}`}>
-              {collectionData.artist}
+              aria-label={`Artist: ${item.artist}`}>
+              {item.artist}
             </p>
           )}
         </header>
 
-        {(collectionData.date ||
-          collectionData.culture ||
-          collectionData.medium) && (
+        {(item.date ||
+          item.culture ||
+          item.medium) && (
           <section
-            aria-labelledby={`artwork-title-${collectionData.id}`}
+            aria-labelledby={`artwork-title-${item.id}`}
             className="mt-1">
             <dl className="flex flex-col gap-1 text-sm text-gray-400 font-crimson">
-              {collectionData.date && <dd>{collectionData.date}</dd>}
-              {collectionData.culture && <dd>{collectionData.culture}</dd>}
-              {collectionData.medium && (
+              {item.date && <dd>{item.date}</dd>}
+              {item.culture && <dd>{item.culture}</dd>}
+              {item.medium && (
                 <dd className="text-xs text-gray-500">
-                  {collectionData.medium}
+                  {item.medium}
                 </dd>
               )}
             </dl>
@@ -100,15 +100,15 @@ export default function CollectionItem({
       </div>
 
       <footer className="flex flex-col gap-2 mt-auto border-t border-gray-800/60 pt-3">
-        {collectionData.department && (
+        {item.department && (
           <p className="font-crimson font-light text-xs text-gray-500">
-            {collectionData.department}
+            {item.department}
           </p>
         )}
 
-        {collectionData.objectURL && (
+        {item.objectURL && (
           <a
-            href={collectionData.objectURL}
+            href={item.objectURL}
             target="_blank"
             rel="noopener noreferrer"
             className="text-center font-crimson font-medium text-sm text-red-400 hover:text-red-500 underline underline-offset-2 transition-colors">
@@ -118,17 +118,7 @@ export default function CollectionItem({
       </footer>
 
       <div className="flex justify-center">
-        <FavouriteButton
-          id={collectionData.id}
-          title={collectionData.title}
-          artist={collectionData.artist}
-          date={collectionData.date}
-          culture={collectionData.culture}
-          medium={collectionData.medium}
-          objectURL={collectionData.objectURL}
-          primaryimageurl={collectionData.primaryimageurl}
-          images={collectionData.images}
-        />
+        <FavouriteButton item={item} />
       </div>
     </article>
   );
