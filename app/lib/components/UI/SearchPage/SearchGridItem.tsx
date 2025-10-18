@@ -37,10 +37,7 @@ export default function SearchGridItem({
                 artist ? ` by ${artist}` : ''
               }`}>
               {primaryImageUrl ? (
-                <ImageSkeleton
-                  src={primaryImageUrl}
-                  alt={title || 'Artwork'}
-                />
+                <ImageSkeleton src={primaryImageUrl} alt={title || 'Artwork'} />
               ) : (
                 <div className="w-full h-full bg-gray-800 flex items-center justify-center">
                   <span className="text-gray-500 text-sm">
@@ -72,7 +69,6 @@ export default function SearchGridItem({
               </h3>
             </a>
 
-        
             <div
               className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 font-crimson"
               aria-describedby={`artwork-${id}`}>
@@ -144,8 +140,7 @@ export default function SearchGridItem({
             </div>
           </div>
 
-         
-          <div className="md:absolute md:top-1/2 md:right-4">
+          <div className="flex justify-center md:absolute md:top-1/2 md:right-4 md:transform md:-translate-y-1/2">
             <FavouriteButton
               key={id}
               id={id}
