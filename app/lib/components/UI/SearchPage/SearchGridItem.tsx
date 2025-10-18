@@ -21,15 +21,15 @@ export default function SearchGridItem({
           {/* Image Section */}
           <div className="w-full md:w-2/5 lg:w-1/3 flex-shrink-0">
             <a
-              href={objectURL || '#'}
-              target={objectURL ? '_blank' : '_self'}
-              rel={objectURL ? 'noopener noreferrer' : undefined}
+              href={item.objectURL || '#'}
+              target={item.objectURL ? '_blank' : '_self'}
+              rel={item.objectURL ? 'noopener noreferrer' : undefined}
               className="block aspect-[4/3] overflow-hidden rounded-lg border border-gray-700 hover:border-red-600 transition-colors p-2"
-              aria-label={`View image for ${title}${
-                artist ? ` by ${artist}` : ''
+              aria-label={`View image for ${item.title}${
+                item.artist ? ` by ${item.artist}` : ''
               }`}>
-              {primaryImageUrl ? (
-                <ImageSkeleton src={primaryImageUrl} alt={title || 'Artwork'} />
+              {item.primaryimageurl ? (
+                <ImageSkeleton src={item.primaryimageurl} alt={item.title || 'Artwork'} />
               ) : (
                 <div className="w-full h-full bg-gray-800 flex items-center justify-center">
                   <span className="text-gray-500 text-sm">
@@ -43,56 +43,56 @@ export default function SearchGridItem({
           {/* Content */}
           <div className="flex-1 flex flex-col gap-4 pr-10">
             <a
-              href={objectURL || '#'}
-              target={objectURL ? '_blank' : '_self'}
-              rel={objectURL ? 'noopener noreferrer' : undefined}
+              href={item.objectURL || '#'}
+              target={item.objectURL ? '_blank' : '_self'}
+              rel={item.objectURL ? 'noopener noreferrer' : undefined}
               className="group inline-block"
-              aria-label={`View details for ${title}${
-                artist ? ` by ${artist}` : ''
+              aria-label={`View details for ${item.title}${
+                item.artist ? ` by ${item.artist}` : ''
               } ${
-                objectURL
+                item.objectURL
                   ? '- opens in new tab'
                   : '- no external link available'
               }`}>
               <h3
                 className="text-2xl md:text-2xl italic font-medium font-crimson group-hover:text-red-600 transition-colors underline-animate"
-                id={`artwork-${id}`}>
-                {title || 'Untitled Artwork'}
+                id={`artwork-${item.id}`}>
+                {item.title || 'Untitled Artwork'}
               </h3>
             </a>
 
             <div
               className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 font-crimson"
-              aria-describedby={`artwork-${id}`}>
-              {artist && (
+              aria-describedby={`artwork-${item.id}`}>
+              {item.artist && (
                 <div>
                   <span className="block text-gray-400 text-xs uppercase tracking-wider mb-1">
                     Artist
                   </span>
                   <span className="block text-white font-medium text-sm">
-                    {artist}
+                    {item.artist}
                   </span>
                 </div>
               )}
 
-              {date && (
+              {item.date && (
                 <div>
                   <span className="block text-gray-400 text-xs uppercase tracking-wider mb-1">
                     Date
                   </span>
                   <span className="block text-white font-light text-sm">
-                    {date}
+                    {item.date}
                   </span>
                 </div>
               )}
 
-              {culture && (
+              {item.culture && (
                 <div>
                   <span className="block text-gray-400 text-xs uppercase tracking-wider mb-1">
                     Culture
                   </span>
                   <span className="block text-white font-light text-sm">
-                    {culture}
+                    {item.culture}
                   </span>
                 </div>
               )}
@@ -108,13 +108,13 @@ export default function SearchGridItem({
                 </div>
               )}
 
-              {medium && (
+              {item.medium && (
                 <div className="sm:col-span-2">
                   <span className="block text-gray-400 text-xs uppercase tracking-wider mb-1">
                     Medium
                   </span>
                   <span className="block text-white font-light text-sm">
-                    {medium}
+                    {item.medium}
                   </span>
                 </div>
               )}
@@ -133,23 +133,12 @@ export default function SearchGridItem({
           </div>
 
           <div className="flex justify-center md:absolute md:top-1/2 md:right-4 md:transform md:-translate-y-1/2">
-            <FavouriteButton
-              key={id}
-              id={id}
-              title={title}
-              artist={artist}
-              date={date}
-              culture={culture}
-              medium={medium}
-              objectURL={objectURL}
-              primaryimageurl={primaryImageUrl}
-              images={[images]}
-            />
+            <FavouriteButton item={item} />
           </div>
         </div>
 
         <div className="sr-only" aria-live="polite">
-          Artwork: {title || 'Untitled'}. {artworkDescription}
+          Artwork: {item.title || 'Untitled'}. {artworkDescription}
         </div>
       </article>
     </div>
