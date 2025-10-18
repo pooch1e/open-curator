@@ -23,7 +23,7 @@ export interface MuseumImage {
 
 /**
  * Core museum item type - consolidated from Artwork, MuseumItem, and CollectionItem
- * Uses consistent nullable types throughout
+ * 
  */
 export interface MuseumItem {
   id: number;
