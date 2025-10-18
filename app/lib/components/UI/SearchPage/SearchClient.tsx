@@ -47,7 +47,7 @@ export default function SearchClient({ data }: SearchClientProps) {
       try {
         // Build query based on preset
         const query = selectedPreset.searchTerm;
-        setSearchQuery(query); // Update search bar to show what's being searched
+        setSearchQuery(query); 
 
         const res = await fetch(
           `/api/cache/?q=${encodeURIComponent(query)}&limit=50&service=chicago`

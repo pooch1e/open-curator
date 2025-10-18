@@ -23,7 +23,7 @@ export interface MuseumImage {
 
 /**
  * Core museum item type - consolidated from Artwork, MuseumItem, and CollectionItem
- * 
+ *
  */
 export interface MuseumItem {
   id: number;
@@ -105,4 +105,19 @@ export interface FavouritesContextType {
 
 export interface FavouritesProviderProps {
   children: React.ReactNode;
+}
+
+// ===== Hook State Types =====
+
+export interface ApiSearchState {
+  data: MuseumItem[];
+  isLoading: boolean;
+  isError: boolean;
+}
+
+// ===== Hook Types =====
+export interface ApiSearchState {
+  data: [];
+  isLoading: boolean;
+  isError: boolean;
 }
