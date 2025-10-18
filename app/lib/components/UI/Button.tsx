@@ -25,7 +25,7 @@ export default function Button({
       onClick={state === 'disabled' ? undefined : handleClick}
       aria-label={ariaLabel || text}
       disabled={state === 'disabled'}
-      className={`${baseStyle} ${states[state]}`}>
+      className={`${baseStyle} ${states[state]} cursor-pointer`}>
       {text}
     </button>
   );

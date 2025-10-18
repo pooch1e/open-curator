@@ -1,4 +1,9 @@
-export interface Image {
+// ===== Core Domain Types =====
+
+/**
+ * Represents an image associated with a museum item
+ */
+export interface MuseumImage {
   alttext: string | null;
   baseimageurl: string;
   copyright: string | null;
@@ -15,6 +20,11 @@ export interface Image {
   technique: string | null;
   width: number | null;
 }
+
+/**
+ * Core museum item type - consolidated from Artwork, MuseumItem, and CollectionItem
+ *
+ */
 export interface MuseumItem {
   id: number;
   title: string | null;
@@ -28,56 +38,47 @@ export interface MuseumItem {
   isPublicDomain: boolean | null;
   objectURL: string | null;
   dimensions: string | null;
-  images: Image[];
+  images: MuseumImage[];
 }
+
+/**
+ * Alias for backwards compatibility with favourites context
+ * @deprecated Use MuseumItem instead
+ */
+export type Artwork = MuseumItem;
+
+/**
+ * Alias for backwards compatibility with collection components
+ * @deprecated Use MuseumItem instead
+ */
+export type CollectionItem = MuseumItem;
+
+// ===== Component Props Types =====
 
 export interface SearchClientProps {
   data: MuseumItem[];
   onApiSearch?: (query: string) => Promise<MuseumItem[]>;
 }
 
+/**
+ * Props for SearchGridItem - simplified to use single item prop
+ */
 export interface SearchGridItemProps {
-  id: number;
-  title: string;
-  artist: string;
-  date: string;
-  medium: string;
-  objectURL: string | null;
-  period: string;
-  description: string;
-  culture: string;
-  images: Image;
-  primaryImageUrl: string;
-}
-export interface CollectionItem {
-  id: number;
-  title: string | null;
-  artist: string | null;
-  date: string | null;
-  culture?: string | null;
-  medium?: string | null;
-  department?: string | null;
-  primaryimageurl?: string | null;
-  objectURL?: string | null;
-  images?: any[];
+  item: MuseumItem;
+  /** Additional fields not in core MuseumItem */
+  period?: string;
+  description?: string;
 }
 
 export interface CollectionItemProps {
-  collectionData: CollectionItem;
+  item: MuseumItem;
 }
 
 export interface FavouriteButtonProps {
-  id: number;
-  title: string | null;
-  artist: string | null;
-  date: string | null;
-  culture?: string | null;
-  medium?: string | null;
-  department?: string | null;
-  primaryimageurl?: string | null;
-  objectURL?: string | null;
-  images?: any[];
+  item: MuseumItem;
 }
+
+// ===== Preset/Configuration Types =====
 
 export interface ChicagoPreset {
   id: string;
@@ -92,3 +93,27 @@ export interface DropDownProps {
   presets: ChicagoPreset[];
   onSelectPreset: (preset: ChicagoPreset) => void;
 }
+
+// ===== Context Types =====
+
+export interface FavouritesContextType {
+  favourites: MuseumItem[];
+  addFavourite: (item: MuseumItem) => void;
+  removeFavourite: (id: number) => void;
+  clearAllFavourites: () => void;
+}
+
+export interface FavouritesProviderProps {
+  children: React.ReactNode;
+}
+
+// ===== Hook State Types =====
+
+export interface ApiSearchState {
+  data: MuseumItem[];
+  isLoading: boolean;
+  isError: boolean;
+  error?: string
+}
+
+// ===== Hook Types =====

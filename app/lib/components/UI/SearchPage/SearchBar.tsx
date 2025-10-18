@@ -23,7 +23,7 @@ export default function SearchBar({
         <input
           id={searchId}
           type="text"
-          className="w-full h-36 bg-transparent font-serif placeholder:text-6xl placeholder:text-white text-white text-6xl border border-red-700 rounded-md pl-3 pr-28 py-4 transition duration-300 ease focus:outline-none focus:border-white hover:border-white shadow-sm focus:shadow "
+          className="w-full h-36 bg-transparent font-serif placeholder:text-6xl placeholder:text-white text-white text-6xl border border-red-700 rounded-md pl-3 pr-28 py-4 transition duration-300 ease focus:outline-none focus:border-white hover:border-white shadow-sm focus:shadow"
           value={searchQuery}
           onChange={(e) => {
             onSearch(e.target.value);
@@ -34,7 +34,7 @@ export default function SearchBar({
               onButtonClick()
             }
           }}
-          placeholder="Search our collections"
+          placeholder="Search Art"
           aria-describedby={descriptionId}
           aria-label="Search museum collections by title, artist, or medium"
         />

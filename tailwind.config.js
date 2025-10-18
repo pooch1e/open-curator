@@ -8,16 +8,19 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        'priori': ['var(--font-priori-serif)', 'serif'],
-        'crimson': ['var(--font-crimson-pro)', 'serif'],
+        priori: ['var(--font-priori-serif)', 'serif'],
+        crimson: ['var(--font-crimson-pro)', 'serif'],
       },
       fontWeight: {
-        'light': '300',
-        'normal': '400', 
-        'medium': '500',
-        'semibold': '600',
+        light: '300',
+        normal: '400',
+        medium: '500',
+        semibold: '600',
+      },
+      transitionDelay: {
+        100: '100ms',
       },
     },
   },
   plugins: [],
-}
+};

@@ -4,10 +4,10 @@ import { useState } from 'react'
 import ClearAllFavouritesButton from '../ClearAllFavouritesButton'
 import CollectionItem from './CollectionItem'
 import ImageModal from '../Modal/ImageModal'
-import type { CollectionItem as CollectionItemType } from '@/app/lib/config/types'
+import type { MuseumItem } from '@/app/lib/config/types'
 
 interface collectionContainerProps {
-  favourites: CollectionItemType[]
+  favourites: MuseumItem[]
 }
 
 export default function CollectionContainer({
@@ -49,7 +49,7 @@ export default function CollectionContainer({
             {favourites.map((item, index) => (
               <CollectionItem 
                 key={item.id} 
-                collectionData={item} 
+                item={item} 
                 onImageClick={() => openModal(index)}
               />
             ))}
