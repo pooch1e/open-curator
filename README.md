@@ -14,6 +14,8 @@ Open Curator is a web application that allows users to search, discover, and cur
 ## HOSTED
 Hosted on Vercel
 https://open-curator-kappa.vercel.app/
+or live at 
+https://www.opencurator.xyz/
 
 ### Key Features
 
