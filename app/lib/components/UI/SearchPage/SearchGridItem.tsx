@@ -32,7 +32,7 @@ export default function SearchGridItem({
               href={objectURL || '#'}
               target={objectURL ? '_blank' : '_self'}
               rel={objectURL ? 'noopener noreferrer' : undefined}
-              className="block aspect-[4/3] overflow-hidden rounded-lg border border-gray-700 hover:border-red-600 transition-colors"
+              className="block aspect-[4/3] overflow-hidden rounded-lg border border-gray-700 hover:border-red-600 transition-colors p-2"
               aria-label={`View image for ${title}${
                 artist ? ` by ${artist}` : ''
               }`}>
@@ -51,7 +51,7 @@ export default function SearchGridItem({
             </a>
           </div>
 
-          {/* Content Section */}
+          {/* Content */}
           <div className="flex-1 flex flex-col gap-4 pr-10">
             <a
               href={objectURL || '#'}
@@ -145,7 +145,7 @@ export default function SearchGridItem({
           </div>
 
          
-          <div className="md:absolute md:top-4 md:right-4">
+          <div className="md:absolute md:top-1/2 md:right-4">
             <FavouriteButton
               key={id}
               id={id}

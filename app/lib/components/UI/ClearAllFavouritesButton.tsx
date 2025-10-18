@@ -18,7 +18,7 @@ export default function ClearAllFavouritesButton() {
   };
 
   return (
-    <div className="relative">
+    <div className="relative font-mono underline underline-offset-4">
       <Button
         text={isCleared ? 'Favourites Cleared!' : 'Clear Favourites'}
         handleClick={handleClick}
