@@ -10,159 +10,73 @@ import {
 import DropDown from '../PresetSelector/DropDown';
 import type { MuseumItem, SearchClientProps } from '../../../config/types';
 import { Riple } from 'react-loading-indicators';
+import { useApiSearch } from '@/app/lib/hooks/useApiSearch';
+import { useSearchFilter } from '@/app/lib/hooks/useSearchFilter';
 
 export default function SearchClient({ data }: SearchClientProps) {
   const [museumData, setMuseumData] = useState<MuseumItem[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isError, setIsError] = useState<boolean>(false);
   const [isApiSearch, setIsApiSearch] = useState<boolean>(false);
+
+  const apiSearch = useApiSearch();
+  const filteredResults = useSearchFilter(
+    museumData,
+    isApiSearch ? '' : searchQuery
+  );
+
   const [selectedPreset, setSelectedPreset] = useState<ChicagoPreset | null>(
     null
   );
   const [availablePresets, setAvailablePresets] =
     useState<ChicagoPreset[]>(CHICAGO_API_PRESET);
 
-  // handle use effect stuff here?
-
   useEffect(() => {
-    try {
-      setMuseumData(data);
-
-      setIsLoading(false);
-    } catch (err) {
-      setIsError(true);
-      setIsLoading(false);
-    }
+    setMuseumData(data);
   }, [data]);
 
-  // handle search preset
+  // handle preset search
+
   useEffect(() => {
     if (!selectedPreset) return;
 
     const executePresetSearch = async () => {
-      setIsLoading(true);
-      setIsError(false);
+      setSearchQuery(selectedPreset.searchTerm);
 
-      try {
-        // Build query based on preset
-        const query = selectedPreset.searchTerm;
-        setSearchQuery(query); 
+      const results = await apiSearch.searchMuseumItems(
+        selectedPreset.searchTerm,
+        'chicago',
+        50
+      );
 
-        const res = await fetch(
-          `/api/cache/?q=${encodeURIComponent(query)}&limit=50&service=chicago`
-        );
-
-        if (!res.ok) {
-          const errorText = await res.text();
-          throw new Error(`API request failed: ${res.status} - ${errorText}`);
-        }
-
-        const responseData = await res.json();
-
-        // Check if the response has an error
-        if (responseData.error) {
-          throw new Error(responseData.error);
-        }
-
-        const { results } = responseData;
-
-        if (!Array.isArray(results)) {
-          throw new Error(
-            'Invalid response format - expected results to be an array'
-          );
-        }
-
-        const filtered = results.filter(
-          (item: MuseumItem | null): item is MuseumItem => item !== null
-        );
-
-        setMuseumData(filtered);
+      if (results) {
+        setMuseumData(results);
         setIsApiSearch(true);
-      } catch (err) {
-        setIsError(true);
-      } finally {
-        setIsLoading(false);
       }
     };
 
     executePresetSearch();
   }, [selectedPreset]);
 
-  // handle search button click api request
-
-  const filterResults = useMemo(() => {
-    if (!searchQuery.trim()) return museumData;
-
-    return museumData.filter((item) => {
-      const searchLower = searchQuery.toLowerCase();
-
-      // Search in title
-      if (item.title && item.title.toLowerCase().includes(searchLower)) {
-        return true;
-      }
-
-      // Search in artist
-      if (item.artist && item.artist.toLowerCase().includes(searchLower)) {
-        return true;
-      }
-
-      //Search in Medium
-      if (item.medium && item.medium.toLowerCase().includes(searchLower)) {
-        return true;
-      }
-
-      return false;
-    });
-  }, [museumData, searchQuery, isApiSearch]);
-
-  // handle search bar stuff here?
+  // handle search bar stuff here
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     setIsApiSearch(false);
-    setIsError(false);
+    apiSearch.reset();
   };
 
+  // handle click
   const handleClick = async () => {
     if (!searchQuery.trim()) return;
 
-    setIsLoading(true);
-    setIsError(false);
-
-    try {
-      const res = await fetch(
-        `/api/cache/?q=${encodeURIComponent(
-          searchQuery
-        )}&limit=50&service=chicago`
-      );
-
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(`API request failed: ${res.status} - ${errorText}`);
-      }
-
-      const { results } = await res.json();
-
-      // Check if response is an error object
-      if (results.error) {
-        throw new Error(results.error);
-      }
-
-      // Check if data is an array
-      if (!Array.isArray(results)) {
-        throw new Error('Invalid response format - expected array');
-      }
-      const filtered = results.filter(
-        (item: MuseumItem | null): item is MuseumItem => item !== null
-      );
-
-      setMuseumData(filtered);
+    const results = await apiSearch.searchMuseumItems(
+      searchQuery,
+      'chicago',
+      50
+    );
+    if (results) {
+      setMuseumData(results);
       setIsApiSearch(true);
       setSearchQuery('');
-    } catch (err) {
-      setIsError(true);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -173,7 +87,7 @@ export default function SearchClient({ data }: SearchClientProps) {
           onSearch={handleSearch}
           searchQuery={searchQuery}
           onButtonClick={handleClick}
-          isLoading={isLoading}
+          isLoading={apiSearch.isLoading}
         />
       </div>
       <div className="flex justify-between">
@@ -188,7 +102,7 @@ export default function SearchClient({ data }: SearchClientProps) {
         </div>
       </div>
 
-      {isError && (
+      {apiSearch.isError && (
         <div
           role="alert"
           aria-live="assertive"
@@ -197,7 +111,7 @@ export default function SearchClient({ data }: SearchClientProps) {
         </div>
       )}
 
-      {isLoading ? (
+      {apiSearch.isLoading ? (
         <div
           role="status"
           aria-live="polite"
@@ -206,10 +120,12 @@ export default function SearchClient({ data }: SearchClientProps) {
           <Riple color="#d0d1d0" size="medium" text="" textColor="" />
           <div className="mt-4 text-center">
             <p className="text-gray-400 text-sm mb-2">Loading artworks...</p>
-            <p className="text-gray-500 text-xs">Images will appear as they load</p>
+            <p className="text-gray-500 text-xs">
+              Images will appear as they load
+            </p>
           </div>
         </div>
-      ) : filterResults.length === 0 ? (
+      ) : filteredResults.length === 0 ? (
         <div className="flex flex-col justify-center items-center p-8 text-gray-400">
           <p className="text-xl mb-2">No artworks found</p>
           {searchQuery && (
@@ -222,8 +138,8 @@ export default function SearchClient({ data }: SearchClientProps) {
             aria-live="polite"
             aria-label="Search results"
             className="sr-only">
-            {filterResults.length > 0
-              ? `Found ${filterResults.length} artworks${
+            {filteredResults.length > 0
+              ? `Found ${filteredResults.length} artworks${
                   searchQuery ? ` matching "${searchQuery}"` : ''
                 }`
               : searchQuery
@@ -231,7 +147,7 @@ export default function SearchClient({ data }: SearchClientProps) {
               : ''}
           </div>
 
-          <SearchGridContainer results={filterResults} />
+          <SearchGridContainer results={filteredResults} />
         </>
       )}
     </main>

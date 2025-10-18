@@ -113,11 +113,7 @@ export interface ApiSearchState {
   data: MuseumItem[];
   isLoading: boolean;
   isError: boolean;
+  error?: string
 }
 
 // ===== Hook Types =====
-export interface ApiSearchState {
-  data: [];
-  isLoading: boolean;
-  isError: boolean;
-}

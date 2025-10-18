@@ -5,6 +5,7 @@ export function useApiSearch() {
     data: [],
     isLoading: false,
     isError: false,
+    error: '',
   });
 
   const searchMuseumItems = useCallback(
