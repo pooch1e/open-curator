@@ -3,41 +3,19 @@
 import { useFavourites } from '../../hooks/useFavourites';
 import type { FavouriteButtonProps } from '../../config/types';
 
-export default function FavouriteButton({
-  id,
-  title,
-  artist,
-  date,
-  culture,
-  medium,
-  department,
-  primaryimageurl,
-  objectURL,
-  images,
-}: FavouriteButtonProps) {
+export default function FavouriteButton({ item }: FavouriteButtonProps) {
   const favourites = useFavourites();
 
   // check if work is already added to catalog
   const isFavourited = favourites?.favourites.some(
-    (artwork) => artwork.id === id
+    (artwork) => artwork.id === item.id
   );
 
   const handleToggleFavourite = () => {
     if (isFavourited) {
-      favourites?.removeFavourite(id);
+      favourites?.removeFavourite(item.id);
     } else {
-      favourites?.addFavourite({
-        id,
-        title,
-        artist,
-        date,
-        culture,
-        medium,
-        department,
-        primaryimageurl,
-        objectURL,
-        images,
-      });
+      favourites?.addFavourite(item);
     }
   };
   return (
