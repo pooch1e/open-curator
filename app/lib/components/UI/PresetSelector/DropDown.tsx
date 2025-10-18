@@ -24,7 +24,7 @@ export default function DropDown({ presets, onSelectPreset }: DropDownProps) {
   return (
     <div className="dropdown text-2xl ">
       <button
-        className="hover:text-red-600 underline underline-offset-4 font-mono "
+        className="hover:text-red-600 underline underline-offset-4 font-mono cursor-pointer"
         onClick={handleOpen}>
         {selectedPreset ? selectedPreset.label : 'Search Presets'}
       </button>

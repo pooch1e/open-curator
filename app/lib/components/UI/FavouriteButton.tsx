@@ -46,7 +46,7 @@ export default function FavouriteButton({
       type="button"
       aria-label={isFavourited ? 'Remove from favourites' : 'Add to favourites'}
       data-favourited={isFavourited}
-      className={`relative text-5xl transition-transform duration-200 ${
+      className={`relative text-5xl transition-transform duration-200 cursor-pointer ${
         isFavourited ? 'rotate-360 text-red-700' : 'text-white'
       } hover:text-red-500`}>
       <span
