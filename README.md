@@ -555,3 +555,5 @@ This project is licensed under the MIT License
 - Tailwind CSS 4.x for styling
 
 ---
+
+supabase wound down 
