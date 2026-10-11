@@ -4,20 +4,24 @@
  */
 'use client';
 import { useEffect, useId, useRef, useState } from 'react';
-import type { ChicagoPreset } from '@/app/lib/config/chicago.config';
+import type { SearchPreset } from '@/app/lib/config/searchPresets';
 
 interface DropDownProps {
-  presets: ChicagoPreset[];
-  onSelectPreset: (preset: ChicagoPreset) => void;
+  presets: SearchPreset[];
+  activePresetId: string | null;
+  onSelectPreset: (preset: SearchPreset) => void;
 }
 
-export default function DropDown({ presets, onSelectPreset }: DropDownProps) {
+export default function DropDown({
+  presets,
+  activePresetId,
+  onSelectPreset,
+}: DropDownProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedPreset, setSelectedPreset] = useState<ChicagoPreset | null>(
-    null
-  );
   const containerRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const menuId = useId();
+  const activePreset = presets.find((preset) => preset.id === activePresetId);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -26,7 +30,9 @@ export default function DropDown({ presets, onSelectPreset }: DropDownProps) {
       if (!containerRef.current?.contains(e.target as Node)) setIsOpen(false);
     };
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setIsOpen(false);
+      if (e.key !== 'Escape') return;
+      setIsOpen(false);
+      buttonRef.current?.focus();
     };
 
     document.addEventListener('pointerdown', handlePointerDown);
@@ -37,21 +43,22 @@ export default function DropDown({ presets, onSelectPreset }: DropDownProps) {
     };
   }, [isOpen]);
 
-  const handleSelect = (preset: ChicagoPreset) => {
-    setSelectedPreset(preset);
+  const handleSelect = (preset: SearchPreset) => {
     onSelectPreset(preset);
     setIsOpen(false);
+    buttonRef.current?.focus();
   };
 
   return (
     <div ref={containerRef} className="relative text-2xl">
       <button
+        ref={buttonRef}
         type="button"
         aria-expanded={isOpen}
         aria-controls={menuId}
-        className="font-crimson font-medium hover:text-red-600 underline underline-offset-4 cursor-pointer"
+        className="font-crimson font-medium hover:text-red-500 underline underline-offset-4 cursor-pointer"
         onClick={() => setIsOpen((open) => !open)}>
-        {selectedPreset?.label ?? 'Search Presets'}
+        {activePreset?.label ?? 'Search Presets'}
       </button>
       {isOpen && (
         <ul
@@ -61,6 +68,7 @@ export default function DropDown({ presets, onSelectPreset }: DropDownProps) {
             <li key={preset.id}>
               <button
                 type="button"
+                aria-current={preset.id === activePresetId ? 'true' : undefined}
                 className="w-full text-left px-4 py-1 font-light hover:text-red-500 cursor-pointer whitespace-nowrap"
                 onClick={() => handleSelect(preset)}>
                 {preset.label}

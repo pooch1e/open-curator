@@ -1,15 +1,15 @@
 /**
- * Search presets offered in the preset dropdown, each mapped to a Chicago
- * Art Institute search term.
+ * Search presets offered in the preset dropdown, each mapped to a search term
+ * sent to every museum.
  */
 
-export interface ChicagoPreset {
+export interface SearchPreset {
   id: string;
   label: string;
   searchTerm: string;
 }
 
-export const CHICAGO_API_PRESETS: ChicagoPreset[] = [
+export const SEARCH_PRESETS: SearchPreset[] = [
   { id: 'contemporary', label: 'Contemporary', searchTerm: 'contemporary' },
   { id: 'photography', label: 'Photography', searchTerm: 'photograph' },
   { id: 'painting', label: 'Paintings', searchTerm: 'painting' },

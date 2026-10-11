@@ -1,11 +1,11 @@
 /**
- * useSearchFilter — client-side filter of museum items by title, artist, or
- * medium.
+ * useSearchFilter — client-side filter of museum items by title, artist,
+ * medium, or culture.
  */
 import { useMemo } from 'react';
 import type { MuseumItem } from '@/app/lib/types';
 
-const SEARCHABLE_FIELDS = ['title', 'artist', 'medium'] as const;
+const SEARCHABLE_FIELDS = ['title', 'artist', 'medium', 'culture'] as const;
 
 export function useSearchFilter(data: MuseumItem[], query: string) {
   return useMemo(() => {

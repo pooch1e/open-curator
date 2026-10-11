@@ -6,18 +6,21 @@ import FavouriteButton from '../FavouriteButton';
 import ImageSkeleton from '../Skeleton/ImageSkeleton';
 import type { MuseumItem } from '@/app/lib/types';
 import {
+  SOURCE_LABELS,
   describeArtwork,
+  getArtworkDetails,
   getDisplayTitle,
   getImageUrl,
 } from '@/app/lib/utils/museumItem';
 
-const METADATA_FIELDS = [
-  { key: 'artist', label: 'Artist', wide: false },
-  { key: 'date', label: 'Date', wide: false },
-  { key: 'culture', label: 'Culture', wide: false },
-  { key: 'period', label: 'Period', wide: false },
-  { key: 'medium', label: 'Medium', wide: true },
+const SEARCH_DETAIL_KEYS = [
+  'artist',
+  'date',
+  'culture',
+  'period',
+  'medium',
 ] as const;
+const WIDE_DETAIL_KEYS = new Set(['medium']);
 
 function ExternalLink({
   href,
@@ -58,8 +61,8 @@ export default function SearchGridItem({ item }: { item: MuseumItem }) {
               {imageUrl ? (
                 <ImageSkeleton src={imageUrl} alt={describeArtwork(item)} />
               ) : (
-                <div className="w-full h-full bg-gray-800 flex items-center justify-center">
-                  <span className="text-gray-500 text-sm">
+                <div className="w-full h-full bg-gray-900 flex items-center justify-center">
+                  <span className="text-gray-400 text-sm">
                     No image available
                   </span>
                 </div>
@@ -67,13 +70,13 @@ export default function SearchGridItem({ item }: { item: MuseumItem }) {
             </ExternalLink>
           </div>
 
-          <div className="flex-1 flex flex-col gap-4 pr-10">
+          <div className="flex-1 flex flex-col gap-4 md:pr-16">
             <ExternalLink
               href={item.objectURL}
               className="group inline-block self-start">
               <h3
                 id={titleId}
-                className="text-2xl italic font-medium font-crimson group-hover:text-red-600 transition-colors underline-animate">
+                className="text-2xl italic font-medium font-crimson group-hover:text-red-500 transition-colors underline-animate">
                 {getDisplayTitle(item)}
                 {item.objectURL && (
                   <span className="sr-only"> (opens in new tab)</span>
@@ -82,9 +85,13 @@ export default function SearchGridItem({ item }: { item: MuseumItem }) {
             </ExternalLink>
 
             <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 font-crimson">
-              {METADATA_FIELDS.map(({ key, label, wide }) =>
-                item[key] ? (
-                  <div key={key} className={wide ? 'sm:col-span-2' : undefined}>
+              {getArtworkDetails(item, SEARCH_DETAIL_KEYS).map(
+                ({ key, label, value }) => (
+                  <div
+                    key={key}
+                    className={
+                      WIDE_DETAIL_KEYS.has(key) ? 'sm:col-span-2' : undefined
+                    }>
                     <dt className="text-gray-400 text-xs uppercase tracking-wider mb-1">
                       {label}
                     </dt>
@@ -92,12 +99,16 @@ export default function SearchGridItem({ item }: { item: MuseumItem }) {
                       className={`text-white text-sm ${
                         key === 'artist' ? 'font-medium' : 'font-light'
                       }`}>
-                      {item[key]}
+                      {value}
                     </dd>
                   </div>
-                ) : null
+                )
               )}
             </dl>
+
+            <p className="text-gray-400 text-xs uppercase tracking-wider">
+              {SOURCE_LABELS[item.source]}
+            </p>
           </div>
 
           <div className="flex justify-center md:absolute md:top-1/2 md:right-4 md:-translate-y-1/2">

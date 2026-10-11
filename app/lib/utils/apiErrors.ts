@@ -9,6 +9,5 @@ export function createErrorResponse(message: string, status = 500) {
 
 export const API_ERRORS = {
   MISSING_QUERY: 'Query parameter "q" is required',
-  INVALID_SERVICE: 'Service must be one of: harvard, chicago',
   INTERNAL_ERROR: 'Something went wrong on our end',
 };

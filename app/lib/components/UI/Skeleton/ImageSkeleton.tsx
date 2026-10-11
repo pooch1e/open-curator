@@ -13,24 +13,29 @@ interface ImageSkeletonProps {
   className?: string;
 }
 
-export default function ImageSkeleton({
+const DEFAULT_IMAGE_CLASS =
+  'w-full h-full object-scale-down hover:scale-105 transition-transform duration-300';
+
+function ImageWithStatus({
   src,
   alt,
-  className = 'w-full h-full object-scale-down hover:scale-105 transition-transform duration-300',
+  className = DEFAULT_IMAGE_CLASS,
 }: ImageSkeletonProps) {
   const [status, setStatus] = useState<LoadStatus>('loading');
   const imgRef = useRef<HTMLImageElement>(null);
 
-  // Cached images can finish loading before hydration attaches onLoad.
+  // Cached images can finish loading before hydration attaches onLoad. Only
+  // trust a decoded image here: lazy images that haven't started can also
+  // report `complete`, so an error is left for onError to report.
   useEffect(() => {
     const img = imgRef.current;
-    if (img?.complete) setStatus(img.naturalWidth > 0 ? 'loaded' : 'error');
-  }, [src]);
+    if (img?.complete && img.naturalWidth > 0) setStatus('loaded');
+  }, []);
 
   if (status === 'error') {
     return (
-      <div className="w-full h-full bg-gray-800 flex items-center justify-center">
-        <span className="text-gray-500 text-sm">Image unavailable</span>
+      <div className="w-full h-full bg-gray-900 flex items-center justify-center p-4 text-center">
+        <span className="text-gray-400 text-sm">Image unavailable</span>
       </div>
     );
   }
@@ -38,14 +43,11 @@ export default function ImageSkeleton({
   return (
     <div className="relative w-full h-full">
       {status === 'loading' && (
-        <div className="absolute inset-0 bg-gray-800 animate-pulse flex items-center justify-center">
-          <div className="flex flex-col items-center space-y-2">
-            <div className="w-8 h-8 bg-gray-700 rounded" />
-            <div className="w-16 h-2 bg-gray-700 rounded" />
-          </div>
-        </div>
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-gray-800 animate-pulse"
+        />
       )}
-
       <img
         ref={imgRef}
         src={src}
@@ -59,4 +61,8 @@ export default function ImageSkeleton({
       />
     </div>
   );
+}
+
+export default function ImageSkeleton(props: ImageSkeletonProps) {
+  return <ImageWithStatus key={props.src} {...props} />;
 }

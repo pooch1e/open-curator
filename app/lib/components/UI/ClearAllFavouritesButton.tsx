@@ -4,23 +4,22 @@
  */
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import Button from './Button';
-import { useFavourites } from '@/app/lib/hooks/useFavourites';
+import { useFavouritesStore } from '@/app/lib/stores/favouritesStore';
 
 const CLEARED_FEEDBACK_MS = 2000;
 
 export default function ClearAllFavouritesButton() {
-  const { favourites, clearAllFavourites } = useFavourites();
+  const count = useFavouritesStore((state) => state.favourites.length);
+  const clearAllFavourites = useFavouritesStore(
+    (state) => state.clearAllFavourites
+  );
   const [isCleared, setIsCleared] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => () => clearTimeout(timeoutRef.current), []);
 
-  const hasFavourites = favourites.length > 0;
-
   const handleClick = () => {
-    if (!hasFavourites) return;
-    if (!window.confirm(`Remove all ${favourites.length} favourites?`)) return;
+    if (!window.confirm(`Remove all ${count} saved works?`)) return;
 
     clearAllFavourites();
     setIsCleared(true);
@@ -31,17 +30,24 @@ export default function ClearAllFavouritesButton() {
     );
   };
 
+  if (count === 0 && !isCleared) return null;
+
   return (
-    <div className="relative">
-      <Button
-        text={isCleared ? 'Favourites Cleared!' : 'Clear Favourites'}
-        handleClick={handleClick}
-        aria-label="Clear all favourited items"
-        state={isCleared ? 'cleared' : hasFavourites ? 'active' : 'disabled'}
-      />
-      <div aria-live="polite" className="sr-only">
-        {isCleared ? 'All favourites have been cleared.' : ''}
-      </div>
-    </div>
+    <>
+      <button
+        type="button"
+        onClick={handleClick}
+        disabled={isCleared}
+        className={`font-crimson text-lg underline underline-offset-4 transition-colors ${
+          isCleared
+            ? 'text-green-400'
+            : 'text-gray-300 hover:text-red-500 cursor-pointer'
+        }`}>
+        {isCleared ? 'Collection cleared' : 'Clear all'}
+      </button>
+      <span aria-live="polite" className="sr-only">
+        {isCleared ? 'All saved works have been removed.' : ''}
+      </span>
+    </>
   );
 }

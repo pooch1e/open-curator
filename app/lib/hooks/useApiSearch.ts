@@ -1,16 +1,21 @@
 /**
- * useApiSearch — fetches museum search results through /api/cache, tracking
- * loading/error state and discarding responses from superseded requests.
+ * useApiSearch — fetches merged museum search results through /api/search,
+ * tracking loading/error state and discarding superseded requests.
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { MuseumItem, MuseumSource } from '@/app/lib/types';
+import type { MuseumSource, SearchResponse } from '@/app/lib/types';
 
 interface ApiSearchState {
   isLoading: boolean;
   isError: boolean;
+  failedSources: MuseumSource[];
 }
 
-const IDLE_STATE: ApiSearchState = { isLoading: false, isError: false };
+const IDLE_STATE: ApiSearchState = {
+  isLoading: false,
+  isError: false,
+  failedSources: [],
+};
 
 export function useApiSearch() {
   const [state, setState] = useState<ApiSearchState>(IDLE_STATE);
@@ -19,28 +24,20 @@ export function useApiSearch() {
   useEffect(() => () => controllerRef.current?.abort(), []);
 
   const search = useCallback(
-    async (
-      query: string,
-      service: MuseumSource = 'chicago',
-      limit = 50
-    ): Promise<MuseumItem[] | null> => {
+    async (query: string): Promise<SearchResponse | null> => {
       if (!query.trim()) return null;
 
       controllerRef.current?.abort();
       const controller = new AbortController();
       controllerRef.current = controller;
 
-      setState({ isLoading: true, isError: false });
+      setState({ ...IDLE_STATE, isLoading: true });
 
       try {
-        const params = new URLSearchParams({
-          q: query,
-          service,
-          limit: String(limit),
-        });
-        const res = await fetch(`/api/cache?${params}`, {
-          signal: controller.signal,
-        });
+        const res = await fetch(
+          `/api/search?${new URLSearchParams({ q: query })}`,
+          { signal: controller.signal }
+        );
         const body = await res.json();
 
         if (!res.ok) {
@@ -50,12 +47,13 @@ export function useApiSearch() {
           throw new Error('Invalid response: expected results array');
         }
 
-        setState(IDLE_STATE);
-        return body.results as MuseumItem[];
+        const response = body as SearchResponse;
+        setState({ ...IDLE_STATE, failedSources: response.failedSources });
+        return response;
       } catch (err) {
         if (controller.signal.aborted) return null;
         console.error('Museum search failed', err);
-        setState({ isLoading: false, isError: true });
+        setState({ ...IDLE_STATE, isError: true });
         return null;
       }
     },

@@ -1,66 +1,96 @@
 /**
- * ImageModal — full-screen lightbox for browsing collection artworks, with
- * keyboard navigation, focus trapping, and scroll locking.
+ * ImageModal — full-screen lightbox for browsing collection artworks. Renders
+ * in a portal, marks the rest of the app inert, traps focus, locks scrolling,
+ * and supports arrow-key navigation.
  */
 'use client';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import type { MuseumItem } from '@/app/lib/types';
+import { APP_SHELL_ID } from '@/app/lib/config/appShell';
 import {
+  SOURCE_LABELS,
   describeArtwork,
+  getArtworkDetails,
   getDisplayTitle,
   getImageUrl,
 } from '@/app/lib/utils/museumItem';
 
 interface ImageModalProps {
-  onClose: () => void;
   items: MuseumItem[];
   currentIndex: number;
   onNavigate: (index: number) => void;
+  onClose: () => void;
 }
 
 const FOCUSABLE_SELECTOR =
   'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-const DETAIL_FIELDS = [
-  { key: 'date', label: 'Date' },
-  { key: 'culture', label: 'Culture' },
-  { key: 'medium', label: 'Medium' },
-  { key: 'department', label: 'Department' },
+const MODAL_DETAIL_KEYS = [
+  'date',
+  'culture',
+  'period',
+  'medium',
+  'dimensions',
+  'department',
 ] as const;
 
+const NAV_BUTTON_CLASS =
+  'absolute top-1/2 -translate-y-1/2 z-10 rounded-full bg-black/60 p-2 text-white hover:text-red-500';
+
+function ModalImage({ item }: { item: MuseumItem }) {
+  const [hasFailed, setHasFailed] = useState(false);
+  const imageUrl = getImageUrl(item);
+
+  if (!imageUrl || hasFailed) {
+    return (
+      <div className="flex h-96 w-full max-w-96 items-center justify-center rounded-lg bg-gray-900">
+        <span className="font-crimson text-gray-300">
+          {imageUrl ? 'Image unavailable' : 'No image available'}
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={imageUrl}
+      alt={describeArtwork(item)}
+      onError={() => setHasFailed(true)}
+      className="max-h-[80vh] max-w-full rounded-lg object-contain"
+    />
+  );
+}
+
 export default function ImageModal({
-  onClose,
   items,
   currentIndex,
   onNavigate,
+  onClose,
 }: ImageModalProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
-  const index = Math.min(currentIndex, items.length - 1);
-  const currentItem = items[index];
-  const hasPrevious = index > 0;
-  const hasNext = index < items.length - 1;
+  const currentItem = items[currentIndex];
+  const hasPrevious = currentIndex > 0;
+  const hasNext = currentIndex < items.length - 1;
 
   useEffect(() => {
+    const appShell = document.getElementById(APP_SHELL_ID);
     const previouslyFocused = document.activeElement as HTMLElement | null;
     const previousOverflow = document.body.style.overflow;
+
+    if (appShell) appShell.inert = true;
     document.body.style.overflow = 'hidden';
     closeButtonRef.current?.focus();
 
     return () => {
+      if (appShell) appShell.inert = false;
       document.body.style.overflow = previousOverflow;
       previouslyFocused?.focus();
     };
   }, []);
 
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-      if (e.key === 'ArrowLeft' && hasPrevious) onNavigate(index - 1);
-      if (e.key === 'ArrowRight' && hasNext) onNavigate(index + 1);
-      if (e.key === 'Tab') trapFocus(e);
-    };
-
     const trapFocus = (e: KeyboardEvent) => {
       const focusable =
         dialogRef.current?.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR);
@@ -76,18 +106,23 @@ export default function ImageModal({
       }
     };
 
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+      if (e.key === 'ArrowLeft' && hasPrevious) onNavigate(currentIndex - 1);
+      if (e.key === 'ArrowRight' && hasNext) onNavigate(currentIndex + 1);
+      if (e.key === 'Tab') trapFocus(e);
+    };
+
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [index, hasPrevious, hasNext, onClose, onNavigate]);
+  }, [currentIndex, hasPrevious, hasNext, onClose, onNavigate]);
 
   if (!currentItem) return null;
 
-  const imageUrl = getImageUrl(currentItem);
-
-  return (
+  return createPortal(
     <div
       ref={dialogRef}
-      className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/95"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
@@ -96,7 +131,7 @@ export default function ImageModal({
         ref={closeButtonRef}
         type="button"
         onClick={onClose}
-        className="absolute top-4 right-4 text-white hover:text-red-600 z-10 p-2"
+        className="absolute top-4 right-4 z-10 rounded-full bg-black/60 p-2 text-white hover:text-red-500"
         aria-label="Close gallery">
         <svg
           width="24"
@@ -116,10 +151,10 @@ export default function ImageModal({
           type="button"
           onClick={(e) => {
             e.stopPropagation();
-            onNavigate(index - 1);
+            onNavigate(currentIndex - 1);
           }}
-          className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:text-red-600 p-2 z-10"
-          aria-label="Previous image">
+          className={`${NAV_BUTTON_CLASS} left-4`}
+          aria-label="Previous artwork">
           <svg
             width="32"
             height="32"
@@ -138,10 +173,10 @@ export default function ImageModal({
           type="button"
           onClick={(e) => {
             e.stopPropagation();
-            onNavigate(index + 1);
+            onNavigate(currentIndex + 1);
           }}
-          className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-red-600 p-2 z-10"
-          aria-label="Next image">
+          className={`${NAV_BUTTON_CLASS} right-4`}
+          aria-label="Next artwork">
           <svg
             width="32"
             height="32"
@@ -156,56 +191,42 @@ export default function ImageModal({
       )}
 
       <div
-        className="flex flex-col lg:flex-row max-w-7xl mx-auto p-4 gap-6"
+        className="mx-auto flex max-h-full max-w-7xl flex-col gap-6 overflow-y-auto p-4 lg:flex-row"
         onClick={(e) => e.stopPropagation()}>
-        <div className="flex-1 flex items-center justify-center">
-          {imageUrl ? (
-            <img
-              src={imageUrl}
-              alt={describeArtwork(currentItem)}
-              className="max-w-full max-h-[80vh] object-contain rounded-lg"
-            />
-          ) : (
-            <div className="w-96 h-96 bg-black rounded-lg flex items-center justify-center">
-              <span className="text-gray-400 font-crimson">
-                No image available
-              </span>
-            </div>
-          )}
+        <div className="flex flex-1 items-center justify-center">
+          <ModalImage key={currentIndex} item={currentItem} />
         </div>
 
-        <div className="lg:w-80 bg-gray-900 rounded-lg p-6 overflow-y-auto max-h-[80vh] font-crimson">
-          <h2 id="modal-title" className="text-2xl font-medium text-white mb-2">
+        <div className="max-h-[80vh] overflow-y-auto rounded-lg bg-gray-900 p-6 font-crimson lg:w-80">
+          <h2 id="modal-title" className="mb-2 text-2xl font-medium text-white">
             {getDisplayTitle(currentItem)}
           </h2>
 
           {currentItem.artist && (
-            <p className="text-lg font-normal text-white mb-4">
-              by {currentItem.artist}
-            </p>
+            <p className="mb-4 text-lg text-white">by {currentItem.artist}</p>
           )}
 
           <dl className="space-y-3">
-            {DETAIL_FIELDS.map(({ key, label }) =>
-              currentItem[key] ? (
+            {getArtworkDetails(currentItem, MODAL_DETAIL_KEYS).map(
+              ({ key, label, value }) => (
                 <div key={key}>
-                  <dt className="text-sm font-light text-white uppercase tracking-wide">
+                  <dt className="text-sm font-light uppercase tracking-wide text-gray-300">
                     {label}
                   </dt>
-                  <dd className="text-white font-light">{currentItem[key]}</dd>
+                  <dd className="font-light text-white">{value}</dd>
                 </div>
-              ) : null
+              )
             )}
           </dl>
 
           {currentItem.objectURL && (
-            <div className="mt-6 pt-4 border-t border-gray-700">
+            <div className="mt-6 border-t border-gray-700 pt-4">
               <a
                 href={currentItem.objectURL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-                View at Museum
+                className="inline-flex items-center gap-2 rounded-lg bg-red-700 px-4 py-2 font-medium text-white transition-colors hover:bg-red-800">
+                View at {SOURCE_LABELS[currentItem.source]}
                 <span className="sr-only">(opens in new tab)</span>
                 <svg
                   width="16"
@@ -223,13 +244,12 @@ export default function ImageModal({
             </div>
           )}
 
-          <div className="mt-6 pt-4 border-t border-gray-700 text-center">
-            <span className="text-gray-400 font-light text-sm">
-              {index + 1} of {items.length}
-            </span>
-          </div>
+          <p className="mt-6 border-t border-gray-700 pt-4 text-center text-sm font-light text-gray-300">
+            {currentIndex + 1} of {items.length}
+          </p>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

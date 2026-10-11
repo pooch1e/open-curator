@@ -1,12 +1,20 @@
 /**
- * RootLayout — loads fonts and global styles, and wraps every page in the
- * favourites provider, site header, and skip link.
+ * RootLayout — loads fonts and global styles, sets site metadata, and wraps
+ * every page in the app shell (skip link, header, main) that modals make inert.
  */
 import './app.css';
+import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import { Crimson_Pro } from 'next/font/google';
 import Header from '@/app/lib/components/Layout/Header';
-import FavouritesProvider from '@/app/lib/contexts/FavouritesContext';
+import FavouritesHydrator from '@/app/lib/stores/FavouritesHydrator';
+import { APP_SHELL_ID } from '@/app/lib/config/appShell';
+
+export const metadata: Metadata = {
+  title: { default: 'OpenCurator', template: '%s · OpenCurator' },
+  description:
+    'Search open-access museum collections and curate your own selection of artworks.',
+};
 
 const prioriFont = localFont({
   src: [
@@ -39,17 +47,18 @@ export default function RootLayout({
         <link rel="preconnect" href="https://www.artic.edu" />
       </head>
       <body className="bg-black text-white font-crimson">
-        <a
-          href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-red-700 focus:text-white focus:rounded">
-          Skip to main content
-        </a>
-        <FavouritesProvider>
+        <FavouritesHydrator />
+        <div id={APP_SHELL_ID}>
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-red-700 focus:text-white focus:rounded">
+            Skip to main content
+          </a>
           <Header />
           <main id="main-content" tabIndex={-1}>
             {children}
           </main>
-        </FavouritesProvider>
+        </div>
       </body>
     </html>
   );

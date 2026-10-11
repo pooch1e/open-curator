@@ -1,6 +1,5 @@
 /**
- * Shared domain types — the normalised museum item every service maps into,
- * plus the favourites context contract.
+ * Shared domain types — the normalised museum item every service maps into.
  */
 
 export type MuseumSource = 'harvard' | 'chicago';
@@ -30,10 +29,7 @@ export interface MuseumItem {
   images: MuseumImage[];
 }
 
-export interface FavouritesContextType {
-  favourites: MuseumItem[];
-  isFavourite: (item: MuseumItem) => boolean;
-  addFavourite: (item: MuseumItem) => void;
-  removeFavourite: (item: MuseumItem) => void;
-  clearAllFavourites: () => void;
+export interface SearchResponse {
+  results: MuseumItem[];
+  failedSources: MuseumSource[];
 }

@@ -67,7 +67,11 @@ export class ChicagoMuseumService {
       .map((artwork) => this.toMuseumItem(artwork));
   }
 
-  private getImageUrl(imageId: string, width = 400): string {
+  /**
+   * AIC's docs recommend 843px: it's the width their own site requests, so
+   * it's the most likely to be served from their CDN cache.
+   */
+  private getImageUrl(imageId: string, width = 843): string {
     return `${IIIF_BASE_URL}/${imageId}/full/${width},/0/default.jpg`;
   }
 
