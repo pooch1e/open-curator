@@ -1,21 +1,16 @@
+/**
+ * Global styles — Tailwind v4 entry point, font theme tokens, and the
+ * header title animation.
+ */
 @import 'tailwindcss';
 
-/* Custom font variables */
-:root {
-  --font-priori-serif: 'Priori Serif', serif;
-  --font-crimson-pro: 'Crimson Pro', serif;
-}
-
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border-width: 0;
+/*
+ * `inline` is required because these reference variables that next/font sets
+ * on <html> at runtime; without it Tailwind would resolve them at :root.
+ */
+@theme inline {
+  --font-serif: var(--font-priori-serif), serif;
+  --font-crimson: var(--font-crimson-pro), serif;
 }
 
 @keyframes expand-text {
@@ -27,7 +22,7 @@
     letter-spacing: 0.1em;
   }
   100% {
-    max-width: 20ch; 
+    max-width: 20ch;
     letter-spacing: 0em;
   }
 }
@@ -39,4 +34,24 @@
   animation: expand-text 2s ease-in-out forwards;
 }
 
+.underline-animate {
+  position: relative;
+}
 
+.underline-animate::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--color-red-600);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.underline-animate:hover::after,
+.group:hover .underline-animate::after {
+  transform: scaleX(1);
+}

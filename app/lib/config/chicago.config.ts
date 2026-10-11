@@ -1,51 +1,18 @@
+/**
+ * Search presets offered in the preset dropdown, each mapped to a Chicago
+ * Art Institute search term.
+ */
+
 export interface ChicagoPreset {
   id: string;
   label: string;
-  sortField: string;
-  description: string | null;
   searchTerm: string;
-  category: 'sort' | 'content' | 'department' | 'medium';
 }
 
-export const CHICAGO_API_PRESET: ChicagoPreset[] = [
-  {
-    id: 'recent-acquisitions',
-    label: 'Recent Acquisitions',
-    sortField: 'date',
-    description: 'Browse recently acquired artworks',
-    searchTerm: 'contemporary',
-    category: 'content',
-  },
-  {
-    id: 'photography',
-    label: 'Photography',
-    sortField: 'medium',
-    description: 'Browse photography collections',
-    searchTerm: 'photograph',
-    category: 'medium',
-  },
-  {
-    id: 'painting',
-    label: 'Paintings',
-    sortField: 'medium',
-    description: 'Browse painting collections',
-    searchTerm: 'painting',
-    category: 'medium',
-  },
-  {
-    id: 'drawings',
-    label: 'Drawings',
-    sortField: 'medium',
-    description: 'Browse drawings and sketches',
-    searchTerm: 'drawing',
-    category: 'medium',
-  },
-  {
-    id: 'sculpture',
-    label: 'Sculpture',
-    sortField: 'medium',
-    description: 'Browse sculptures',
-    searchTerm: 'sculpture',
-    category: 'medium',
-  },
+export const CHICAGO_API_PRESETS: ChicagoPreset[] = [
+  { id: 'contemporary', label: 'Contemporary', searchTerm: 'contemporary' },
+  { id: 'photography', label: 'Photography', searchTerm: 'photograph' },
+  { id: 'painting', label: 'Paintings', searchTerm: 'painting' },
+  { id: 'drawings', label: 'Drawings', searchTerm: 'drawing' },
+  { id: 'sculpture', label: 'Sculpture', searchTerm: 'sculpture' },
 ];

@@ -1,4 +1,7 @@
-import Link from 'next/link'
+/**
+ * NotFound — 404 page with a link back home.
+ */
+import Link from 'next/link';
 
 export default function NotFound() {
   return (

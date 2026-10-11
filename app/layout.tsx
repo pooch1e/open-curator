@@ -1,11 +1,21 @@
+/**
+ * RootLayout — loads fonts and global styles, and wraps every page in the
+ * favourites provider, site header, and skip link.
+ */
 import './app.css';
-import Header from './lib/components/Layout/Header';
-import FavouritesProvider from './lib/contexts/FavouritesContext';
 import localFont from 'next/font/local';
 import { Crimson_Pro } from 'next/font/google';
+import Header from '@/app/lib/components/Layout/Header';
+import FavouritesProvider from '@/app/lib/contexts/FavouritesContext';
 
 const prioriFont = localFont({
-  src: [{ path: '../public/fonts/PrioriSerBold.woff2', weight: '400', style: 'normal' }],
+  src: [
+    {
+      path: '../public/fonts/PrioriSerBold.woff2',
+      weight: '400',
+      style: 'normal',
+    },
+  ],
   variable: '--font-priori-serif',
   display: 'swap',
 });
@@ -17,8 +27,6 @@ const crimsonPro = Crimson_Pro({
   display: 'swap',
 });
 
-
-
 export default function RootLayout({
   children,
 }: {
@@ -28,13 +36,7 @@ export default function RootLayout({
     <html lang="en" className={`${prioriFont.variable} ${crimsonPro.variable}`}>
       <head>
         <link rel="preconnect" href="https://nrs.harvard.edu" />
-        <link rel="preconnect" href="https://hvrd.art" />
-        <link rel="preconnect" href="https://images.metmuseum.org" />
         <link rel="preconnect" href="https://www.artic.edu" />
-        <link rel="preconnect" href="https://data.nma.gov.au" />
-
-        <link rel="dns-prefetch" href="https://api.harvardartmuseums.org" />
-        <link rel="dns-prefetch" href="https://collectionapi.metmuseum.org" />
       </head>
       <body className="bg-black text-white font-crimson">
         <a

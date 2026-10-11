@@ -1,176 +1,202 @@
-'use client'
-
-import {  useEffect } from 'react'
-import type { CollectionItem } from '@/app/lib/config/types'
+/**
+ * ImageModal — full-screen lightbox for browsing collection artworks, with
+ * keyboard navigation, focus trapping, and scroll locking.
+ */
+'use client';
+import { useEffect, useRef } from 'react';
+import type { MuseumItem } from '@/app/lib/types';
+import {
+  describeArtwork,
+  getDisplayTitle,
+  getImageUrl,
+} from '@/app/lib/utils/museumItem';
 
 interface ImageModalProps {
-  isOpen: boolean
-  onClose: () => void
-  items: CollectionItem[]
-  currentIndex: number
-  onNavigate: (index: number) => void
+  onClose: () => void;
+  items: MuseumItem[];
+  currentIndex: number;
+  onNavigate: (index: number) => void;
 }
 
+const FOCUSABLE_SELECTOR =
+  'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+const DETAIL_FIELDS = [
+  { key: 'date', label: 'Date' },
+  { key: 'culture', label: 'Culture' },
+  { key: 'medium', label: 'Medium' },
+  { key: 'department', label: 'Department' },
+] as const;
+
 export default function ImageModal({
-  isOpen,
   onClose,
   items,
   currentIndex,
-  onNavigate
+  onNavigate,
 }: ImageModalProps) {
-  const currentItem = items[currentIndex]
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const index = Math.min(currentIndex, items.length - 1);
+  const currentItem = items[index];
+  const hasPrevious = index > 0;
+  const hasNext = index < items.length - 1;
 
-  // Keyboard nav
   useEffect(() => {
-    if (!isOpen) return
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    closeButtonRef.current?.focus();
 
-    const handleKeyDown = (e: KeyboardEvent) => {
-      switch (e.key) {
-        case 'Escape':
-          onClose()
-          break
-        case 'ArrowLeft':
-          if (currentIndex > 0) onNavigate(currentIndex - 1)
-          break
-        case 'ArrowRight':
-          if (currentIndex < items.length - 1) onNavigate(currentIndex + 1)
-          break
-      }
-    }
-
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [isOpen, currentIndex, items.length, onClose, onNavigate])
-
-  //on modal mount, remove scrolling
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = 'unset'
-    }
-    
     return () => {
-      document.body.style.overflow = 'unset'
-    }
-  }, [isOpen])
+      document.body.style.overflow = previousOverflow;
+      previouslyFocused?.focus();
+    };
+  }, []);
 
-  if (!isOpen || !currentItem) return null
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+      if (e.key === 'ArrowLeft' && hasPrevious) onNavigate(index - 1);
+      if (e.key === 'ArrowRight' && hasNext) onNavigate(index + 1);
+      if (e.key === 'Tab') trapFocus(e);
+    };
 
-  const imageUrl = currentItem.primaryimageurl || currentItem.images?.[0]?.baseimageurl
+    const trapFocus = (e: KeyboardEvent) => {
+      const focusable =
+        dialogRef.current?.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR);
+      if (!focusable?.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [index, hasPrevious, hasNext, onClose, onNavigate]);
+
+  if (!currentItem) return null;
+
+  const imageUrl = getImageUrl(currentItem);
 
   return (
-    <div 
-      className="fixed inset-0 font-serif bg-black bg-opacity-95 z-50 flex items-center justify-center"
+    <div
+      ref={dialogRef}
+      className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
-      aria-labelledby="modal-title"
-    >
-
+      aria-labelledby="modal-title">
       <button
+        ref={closeButtonRef}
+        type="button"
         onClick={onClose}
         className="absolute top-4 right-4 text-white hover:text-red-600 z-10 p-2"
-        aria-label="Close gallery"
-      >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
+        aria-label="Close gallery">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
         </svg>
       </button>
 
-  
-      {currentIndex > 0 && (
+      {hasPrevious && (
         <button
+          type="button"
           onClick={(e) => {
-            e.stopPropagation()
-            onNavigate(currentIndex - 1)
+            e.stopPropagation();
+            onNavigate(index - 1);
           }}
-          className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white hover:text-red-600 p-2 z-10"
-          aria-label="Previous image"
-        >
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <polyline points="15,18 9,12 15,6"></polyline>
+          className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:text-red-600 p-2 z-10"
+          aria-label="Previous image">
+          <svg
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            aria-hidden="true">
+            <polyline points="15,18 9,12 15,6" />
           </svg>
         </button>
       )}
 
-      {currentIndex < items.length - 1 && (
+      {hasNext && (
         <button
+          type="button"
           onClick={(e) => {
-            e.stopPropagation()
-            onNavigate(currentIndex + 1)
+            e.stopPropagation();
+            onNavigate(index + 1);
           }}
-          className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:text-6ed-400 p-2 z-10"
-          aria-label="Next image"
-        >
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <polyline points="9,18 15,12 9,6"></polyline>
+          className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-red-600 p-2 z-10"
+          aria-label="Next image">
+          <svg
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            aria-hidden="true">
+            <polyline points="9,18 15,12 9,6" />
           </svg>
         </button>
       )}
 
-      {/* content */}
-      <div 
+      <div
         className="flex flex-col lg:flex-row max-w-7xl mx-auto p-4 gap-6"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Image */}
+        onClick={(e) => e.stopPropagation()}>
         <div className="flex-1 flex items-center justify-center">
           {imageUrl ? (
             <img
               src={imageUrl}
-              alt={`${currentItem.title || 'Untitled'} ${currentItem.artist ? `by ${currentItem.artist}` : ''}`}
+              alt={describeArtwork(currentItem)}
               className="max-w-full max-h-[80vh] object-contain rounded-lg"
             />
           ) : (
             <div className="w-96 h-96 bg-black rounded-lg flex items-center justify-center">
-              <span className="text-gray-400 font-crimson">No image available</span>
+              <span className="text-gray-400 font-crimson">
+                No image available
+              </span>
             </div>
           )}
         </div>
 
-        {/* Artwork details sidebar */}
-        <div className="lg:w-80 bg-gray-900 rounded-lg p-6 overflow-y-auto max-h-[80vh]">
-          <h2 id="modal-title" className="text-2xl font-crimson font-medium text-white mb-2">
-            {currentItem.title || 'Untitled'}
+        <div className="lg:w-80 bg-gray-900 rounded-lg p-6 overflow-y-auto max-h-[80vh] font-crimson">
+          <h2 id="modal-title" className="text-2xl font-medium text-white mb-2">
+            {getDisplayTitle(currentItem)}
           </h2>
-          
+
           {currentItem.artist && (
-            <p className="text-lg font-crimson font-normal text-white mb-4">
+            <p className="text-lg font-normal text-white mb-4">
               by {currentItem.artist}
             </p>
           )}
 
-          <div className="space-y-3">
-            {currentItem.date && (
-              <div>
-                <dt className="text-sm font-crimson font-light text-white uppercase tracking-wide">Date</dt>
-                <dd className="text-white font-crimson font-light">{currentItem.date}</dd>
-              </div>
+          <dl className="space-y-3">
+            {DETAIL_FIELDS.map(({ key, label }) =>
+              currentItem[key] ? (
+                <div key={key}>
+                  <dt className="text-sm font-light text-white uppercase tracking-wide">
+                    {label}
+                  </dt>
+                  <dd className="text-white font-light">{currentItem[key]}</dd>
+                </div>
+              ) : null
             )}
-            
-            {currentItem.culture && (
-              <div>
-                <dt className="text-sm font-crimson font-light text-white uppercase tracking-wide">Culture</dt>
-                <dd className="text-white font-crimson font-light">{currentItem.culture}</dd>
-              </div>
-            )}
-            
-            {currentItem.medium && (
-              <div>
-                <dt className="text-sm font-crimson font-light text-white uppercase tracking-wide">Medium</dt>
-                <dd className="text-white font-crimson font-light">{currentItem.medium}</dd>
-              </div>
-            )}
-            
-            {currentItem.department && (
-              <div>
-                <dt className="text-sm font-crimson font-light text-white uppercase tracking-wide">Department</dt>
-                <dd className="text-white font-crimson font-light">{currentItem.department}</dd>
-              </div>
-            )}
-          </div>
+          </dl>
 
           {currentItem.objectURL && (
             <div className="mt-6 pt-4 border-t border-gray-700">
@@ -178,26 +204,32 @@ export default function ImageModal({
                 href={currentItem.objectURL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-crimson font-medium transition-colors"
-              >
+                className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
                 View at Museum
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
-                  <polyline points="15,3 21,3 21,9"></polyline>
-                  <line x1="10" y1="14" x2="21" y2="3"></line>
+                <span className="sr-only">(opens in new tab)</span>
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  aria-hidden="true">
+                  <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
+                  <polyline points="15,3 21,3 21,9" />
+                  <line x1="10" y1="14" x2="21" y2="3" />
                 </svg>
               </a>
             </div>
           )}
 
-          {/* Counter */}
           <div className="mt-6 pt-4 border-t border-gray-700 text-center">
-            <span className="text-gray-400 font-crimson font-light text-sm">
-              {currentIndex + 1} of {items.length}
+            <span className="text-gray-400 font-light text-sm">
+              {index + 1} of {items.length}
             </span>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

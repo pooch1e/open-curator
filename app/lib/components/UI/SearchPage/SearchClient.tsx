@@ -1,92 +1,79 @@
+/**
+ * SearchClient — interactive search page. Typing filters the artworks on
+ * screen; submitting (or choosing a preset) searches the Chicago API, and
+ * clearing the box returns to the initial Harvard selection.
+ */
 'use client';
-import { useState, useEffect, useMemo } from 'react';
+import { useState } from 'react';
 import SearchBar from './SearchBar';
 import SearchGridContainer from './SearchGridContainer';
 import ClearAllFavouritesButton from '../ClearAllFavouritesButton';
-import {
-  CHICAGO_API_PRESET,
-  ChicagoPreset,
-} from '@/app/lib/config/chicago.config';
 import DropDown from '../PresetSelector/DropDown';
-import type { MuseumItem, SearchClientProps } from '../../../config/types';
-import { Riple } from 'react-loading-indicators';
+import {
+  CHICAGO_API_PRESETS,
+  type ChicagoPreset,
+} from '@/app/lib/config/chicago.config';
+import type { MuseumItem } from '@/app/lib/types';
 import { useApiSearch } from '@/app/lib/hooks/useApiSearch';
 import { useSearchFilter } from '@/app/lib/hooks/useSearchFilter';
 
-export default function SearchClient({ data }: SearchClientProps) {
-  const [museumData, setMuseumData] = useState<MuseumItem[]>([]);
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [isApiSearch, setIsApiSearch] = useState<boolean>(false);
+interface SearchClientProps {
+  initialData: MuseumItem[];
+  initialLoadFailed?: boolean;
+}
+
+export default function SearchClient({
+  initialData,
+  initialLoadFailed = false,
+}: SearchClientProps) {
+  const [museumData, setMuseumData] = useState(initialData);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [submittedQuery, setSubmittedQuery] = useState<string | null>(null);
 
   const apiSearch = useApiSearch();
+  const isShowingSubmittedResults = submittedQuery === searchQuery;
   const filteredResults = useSearchFilter(
     museumData,
-    isApiSearch ? '' : searchQuery
+    isShowingSubmittedResults ? '' : searchQuery
   );
 
-  const [selectedPreset, setSelectedPreset] = useState<ChicagoPreset | null>(
-    null
-  );
-  const [availablePresets, setAvailablePresets] =
-    useState<ChicagoPreset[]>(CHICAGO_API_PRESET);
-
-  useEffect(() => {
-    setMuseumData(data);
-  }, [data]);
-
-  // handle preset search
-
-  useEffect(() => {
-    if (!selectedPreset) return;
-
-    const executePresetSearch = async () => {
-      setSearchQuery(selectedPreset.searchTerm);
-
-      const results = await apiSearch.searchMuseumItems(
-        selectedPreset.searchTerm,
-        'chicago',
-        50
-      );
-
-      if (results) {
-        setMuseumData(results);
-        setIsApiSearch(true);
-      }
-    };
-
-    executePresetSearch();
-  }, [selectedPreset]);
-
-  // handle search bar stuff here
-  const handleSearch = (query: string) => {
+  const runApiSearch = async (query: string) => {
     setSearchQuery(query);
-    setIsApiSearch(false);
-    apiSearch.reset();
-  };
-
-  // handle click
-  const handleClick = async () => {
-    if (!searchQuery.trim()) return;
-
-    const results = await apiSearch.searchMuseumItems(
-      searchQuery,
-      'chicago',
-      50
-    );
+    const results = await apiSearch.search(query);
     if (results) {
       setMuseumData(results);
-      setIsApiSearch(true);
-      setSearchQuery('');
+      setSubmittedQuery(query);
     }
   };
 
+  const handleQueryChange = (query: string) => {
+    setSearchQuery(query);
+    apiSearch.reset();
+    if (!query.trim()) {
+      setMuseumData(initialData);
+      setSubmittedQuery(null);
+    }
+  };
+
+  const handleSubmit = () => {
+    if (searchQuery.trim()) runApiSearch(searchQuery);
+  };
+
+  const handleSelectPreset = (preset: ChicagoPreset) => {
+    runApiSearch(preset.searchTerm);
+  };
+
+  const showInitialLoadError =
+    initialLoadFailed && submittedQuery === null && !apiSearch.isLoading;
+
   return (
-    <main>
+    <div>
+      <h1 className="sr-only">Search museum collections</h1>
       <div className="flex justify-center p-2 mt-8">
         <SearchBar
-          onSearch={handleSearch}
           searchQuery={searchQuery}
-          onButtonClick={handleClick}
+          onQueryChange={handleQueryChange}
+          onSubmit={handleSubmit}
           isLoading={apiSearch.isLoading}
         />
       </div>
@@ -96,17 +83,14 @@ export default function SearchClient({ data }: SearchClientProps) {
         </div>
         <div className="px-6 py-2">
           <DropDown
-            presets={availablePresets}
-            onSelectPreset={setSelectedPreset}
+            presets={CHICAGO_API_PRESETS}
+            onSelectPreset={handleSelectPreset}
           />
         </div>
       </div>
 
-      {apiSearch.isError && (
-        <div
-          role="alert"
-          aria-live="assertive"
-          className="text-red-400 text-center p-4">
+      {(apiSearch.isError || showInitialLoadError) && (
+        <div role="alert" className="text-red-400 text-center p-4">
           Error loading museum data. Please try again.
         </div>
       )}
@@ -114,42 +98,32 @@ export default function SearchClient({ data }: SearchClientProps) {
       {apiSearch.isLoading ? (
         <div
           role="status"
-          aria-live="polite"
-          aria-label="Loading search results"
           className="flex flex-col justify-center items-center p-8">
-          <Riple color="#d0d1d0" size="medium" text="" textColor="" />
-          <div className="mt-4 text-center">
-            <p className="text-gray-400 text-sm mb-2">Loading artworks...</p>
-            <p className="text-gray-500 text-xs">
-              Images will appear as they load
-            </p>
-          </div>
+          <div className="w-10 h-10 border-2 border-gray-300 border-t-transparent rounded-full animate-spin" />
+          <p className="mt-4 text-gray-400 text-sm">Loading artworks...</p>
         </div>
       ) : filteredResults.length === 0 ? (
-        <div className="flex flex-col justify-center items-center p-8 text-gray-400">
+        <div
+          role="status"
+          className="flex flex-col justify-center items-center p-8 text-gray-400">
           <p className="text-xl mb-2">No artworks found</p>
           {searchQuery && (
-            <p className="text-sm">Try a different search term</p>
+            <p className="text-sm">
+              Try a different search term, or press Enter to search the
+              collection
+            </p>
           )}
         </div>
       ) : (
         <>
-          <div
-            aria-live="polite"
-            aria-label="Search results"
-            className="sr-only">
-            {filteredResults.length > 0
-              ? `Found ${filteredResults.length} artworks${
-                  searchQuery ? ` matching "${searchQuery}"` : ''
-                }`
-              : searchQuery
-              ? `No artworks found matching "${searchQuery}"`
-              : ''}
+          <div role="status" className="sr-only">
+            {`Found ${filteredResults.length} artworks${
+              searchQuery ? ` matching "${searchQuery}"` : ''
+            }`}
           </div>
-
           <SearchGridContainer results={filteredResults} />
         </>
       )}
-    </main>
+    </div>
   );
 }

@@ -1,69 +1,65 @@
-'use client'
+/**
+ * CollectionContainer — grid of the user's favourited artworks with a
+ * lightbox modal for browsing them full size.
+ */
+'use client';
+import { useCallback, useState } from 'react';
+import ClearAllFavouritesButton from '../ClearAllFavouritesButton';
+import CollectionItem from './CollectionItem';
+import ImageModal from '../Modal/ImageModal';
+import type { MuseumItem } from '@/app/lib/types';
+import { getItemKey } from '@/app/lib/utils/museumItem';
 
-import { useState } from 'react'
-import ClearAllFavouritesButton from '../ClearAllFavouritesButton'
-import CollectionItem from './CollectionItem'
-import ImageModal from '../Modal/ImageModal'
-import type { MuseumItem } from '@/app/lib/config/types'
-
-interface collectionContainerProps {
-  favourites: MuseumItem[]
+interface CollectionContainerProps {
+  favourites: MuseumItem[];
 }
 
 export default function CollectionContainer({
   favourites,
-}: collectionContainerProps) {
-  const [modalOpen, setModalOpen] = useState(false)
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
+}: CollectionContainerProps) {
+  const [modalIndex, setModalIndex] = useState<number | null>(null);
 
-  const openModal = (index: number) => {
-    setCurrentImageIndex(index)
-    setModalOpen(true)
-  }
+  const closeModal = useCallback(() => setModalIndex(null), []);
 
-  const closeModal = () => {
-    setModalOpen(false)
-  }
-
-  const navigateModal = (index: number) => {
-    setCurrentImageIndex(index)
-  }
   return (
-    <section className="py-8 px-4 md:py-12" aria-labelledby="collection-heading" role="region">
-      <div className='px-6 py-2'>
+    <section
+      className="py-8 px-4 md:py-12"
+      aria-labelledby="collection-heading">
+      <div className="px-6 py-2">
         <ClearAllFavouritesButton />
       </div>
       <div className="max-w-7xl mx-auto">
-        <h1 id="collection-heading" className="text-2xl md:text-3xl font-bold text-white mb-6 text-center p-4">
-          My Collection 
-          <span className='p-4' aria-label={`${favourites.length} items in collection`}>({favourites.length})</span>
+        <h1
+          id="collection-heading"
+          className="text-2xl md:text-3xl font-bold text-white mb-6 text-center p-4">
+          My Collection <span className="p-4">({favourites.length})</span>
         </h1>
 
         {favourites.length === 0 ? (
-          <p className="text-white" aria-live="polite">Your collection is empty. Add artworks to see them here.</p>
+          <p className="text-white">
+            Your collection is empty. Add artworks to see them here.
+          </p>
         ) : (
-          <div 
-            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6"
-            role="list"
-            aria-label={`Collection of ${favourites.length} artworks`}>
+          <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
             {favourites.map((item, index) => (
-              <CollectionItem 
-                key={item.id} 
-                item={item} 
-                onImageClick={() => openModal(index)}
+              <CollectionItem
+                key={getItemKey(item)}
+                item={item}
+                onImageClick={() => setModalIndex(index)}
               />
             ))}
-          </div>
+          </ul>
         )}
       </div>
 
-      <ImageModal
-        isOpen={modalOpen}
-        onClose={closeModal}
-        items={favourites}
-        currentIndex={currentImageIndex}
-        onNavigate={navigateModal}
-      />
+      {modalIndex !== null && (
+        <ImageModal
+          onClose={closeModal}
+          items={favourites}
+          currentIndex={modalIndex}
+          onNavigate={setModalIndex}
+        />
+      )}
     </section>
-  )
+  );
 }

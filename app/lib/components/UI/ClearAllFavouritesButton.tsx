@@ -1,29 +1,43 @@
+/**
+ * ClearAllFavouritesButton — confirms, then empties the user's favourites,
+ * briefly showing a cleared state.
+ */
 'use client';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Button from './Button';
-import { useFavourites } from '../../hooks/useFavourites';
+import { useFavourites } from '@/app/lib/hooks/useFavourites';
+
+const CLEARED_FEEDBACK_MS = 2000;
 
 export default function ClearAllFavouritesButton() {
-  const favourites = useFavourites();
+  const { favourites, clearAllFavourites } = useFavourites();
   const [isCleared, setIsCleared] = useState(false);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
-  const isFavourited = (favourites?.favourites?.length ?? 0) > 0;
+  useEffect(() => () => clearTimeout(timeoutRef.current), []);
+
+  const hasFavourites = favourites.length > 0;
 
   const handleClick = () => {
-    if (isFavourited) {
-      favourites?.clearAllFavourites();
-      setIsCleared(true);
-      setTimeout(() => setIsCleared(false), 2000); 
-    }
+    if (!hasFavourites) return;
+    if (!window.confirm(`Remove all ${favourites.length} favourites?`)) return;
+
+    clearAllFavourites();
+    setIsCleared(true);
+    clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(
+      () => setIsCleared(false),
+      CLEARED_FEEDBACK_MS
+    );
   };
 
   return (
-    <div className="relative font-mono underline underline-offset-4">
+    <div className="relative">
       <Button
         text={isCleared ? 'Favourites Cleared!' : 'Clear Favourites'}
         handleClick={handleClick}
         aria-label="Clear all favourited items"
-        state={isCleared ? 'cleared' : isFavourited ? 'active' : 'disabled'}
+        state={isCleared ? 'cleared' : hasFavourites ? 'active' : 'disabled'}
       />
       <div aria-live="polite" className="sr-only">
         {isCleared ? 'All favourites have been cleared.' : ''}

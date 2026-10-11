@@ -1,14 +1,13 @@
-import Link from 'next/link';
-import Button from '../UI/Button';
+/**
+ * Navbar — primary site navigation between search and the user's collection.
+ */
+import Button from '@/app/lib/components/UI/Button';
+
 export default function Navbar() {
   return (
-    <nav role="navigation" aria-label="Main navigation" className="flex justify-between p-4 px-4 font-mono">
-      <Link href={'/'}>
-        <Button text={'Home'} aria-label="Go to Home page" />
-      </Link>
-      <Link href={'/collection'}>
-        <Button text={'Collection'} aria-label="Go to Collection page" />
-      </Link>
+    <nav aria-label="Main navigation" className="flex justify-between p-4">
+      <Button href="/" text="Home" />
+      <Button href="/collection" text="Collection" />
     </nav>
   );
 }

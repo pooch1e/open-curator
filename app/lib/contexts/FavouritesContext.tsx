@@ -1,67 +1,117 @@
+/**
+ * FavouritesProvider — holds the user's favourited artworks and persists them
+ * to localStorage, keyed by museum source + id.
+ */
 'use client';
-import { useEffect, useState, createContext } from 'react';
-import type {
-  MuseumItem,
-  FavouritesContextType,
-  FavouritesProviderProps,
-} from '@/app/lib/config/types';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  createContext,
+} from 'react';
+import type { FavouritesContextType, MuseumItem } from '@/app/lib/types';
+import { getItemKey } from '@/app/lib/utils/museumItem';
+
+const STORAGE_KEY = 'favourites';
 
 export const FavouritesContext = createContext<
   FavouritesContextType | undefined
 >(undefined);
 
-export default function FavouritesProvider({ children }: FavouritesProviderProps) {
-  const [favourites, setFavourites] = useState<MuseumItem[]>([]);
-  const [isInitialised, setIsInitialised] = useState<boolean>(false);
+function isStoredItem(value: unknown): value is Partial<MuseumItem> {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    typeof (value as MuseumItem).id === 'number'
+  );
+}
 
-  //load local storage on mount
+/**
+ * Favourites saved before items carried a `source` are migrated by sniffing
+ * their museum URL; anything else is dropped rather than trusted blindly.
+ */
+function parseStoredFavourites(raw: string): MuseumItem[] {
+  const parsed: unknown = JSON.parse(raw);
+  if (!Array.isArray(parsed)) return [];
+
+  return parsed.filter(isStoredItem).map((item) => ({
+    period: null,
+    images: [],
+    ...item,
+    source:
+      item.source ??
+      (item.objectURL?.includes('artic.edu') ? 'chicago' : 'harvard'),
+  })) as MuseumItem[];
+}
+
+export default function FavouritesProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const [favourites, setFavourites] = useState<MuseumItem[]>([]);
+  const [isInitialised, setIsInitialised] = useState(false);
+
   useEffect(() => {
     try {
-      const artworks = localStorage.getItem('favourites');
-      if (artworks) {
-        const parsedArtworks = JSON.parse(artworks);
-        setFavourites(parsedArtworks);
-      }
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) setFavourites(parseStoredFavourites(stored));
     } catch (err) {
-      // Silently handle localStorage errors
+      console.warn('Could not load favourites from localStorage', err);
     } finally {
       setIsInitialised(true);
     }
   }, []);
 
-  //save to favs
   useEffect(() => {
+    if (!isInitialised) return;
     try {
-      if (isInitialised) {
-        const faves = JSON.stringify(favourites);
-        localStorage.setItem('favourites', faves);
-      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(favourites));
     } catch (err) {
-      // Silently handle localStorage errors
+      console.warn('Could not save favourites to localStorage', err);
     }
   }, [favourites, isInitialised]);
 
-  const addFavourite = (item: MuseumItem) => {
-    setFavourites((prev) => {
-      const isAlreadyFavorited = prev.some((fav) => fav.id === item.id);
-      if (isAlreadyFavorited) {
-        return prev;
-      }
-      return [...prev, item];
-    });
-  };
+  const favouriteKeys = useMemo(
+    () => new Set(favourites.map(getItemKey)),
+    [favourites]
+  );
 
-  const removeFavourite = (id: number) => {
-    setFavourites((prev) => prev.filter((item) => item.id !== id));
-  };
+  const isFavourite = useCallback(
+    (item: MuseumItem) => favouriteKeys.has(getItemKey(item)),
+    [favouriteKeys]
+  );
 
-  const clearAllFavourites = () => {
-    setFavourites([]);
-  };
+  const addFavourite = useCallback((item: MuseumItem) => {
+    setFavourites((prev) =>
+      prev.some((fav) => getItemKey(fav) === getItemKey(item))
+        ? prev
+        : [...prev, item]
+    );
+  }, []);
+
+  const removeFavourite = useCallback((item: MuseumItem) => {
+    setFavourites((prev) =>
+      prev.filter((fav) => getItemKey(fav) !== getItemKey(item))
+    );
+  }, []);
+
+  const clearAllFavourites = useCallback(() => setFavourites([]), []);
+
+  const value = useMemo(
+    () => ({
+      favourites,
+      isFavourite,
+      addFavourite,
+      removeFavourite,
+      clearAllFavourites,
+    }),
+    [favourites, isFavourite, addFavourite, removeFavourite, clearAllFavourites]
+  );
 
   return (
-    <FavouritesContext.Provider
-      value={{ favourites, addFavourite, removeFavourite, clearAllFavourites }}>
+    <FavouritesContext.Provider value={value}>
       {children}
     </FavouritesContext.Provider>
   );

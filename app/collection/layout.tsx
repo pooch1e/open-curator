@@ -1,6 +1,7 @@
-import '../app.css';
-
-export default function RootLayout({
+/**
+ * CollectionLayout — section wrapper for the favourites collection route.
+ */
+export default function CollectionLayout({
   children,
 }: {
   children: React.ReactNode;
