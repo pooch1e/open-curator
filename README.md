@@ -20,19 +20,20 @@ https://www.opencurator.xyz/
 ### Key Features
 
 - 🔍 **Smart Search**: Search across multiple museum collections simultaneously
-- 🏛️ **Multiple Museums**: Integrates with Harvard Art Museums, Metropolitan Museum of Art, and Australian Museum APIs
+- 🏛️ **Multiple Museums**: Searches Harvard Art Museums and the Art Institute of Chicago in parallel and merges the results
 - 📱 **Responsive Design**: Optimized for desktop, tablet, and mobile devices
-- ❤️ **Personal Collections**: Save artworks to create personalized exhibitions using React Context
+- ❤️ **Personal Collections**: Save artworks to a searchable collection, stored in your browser
 - 🔗 **Direct Museum Links**: Easy access to original museum pages for each artwork
-- ⚡ **Fast Performance**: Cached results and optimized loading with Next.js
-- 🎯 **Session Persistence**: Collections persist throughout your browsing session
-- 🖼️ **Image Optimization**: IIIF image optimization for fast loading
+- ⚡ **Fast Performance**: Upstream museum responses cached for an hour by Next.js
+- 🎯 **Persistence**: Collections are saved to localStorage and sync across tabs
+- 🖼️ **IIIF Images**: Images requested at sensible sizes via the IIIF protocol
 
 ## 🏛️ Museum Partners
 
 - **Harvard Art Museums** - Access to over 250,000 objects from Harvard's world-class collections
-- **Chicago Museum** - Chicago Museum collection
-- **Metropolitan Museum of Art** - Explore artworks from one of the world's largest and most prestigious art museums
+- **Art Institute of Chicago** - Open-access collection via the AIC public API
+
+> **Note:** As of October 2026 the Art Institute's image server (`www.artic.edu/iiif`) answers requests with a Cloudflare bot challenge, so Chicago images may show as "Image unavailable" until AIC resolves it. Search results and metadata still load.
 
 ## 🚀 Running the Application Offline
 
@@ -79,10 +80,10 @@ touch .env.local
 
 Add the following environment variables to `.env.local`:
 
-````env
+```env
 # Harvard Art Museums API (Required)
 HARVARD_MUSEUM_API_KEY=your_harvard_api_key_here
-
+```
 
 #### Getting API Keys
 
@@ -93,14 +94,8 @@ HARVARD_MUSEUM_API_KEY=your_harvard_api_key_here
 4. Copy your API key to the `.env.local` file
 5. **Important**: Wait a few minutes after registration for the API key to become active
 
-**Metropolitan Museum API:**
-- No API key required - uses open access API
-
-**Chicago Museum :**
-- No API key required - uses open access API, however it is rate limited
-
-**Australian Museum API (Optional):**
-- Contact the museum directly for API access if needed
+**Art Institute of Chicago API:**
+- No API key required - uses the open access API, which is rate limited
 
 ### Step 4: Verify Configuration
 
@@ -111,7 +106,7 @@ Check that your configuration is correct:
 cat .env.local
 
 # Should show your API keys (keep these secret!)
-````
+```
 
 ### Step 5: Run the Development Server
 
@@ -152,24 +147,6 @@ The production server will run on [http://localhost:3000](http://localhost:3000)
 
 ### Step 7: Advanced Offline Configuration
 
-#### Static Export (Optional)
-
-For completely offline deployment without a server:
-
-```bash
-# Add to next.config.ts
-const nextConfig = {
-  output: 'export',
-  trailingSlash: true,
-  images: {
-    unoptimized: true
-  }
-}
-
-# Then build
-npm run build
-```
-
 #### Docker Deployment (Optional)
 
 Create a `Dockerfile` for containerized deployment:
@@ -189,17 +166,19 @@ CMD ["npm", "start"]
 
 ### Searching for Artworks
 
-1. **Browse Initial Collection**: The homepage loads with a curated selection of artworks
-2. **Search by Keywords**: Use the search bar to find specific artworks, artists, or themes
-3. **Filter Results**: Results are automatically filtered as you type
-4. **API Search**: Click the search button to query external museum APIs for more results
+1. **Browse Initial Collection**: The homepage loads a selection of Harvard artworks
+2. **Filter as You Type**: Typing filters the artworks on screen by title, artist, medium, or culture
+3. **Search Every Museum**: Press Enter (or the search button) to search Harvard and Chicago together
+4. **Presets**: Pick a preset (Paintings, Photography, …) for a quick themed search
+5. **Reset**: Clear the search box to return to the initial selection
 
 ### Creating Your Exhibition
 
 1. **Add to Favorites**: Click the favorite button (+) on any artwork
-2. **View Collection**: Navigate to "My Collection" to see all saved artworks
-3. **Manage Collection**: Remove items or clear your entire collection
-4. **Explore Details**: Click on artwork titles to visit the original museum page
+2. **View Collection**: Navigate to "Collection" to see all saved artworks
+3. **Search Your Collection**: Filter saved works with the collection search bar
+4. **Explore Details**: Click an artwork to open it full size, then use the arrow keys to browse
+5. **Manage Collection**: Remove items with (–) or clear your entire collection
 
 ### Responsive Design
 
@@ -211,8 +190,8 @@ CMD ["npm", "start"]
 
 ### Frontend Framework
 
-- **Next.js 15.5.3** with App Router for server-side rendering
-- **React 19.1.0** with latest hooks and features
+- **Next.js 15.5** with App Router for server-side rendering
+- **React 19.1** with latest hooks and features
 - **TypeScript 5.x** for type safety and better development experience
 
 ### Styling & UI
@@ -220,32 +199,29 @@ CMD ["npm", "start"]
 - **Tailwind CSS 4.x** for utility-first styling
 - **Custom Fonts**: Priori Serif and Crimson Pro
 - **Responsive Design**: Mobile-first approach
-- **Loading Indicators**: React Loading Indicators
 
 ### State Management
 
-- **React Context API** for favorites management
-- **Custom Hooks** (`useFavourites`) for state logic
-- **Session Storage** for persistence
+- **Zustand** (with `persist`) for favourites, saved to localStorage and synced across tabs
+- **Custom Hooks** (`useApiSearch`, `useSearchFilter`) for search state
 
 ### APIs & Data Sources
 
-- **Harvard Art Museums API** - Primary data source with advanced search
-- **Metropolitan Museum API** - Secondary collection access
-- **Australian Museum API** - Additional cultural artifacts
-- **IIIF Image Protocol** - Optimized image delivery
+- **Harvard Art Museums API** - Initial selection and search
+- **Art Institute of Chicago API** - Search
+- **IIIF Image Protocol** - Sized image delivery
 
 ### Performance & Optimization
 
-- **Next.js Caching** - Built-in ISR (Incremental Static Regeneration)
-- **Image Optimization** - WebP/AVIF formats, multiple sizes
-- **Rate Limiting** - Respectful API usage with delays
+- **Next.js Caching** - Upstream fetches revalidate hourly; the homepage uses ISR
+- **Parallel Search** - Museums are queried concurrently; one failing doesn't block the other
 - **Error Boundaries** - Graceful error handling
 
 ### Development Tools
 
 - **Jest** - Unit testing framework
 - **ESLint** - Code linting with Next.js config
+- **Prettier** - Code formatting
 - **PostCSS** - CSS processing
 - **TypeScript** - Static type checking
 
@@ -253,50 +229,32 @@ CMD ["npm", "start"]
 
 ```
 open-curator/
-├── app/                        # Next.js 13+ App Directory
-│   ├── api/                    # API Routes
-│   │   ├── cache/              # Cache management
-│   │   ├── harvard/search/     # Harvard Museum search endpoint
-│   │   └── met/search/         # Met Museum search endpoint
-│   ├── lib/                    # Shared utilities and components
-│   │   ├── components/         # React components
-│   │   │   ├── Layout/         # Header, navigation
-│   │   │   │   ├── Header.tsx
-│   │   │   │   └── Navbar.tsx
-│   │   │   ├── UI/             # User interface components
-│   │   │   │   ├── Button.tsx
-│   │   │   │   ├── FavouriteButton.tsx
-│   │   │   │   └── ClearAllFavouritesButton.tsx
-│   │   │   └── Errors/         # Error handling components
-│   │   ├── contexts/           # React Context providers
-│   │   │   └── FavouritesContext.tsx
-│   │   ├── hooks/              # Custom React hooks
-│   │   │   └── useFavourites.tsx
-│   │   ├── services/           # API service classes
-│   │   │   ├── HarvardMusemService.ts
-│   │   │   ├── MetMuseumService.ts
-│   │   │   └── ChicagoMuseumService.ts
-│   │   ├── utils/              # Utility functions
-│   │   │   ├── apiErrors.ts
-│   │   │   ├── delay.ts
-│   │   │   └── processBatches.ts
-│   │   └── config/             # Configuration files
-│   ├── layout.tsx              # Root layout with fonts and providers
-│   ├── page.tsx                # Homepage component
-│   ├── global-error.tsx        # Global error boundary
-│   └── not-found.tsx           # 404 page
-├── __tests__/                  # Test files
-│   └── extractData.test.ts
-├── public/                     # Static assets
-│   └── fonts/                  # Custom font files
-├── config.ts                   # API configuration
-├── jest.config.ts              # Jest testing configuration
-├── next.config.ts              # Next.js configuration
-├── tailwind.config.js          # Tailwind CSS configuration
-├── postcss.config.mjs          # PostCSS configuration
-├── tsconfig.json               # TypeScript configuration
-├── package.json                # Dependencies and scripts
-└── pnpm-lock.yaml             # Package lock file
+├── app/                          # Next.js App Router directory
+│   ├── api/
+│   │   └── search/route.ts       # Merged Harvard + Chicago search endpoint
+│   ├── collection/               # Saved-works page
+│   ├── lib/
+│   │   ├── components/
+│   │   │   ├── Layout/           # Header, Navbar
+│   │   │   └── UI/               # Search, collection, modal, buttons, skeleton
+│   │   ├── config/               # Search presets, app shell id
+│   │   ├── hooks/                # useApiSearch, useSearchFilter
+│   │   ├── services/             # HarvardMuseumService, ChicagoMuseumService
+│   │   ├── stores/               # Zustand favourites store + hydrator
+│   │   ├── utils/                # MuseumItem helpers, API error responses
+│   │   └── types.ts              # Shared domain types
+│   ├── app.css                   # Tailwind entry point and theme tokens
+│   ├── layout.tsx                # Root layout, fonts, metadata
+│   ├── page.tsx                  # Homepage
+│   ├── global-error.tsx          # Global error boundary
+│   └── not-found.tsx             # 404 page
+├── public/fonts/                 # Custom font files
+├── config.ts                     # Museum API configuration
+├── jest.config.ts                # Jest configuration
+├── next.config.ts                # Next.js configuration
+├── postcss.config.mjs            # PostCSS configuration
+├── tsconfig.json                 # TypeScript configuration
+└── package.json                  # Dependencies and scripts
 ```
 
 ## 🧪 Testing
@@ -316,10 +274,8 @@ npm run test -- --coverage
 
 ### Test Structure
 
-- Unit tests in `__tests__/` directory
-- Service layer testing for API integrations
-- Component testing with React Testing Library
-- TypeScript support in tests
+- Tests live next to the code as `*.test.ts(x)` files under `app/`
+- TypeScript support via ts-jest
 
 ## 🚀 Deployment Options
 
@@ -366,51 +322,21 @@ docker run -p 3000:3000 -e HARVARD_MUSEUM_API_KEY=your_key open-curator
 Edit `config.ts` to modify API endpoints and settings:
 
 ```typescript
-export const config = {
+export const config: Config = {
   harvardMuseum: {
     baseUrl: 'https://api.harvardartmuseums.org',
-    urlEndsInObject: 'https://api.harvardartmuseums.org/object',
-    apiKey: process.env.HARVARD_MUSEUM_API_KEY || '',
+    apiKey: process.env.HARVARD_MUSEUM_API_KEY ?? '',
   },
-  metMuseum: {
-    baseUrl: 'https://collectionapi.metmuseum.org/public/collection/v1',
-    searchUrl:
-      'https://collectionapi.metmuseum.org/public/collection/v1/search?isHighlight=true&q=',
-  },
-  ausMuseum: {
-    baseUrl: 'https://data.nma.gov.au/',
-    objectEndpointStart: '/object?offset=0&limit=50',
-    imageEndpoint: '/media?id=*',
-    objectAndMediaEndpoint: 'object?media=*&offset=0&limit=50',
-    apiKey: process.env.MUSEUM_API_KEY ?? '',
+  chicagoMuseum: {
+    baseUrl: 'https://api.artic.edu/api/v1',
   },
 };
 ```
 
 ### Performance Settings
 
-- **Image Caching**: 1 hour (3600s) for museum images with ISR
-- **API Caching**: 1 hour for search results with ISR
-- **Rate Limiting**: Implemented to respect museum API guidelines
-- **Concurrent Requests**: Limited to prevent API throttling
-
-### Image Optimization
-
-Next.js image optimization is configured for museum domains:
-
-```typescript
-// next.config.ts
-images: {
-  remotePatterns: [
-    { protocol: 'https', hostname: 'nrs.harvard.edu' },
-    { protocol: 'https', hostname: 'hvrd.art' },
-    { protocol: 'https', hostname: 'images.metmuseum.org' },
-    { protocol: 'https', hostname: 'www.artic.edu' },
-    { protocol: 'https', hostname: 'data.nma.gov.au' },
-  ],
-  formats: ['image/webp', 'image/avif'],
-}
-```
+- **API Caching**: Upstream museum responses are cached for 1 hour via `fetch(..., { next: { revalidate: 3600 } })`
+- **Homepage**: Regenerated at most once an hour (ISR)
 
 ## 🔍 Available Scripts
 
@@ -422,6 +348,7 @@ npm start           # Start production server
 
 # Code Quality
 npm run lint        # Run ESLint
+npm run format      # Format with Prettier
 npm run test        # Run Jest tests
 
 # Debugging
@@ -457,13 +384,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ### Chicago Museum API
 
 - **Documentation**: [Chicago Museum Api](https://www.artic.edu/open-access/public-api)
-- **Rate Limits**: No official rate limits, however, I employ rate limiting of 30 requests a second max and caching frequent requests via a proxy layer
-
-### Metropolitan Museum of Art API
-
-- **Documentation**: [Met Museum API](https://metmuseum.github.io/)
-- **Rate Limits**: No official limits, but respectful usage required
-- **Features**: Open access collection, high-resolution images
+- **Rate Limits**: Anonymous requests are throttled to 60 per minute; responses are cached for an hour by Next.js to stay well under it
 
 ## ❓ Troubleshooting
 

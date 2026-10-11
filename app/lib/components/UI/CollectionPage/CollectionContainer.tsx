@@ -1,69 +1,105 @@
-'use client'
+/**
+ * CollectionContainer — the user's saved artworks: a serif search bar that
+ * filters them, a count, and a gallery grid that opens a lightbox.
+ */
+'use client';
+import { useCallback, useState } from 'react';
+import Link from 'next/link';
+import CollectionItem from './CollectionItem';
+import ImageModal from '../Modal/ImageModal';
+import SearchBar from '../SearchPage/SearchBar';
+import ClearAllFavouritesButton from '../ClearAllFavouritesButton';
+import {
+  useFavouritesHydrated,
+  useFavouritesStore,
+} from '@/app/lib/stores/favouritesStore';
+import { useSearchFilter } from '@/app/lib/hooks/useSearchFilter';
+import { getItemKey } from '@/app/lib/utils/museumItem';
 
-import { useState } from 'react'
-import ClearAllFavouritesButton from '../ClearAllFavouritesButton'
-import CollectionItem from './CollectionItem'
-import ImageModal from '../Modal/ImageModal'
-import type { MuseumItem } from '@/app/lib/config/types'
-
-interface collectionContainerProps {
-  favourites: MuseumItem[]
+function pluraliseWorks(count: number): string {
+  return `${count} saved ${count === 1 ? 'work' : 'works'}`;
 }
 
-export default function CollectionContainer({
-  favourites,
-}: collectionContainerProps) {
-  const [modalOpen, setModalOpen] = useState(false)
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
+export default function CollectionContainer() {
+  const favourites = useFavouritesStore((state) => state.favourites);
+  const isHydrated = useFavouritesHydrated();
+  const [query, setQuery] = useState('');
+  const [modalIndex, setModalIndex] = useState<number | null>(null);
 
-  const openModal = (index: number) => {
-    setCurrentImageIndex(index)
-    setModalOpen(true)
-  }
+  const visible = useSearchFilter(favourites, query);
+  const isFiltering = query.trim().length > 0;
+  const openIndex =
+    modalIndex !== null && modalIndex < visible.length ? modalIndex : null;
 
-  const closeModal = () => {
-    setModalOpen(false)
-  }
+  const closeModal = useCallback(() => setModalIndex(null), []);
 
-  const navigateModal = (index: number) => {
-    setCurrentImageIndex(index)
-  }
+  const countLabel = isFiltering
+    ? `${visible.length} of ${pluraliseWorks(favourites.length)}`
+    : pluraliseWorks(favourites.length);
+
   return (
-    <section className="py-8 px-4 md:py-12" aria-labelledby="collection-heading" role="region">
-      <div className='px-6 py-2'>
+    <section
+      aria-labelledby="collection-heading"
+      className="px-4 md:px-8 pb-16">
+      <h1 id="collection-heading" className="sr-only">
+        My Collection
+      </h1>
+
+      <div className="flex justify-center p-2 mt-8">
+        <SearchBar
+          value={query}
+          onChange={setQuery}
+          label="Search your collection"
+          placeholder="Search your collection"
+          description="Filters your saved works by title, artist, medium, or culture."
+        />
+      </div>
+
+      <div className="flex items-baseline justify-between gap-4 px-2 py-3">
+        <p role="status" className="font-crimson text-lg text-gray-300">
+          {isHydrated ? countLabel : ''}
+        </p>
         <ClearAllFavouritesButton />
       </div>
-      <div className="max-w-7xl mx-auto">
-        <h1 id="collection-heading" className="text-2xl md:text-3xl font-bold text-white mb-6 text-center p-4">
-          My Collection 
-          <span className='p-4' aria-label={`${favourites.length} items in collection`}>({favourites.length})</span>
-        </h1>
 
-        {favourites.length === 0 ? (
-          <p className="text-white" aria-live="polite">Your collection is empty. Add artworks to see them here.</p>
-        ) : (
-          <div 
-            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6"
-            role="list"
-            aria-label={`Collection of ${favourites.length} artworks`}>
-            {favourites.map((item, index) => (
-              <CollectionItem 
-                key={item.id} 
-                item={item} 
-                onImageClick={() => openModal(index)}
-              />
-            ))}
-          </div>
-        )}
-      </div>
+      {!isHydrated ? null : favourites.length === 0 ? (
+        <div className="flex flex-col items-center gap-4 py-16 text-center">
+          <p className="font-crimson text-2xl">Your collection is empty.</p>
+          <p className="text-gray-300">
+            Press <span aria-hidden="true">+</span>
+            <span className="sr-only">the add to favourites button</span> on any
+            artwork to save it here.
+          </p>
+          <Link
+            href="/"
+            className="font-crimson text-xl underline underline-offset-4 hover:text-red-500">
+            Browse artworks
+          </Link>
+        </div>
+      ) : visible.length === 0 ? (
+        <p className="py-16 text-center font-crimson text-xl text-gray-300">
+          No saved works match &ldquo;{query.trim()}&rdquo;.
+        </p>
+      ) : (
+        <ul className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {visible.map((item, index) => (
+            <CollectionItem
+              key={getItemKey(item)}
+              item={item}
+              onOpen={() => setModalIndex(index)}
+            />
+          ))}
+        </ul>
+      )}
 
-      <ImageModal
-        isOpen={modalOpen}
-        onClose={closeModal}
-        items={favourites}
-        currentIndex={currentImageIndex}
-        onNavigate={navigateModal}
-      />
+      {openIndex !== null && (
+        <ImageModal
+          items={visible}
+          currentIndex={openIndex}
+          onNavigate={setModalIndex}
+          onClose={closeModal}
+        />
+      )}
     </section>
-  )
+  );
 }

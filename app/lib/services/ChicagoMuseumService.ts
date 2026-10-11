@@ -1,103 +1,107 @@
-// ChicagoMuseumService.ts
+/**
+ * ChicagoMuseumService — searches the Art Institute of Chicago API and maps
+ * artworks that have an image into normalised MuseumItems.
+ */
+import type { MuseumItem } from '@/app/lib/types';
+
+interface ChicagoArtwork {
+  id: number;
+  title?: string | null;
+  artist_display?: string | null;
+  date_display?: string | null;
+  image_id?: string | null;
+  thumbnail?: {
+    alt_text?: string | null;
+    width?: number;
+    height?: number;
+  } | null;
+  medium_display?: string | null;
+  department_title?: string | null;
+  dimensions?: string | null;
+  is_public_domain?: boolean | null;
+}
+
+interface ChicagoSearchResponse {
+  data?: ChicagoArtwork[];
+}
+
+const IIIF_BASE_URL = 'https://www.artic.edu/iiif/2';
+const ARTWORK_PAGE_URL = 'https://www.artic.edu/artworks';
+const SEARCH_FIELDS = [
+  'id',
+  'title',
+  'artist_display',
+  'date_display',
+  'image_id',
+  'thumbnail',
+  'medium_display',
+  'department_title',
+  'dimensions',
+  'is_public_domain',
+].join(',');
+
 export class ChicagoMuseumService {
-  private baseUrl: string;
+  constructor(private readonly baseUrl: string) {}
 
-  constructor(baseUrl: string) {
-    this.baseUrl = baseUrl;
-  }
+  async searchObjects(query: string, limit = 50): Promise<MuseumItem[]> {
+    const params = new URLSearchParams({
+      q: query,
+      size: String(limit),
+      fields: SEARCH_FIELDS,
+    });
 
-  async getInitialObjectsWithImages(limit = 50, query: string): Promise<any[]> {
-    try {
-      const params = new URLSearchParams({
-        q: query,
-        size: limit.toString(),
-        fields:
-          'id,title,artist_display,date_display,image_id,thumbnail,medium_display,department_title,dimensions,is_public_domain',
-      });
+    const response = await fetch(`${this.baseUrl}/artworks/search?${params}`, {
+      next: { revalidate: 3600 },
+    });
 
-      const url = `${this.baseUrl}/artworks/search?${params}`;
-
-      const response = await fetch(url, {
-        next: { revalidate: 3600 },
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(
-          `Request failed: ${response.status} ${response.statusText}`
-        );
-      }
-
-      const data = await response.json();
-
-      if (!data.data || data.data.length === 0) {
-        return [];
-      }
-
-      // Filter for artworks with images
-      const filteredArtworksWithImages = data.data.filter((artwork: any) => {
-        return !!artwork.image_id;
-      });
-
-      return filteredArtworksWithImages;
-    } catch (err: any) {
-      throw err;
+    if (!response.ok) {
+      throw new Error(
+        `Chicago request failed: ${response.status} ${response.statusText}`
+      );
     }
+
+    const data: ChicagoSearchResponse = await response.json();
+
+    return (data.data ?? [])
+      .filter((artwork) => !!artwork.image_id)
+      .map((artwork) => this.toMuseumItem(artwork));
   }
 
   /**
-   * Get optimized image URL for Chicago Museum IIIF images
-   * @param imageId -
-   * @param size -
-   * @returns
+   * AIC's docs recommend 843px: it's the width their own site requests, so
+   * it's the most likely to be served from their CDN cache.
    */
-  getImageUrl(imageId: string, size: string = '400'): string {
-    return `https://www.artic.edu/iiif/2/${imageId}/full/${size},/0/default.jpg`;
+  private getImageUrl(imageId: string, width = 843): string {
+    return `${IIIF_BASE_URL}/${imageId}/full/${width},/0/default.jpg`;
   }
 
-  /**
-   *
-   * @param imageId -
-   * @returns
-   */
-  getThumbnailUrl(imageId: string): string {
-    return this.getImageUrl(imageId, '200');
-  }
+  private toMuseumItem(artwork: ChicagoArtwork): MuseumItem {
+    const imageUrl = artwork.image_id
+      ? this.getImageUrl(artwork.image_id)
+      : null;
 
-  transformToMuseumItem(chicagoItem: any): any {
     return {
-      id: chicagoItem.id,
-      title: chicagoItem.title || 'Untitled',
-      artist: chicagoItem.artist_display || 'Unknown Artist',
-      date: chicagoItem.date_display || null,
+      id: artwork.id,
+      source: 'chicago',
+      title: artwork.title || null,
+      artist: artwork.artist_display || null,
+      date: artwork.date_display || null,
       culture: null,
-      medium: chicagoItem.medium_display || null,
-      department: chicagoItem.department_title || null,
-      primaryimageurl: chicagoItem.image_id
-        ? this.getImageUrl(chicagoItem.image_id)
-        : null,
-      additionalImages: [],
-      isPublicDomain: chicagoItem.is_public_domain || false,
-      objectURL: `https://www.artic.edu/artworks/${chicagoItem.id}`,
-      dimensions: chicagoItem.dimensions || null,
-      images: chicagoItem.image_id
+      medium: artwork.medium_display || null,
+      period: null,
+      department: artwork.department_title || null,
+      primaryimageurl: imageUrl,
+      isPublicDomain: artwork.is_public_domain ?? null,
+      objectURL: `${ARTWORK_PAGE_URL}/${artwork.id}`,
+      dimensions: artwork.dimensions || null,
+      images: imageUrl
         ? [
             {
-              alttext: chicagoItem.thumbnail?.alt_text || null,
-              baseimageurl: this.getImageUrl(chicagoItem.image_id),
-              copyright: null,
-              date: chicagoItem.date_display,
-              description: null,
-              displayorder: 0,
-              format: 'jpg',
-              height: chicagoItem.thumbnail?.height || null,
-              idsid: null,
-              iiifbaseuri: `https://www.artic.edu/iiif/2/${chicagoItem.image_id}`,
-              imageid: chicagoItem.id,
-              publiccaption: null,
-              renditionnumber: null,
-              technique: null,
-              width: chicagoItem.thumbnail?.width || null,
+              baseimageurl: imageUrl,
+              iiifbaseuri: `${IIIF_BASE_URL}/${artwork.image_id}`,
+              alttext: artwork.thumbnail?.alt_text ?? null,
+              width: artwork.thumbnail?.width ?? null,
+              height: artwork.thumbnail?.height ?? null,
             },
           ]
         : [],

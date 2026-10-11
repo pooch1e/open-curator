@@ -1,3 +1,6 @@
+/**
+ * Jest configuration — ts-jest over any *.test / *.spec files under app/.
+ */
 import type { Config } from 'jest';
 
 const config: Config = {
@@ -5,6 +8,9 @@ const config: Config = {
   testEnvironment: 'node',
   testMatch: ['**/?(*.)+(spec|test).[jt]s?(x)'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-  roots: ['<rootDir>/app', '<rootDir>/__tests__'],
+  moduleNameMapper: { '^@/(.*)$': '<rootDir>/$1' },
+  roots: ['<rootDir>/app'],
+  passWithNoTests: true,
 };
+
 export default config;

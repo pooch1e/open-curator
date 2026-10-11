@@ -1,8 +1,8 @@
-'use client';
-import CollectionContainer from '../lib/components/UI/CollectionPage/CollectionContainer';
-import { useFavourites } from '../lib/hooks/useFavourites';
+/**
+ * Collection page — searchable view of the artworks the user has saved.
+ */
+import CollectionContainer from '@/app/lib/components/UI/CollectionPage/CollectionContainer';
 
 export default function CollectionPage() {
-  const collection = useFavourites();
-  return <CollectionContainer favourites={collection?.favourites || []} />;
+  return <CollectionContainer />;
 }
